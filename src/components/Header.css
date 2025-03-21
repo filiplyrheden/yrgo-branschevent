@@ -1,0 +1,34 @@
+/* Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+header {
+  display: flex;
+  width: 94.5rem;
+  padding: 0.625rem 7.5rem;
+  align-items: flex-end;
+  gap: 5.125rem;
+}
+
+.yrgo-logo {
+  width: 12.75rem;
+  height: 3.125rem;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.nav,
+a {
+  color: var(--Grey-Grey-800, #4f4f4f);
+  text-align: center;
+  font-family: Inter;
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-decoration: none;
+}
+
