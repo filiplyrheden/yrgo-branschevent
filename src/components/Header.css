@@ -3,31 +3,35 @@
 
 header {
   display: flex;
-  padding: 0.625rem 7.5rem;
-  align-items: flex-end;
-  gap: 5.125rem;
+  height: 4rem;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0.75rem 1rem;
+
 }
 
 .yrgo-logo {
   width: 12.75rem;
   height: 3.125rem;
+  margin-right: 2rem;
 }
 
 nav {
   display: flex;
   align-items: center;
-  gap: 2.5rem;
+  gap: 2rem;
 }
 
 .nav,
 a {
-  color: var(--Grey-Grey-800, #4f4f4f);
-  text-align: center;
-  font-family: Inter;
-  font-size: 1.25rem;
+  color: #4F4F4F;
+  font-family:  Inter;
+  font-size: 1rem;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 500;
   line-height: normal;
+  letter-spacing: 0.05rem;
+  text-transform: capitalize;
   text-decoration: none;
 }
 
