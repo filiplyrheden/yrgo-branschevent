@@ -3,7 +3,6 @@
 
 header {
   display: flex;
-  width: 94.5rem;
   padding: 0.625rem 7.5rem;
   align-items: flex-end;
   gap: 5.125rem;
