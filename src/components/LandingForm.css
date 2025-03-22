@@ -1,0 +1,37 @@
+/* IBM Plex Mono font */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+.landing-form {
+    height: 51rem;
+}
+
+.landing-form-content {
+    width: 80%;
+    margin: 5rem 0 0 5rem;
+}
+
+h1 {
+    color: #001A52;
+font-feature-settings: 'liga' off, 'clig' off;
+font-family: "IBM Plex Mono";
+font-size: 2rem;
+font-style: normal;
+font-weight: 700;
+line-height: normal;
+margin: 1.5rem 0 1.5rem 0;
+}
+
+p {
+    color: #001A52;
+font-feature-settings: 'liga' off, 'clig' off;
+font-family: "IBM Plex Mono";
+font-size: 1.25rem;
+font-style: normal;
+font-weight: 400;
+line-height: 2.1875rem; 
+margin: 1.5rem 0 1.5rem 0;
+}
+
+span {
+    color: #E51236;
+}
