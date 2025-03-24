@@ -4,18 +4,18 @@ import { useEffect } from "react";
 
 export default function Home() {
   useEffect(() => {
-    const handleScroll = (e) => {
-      if (window.scrollY < 50 && e.deltaY > 0) {
-        document.querySelector(".landing-section")?.scrollIntoView({
-          behavior: "smooth",
-        });
-      }
+    const arrow = document.querySelector(".arrow-wrapper");
+
+    const handleClick = () => {
+      document.querySelector(".landing-section")?.scrollIntoView({
+        behavior: "smooth",
+      });
     };
 
-    document.addEventListener("wheel", handleScroll);
+    arrow?.addEventListener("click", handleClick);
 
     return () => {
-      document.removeEventListener("wheel", handleScroll);
+      arrow?.removeEventListener("click", handleClick);
     };
   }, []);
 
