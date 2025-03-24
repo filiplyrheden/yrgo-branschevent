@@ -67,6 +67,7 @@
 
 svg {
   flex-shrink: 0;
+  margin-bottom: 1.6rem;
 }
 
 .hero-icons {
