@@ -10,9 +10,10 @@ const StyledInput = styled.input`
   background: #f2f2f2;
   padding: 0.5rem;
   font-size: 1rem;
+  margin-top: 0;
 `;
 
-const Input = ({ id = "mejl", label = "Mejl:", placeholder = "Mejl..." }) => {
+const Input = ({ id = "mejl", label = "Mejl", placeholder = "Mejl..." }) => {
   return (
     <div>
       <label htmlFor={id}>{label}</label>
