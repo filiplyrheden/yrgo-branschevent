@@ -27,7 +27,7 @@ const LandingForm = () => {
           Designers på Yrgo!<span>&lt;/p&gt;</span>
         </p>
       </div>
-      <Input placeholder="Namn..." />
+      <Input />
     </div>
   );
 };

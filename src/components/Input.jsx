@@ -12,7 +12,7 @@ const StyledInput = styled.input`
   font-size: 1rem;
 `;
 
-const Input = ({ id = "name", label = "Namn:", placeholder = "Namn..." }) => {
+const Input = ({ id = "mejl", label = "Mejl:", placeholder = "Mejl..." }) => {
   return (
     <div>
       <label htmlFor={id}>{label}</label>
