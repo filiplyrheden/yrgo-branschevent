@@ -26,8 +26,11 @@ const LandingForm = () => {
           <span>&lt;p&gt;</span>Välkomna önskar Webbutvecklare & Digital
           Designers på Yrgo!<span>&lt;/p&gt;</span>
         </p>
+        <div className="input-container">
+          <Input />
+          <Input label="Lösenord" placeholder="Lösenord..." />
+        </div>
       </div>
-      <Input />
     </div>
   );
 };
