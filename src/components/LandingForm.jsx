@@ -1,6 +1,7 @@
 import React from "react";
 import "./LandingForm.css";
 import Input from "./Input";
+import Button from "./Button";
 
 const LandingForm = () => {
   return (
@@ -35,6 +36,10 @@ const LandingForm = () => {
           <label for="consent" id="consent-label">
             Jag accepterar Villkor och Sekretesspolicy
           </label>
+        </div>
+        <div className="button-container">
+          <Button />
+          <Button text="Student" />
         </div>
       </div>
     </div>
