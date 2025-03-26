@@ -30,6 +30,12 @@ const LandingForm = () => {
           <Input />
           <Input label="Lösenord" placeholder="Lösenord..." />
         </div>
+        <div className="checkbox-container">
+          <input type="checkbox" id="consent" name="consent" />
+          <label for="consent" id="consent-label">
+            Jag accepterar Villkor och Sekretesspolicy
+          </label>
+        </div>
       </div>
     </div>
   );
