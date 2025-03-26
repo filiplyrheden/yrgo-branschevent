@@ -1,5 +1,6 @@
 import Hero from "../components/Hero";
 import LandingForm from "../components/LandingForm";
+import LandingInfo from "../components/LandingInfo";
 import { useEffect } from "react";
 
 export default function Home() {
@@ -22,9 +23,12 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <div className="landing-section">
+      <>
         <LandingForm />
-      </div>
+      </>
+      <>
+        <LandingInfo />
+      </>
     </>
   );
 }

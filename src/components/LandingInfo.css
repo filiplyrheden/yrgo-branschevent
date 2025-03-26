@@ -1,0 +1,60 @@
+/* Inter font */
+@import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+.landing-info {
+  height: 27rem;
+  background-color: #001a52;
+}
+
+.landing-info-content {
+  display: flex;
+  flex-direction: row;
+  padding: 2.5rem 7.5rem;
+}
+
+.landing-info-info {
+  display: flex;
+  height: 100%;
+  width: 50%;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.info-heading {
+  color: #fff;
+  font-family: Inter;
+  font-size: 2rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  text-align: left; /* Added */
+}
+
+.info-text {
+  color: #fff;
+  font-family: Inter;
+  font-size: 2rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-top: 0;
+  text-align: left; /* Added */
+}
+
+#adress {
+  margin-bottom: 0;
+}
+
+.landing-info-grid {
+  display: grid;
+  width: 50%;
+  grid-template-columns: repeat(3, 9rem);
+  grid-template-rows: repeat(1, 9rem);
+  align-self: end;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.square {
+  background-color: #bdbdbd;
+}
