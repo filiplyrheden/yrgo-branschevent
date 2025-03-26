@@ -1,34 +1,22 @@
 import Hero from "../components/Hero";
 import LandingForm from "../components/LandingForm";
 import LandingInfo from "../components/LandingInfo";
-import { useEffect } from "react";
+import { useRef } from "react";
 
 export default function Home() {
-  useEffect(() => {
-    const arrow = document.querySelector(".arrow-wrapper");
+  const landingRef = useRef(null);
 
-    const handleClick = () => {
-      document.querySelector(".landing-section")?.scrollIntoView({
-        behavior: "smooth",
-      });
-    };
-
-    arrow?.addEventListener("click", handleClick);
-
-    return () => {
-      arrow?.removeEventListener("click", handleClick);
-    };
-  }, []);
+  const scrollToLanding = () => {
+    landingRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <>
-      <Hero />
-      <>
+      <Hero onArrowClick={scrollToLanding} />
+      <div ref={landingRef} className="landing-section">
         <LandingForm />
-      </>
-      <>
-        <LandingInfo />
-      </>
+      </div>
+      <LandingInfo />
     </>
   );
 }
