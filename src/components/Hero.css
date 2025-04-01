@@ -77,9 +77,241 @@
   display: grid;
   grid-template-columns: repeat(3, 9rem);
   grid-template-rows: repeat(4, 9rem);
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
-.square {
-  background-color: #d9d9d9;
+#grid-icon-1-wrapper {
+  display: flex;
+  width: 11.25rem;
+  height: 11.25rem;
+  padding: 0.25rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-1 {
+  width: 8rem;
+  height: 7.95744rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-2-wrapper {
+  display: flex;
+  width: 11.25rem;
+  height: 11.25rem;
+  padding: 0.25rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-2 {
+  width: 8rem;
+  height: 7.6875rem;
+  flex-shrink: 0;
+  aspect-ratio: 128/123;
+}
+
+#grid-icon-3-wrapper {
+  display: flex;
+  width: 11.25rem;
+  height: 11.25rem;
+  padding: 0.25rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-3 {
+  width: 9.0625rem;
+  height: 4.125rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-4-wrapper {
+  position: relative;
+  width: 11.25rem;
+  height: 11.25rem;
+}
+
+#grid-icon-4-white {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 7.83256rem;
+  height: 7.83256rem;
+  transform: rotate(-45deg);
+}
+
+#grid-icon-4-blue {
+  position: absolute;
+  left: 2.626rem;
+  top: 2.9385rem;
+  width: 4.06156rem;
+  height: 4.06156rem;
+  padding: 0.8125rem 0.6875rem;
+  border-radius: 62.4375rem;
+  background: #001a52;
+  z-index: 2;
+}
+
+#grid-icon-4-red {
+  position: absolute;
+  top: 4rem;
+  left: 4rem;
+  width: 2.03075rem;
+  height: 2.03075rem;
+  z-index: 3;
+}
+
+#grid-icon-5-wrapper {
+  display: flex;
+  width: 11.25rem;
+  height: 11.25rem;
+  padding: 0.25rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-5 {
+  width: 8rem;
+  height: 5.375rem;
+  flex-shrink: 0;
+  aspect-ratio: 64/43;
+}
+
+#grid-icon-6-wrapper {
+  display: flex;
+  width: 11.25rem;
+  height: 11.25rem;
+  padding: 0.25rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-6 {
+  width: 8rem;
+  height: 6.9375rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-7-wrapper {
+  display: flex;
+  width: 11.25rem;
+  height: 11.25rem;
+  padding: 0.25rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-7 {
+  width: 8rem;
+  height: 7.95744rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-8-wrapper {
+  display: flex;
+  width: 11.25rem;
+  height: 11.25rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-8 {
+  width: 8rem;
+  height: 7.8125rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-9-wrapper {
+  display: flex;
+  width: 11.25rem;
+  height: 11.25rem;
+  padding: 0.0625rem 0rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-9 {
+  width: 9.0625rem;
+  height: 4.125rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-10-wrapper {
+  display: flex;
+  width: 11.25rem;
+  height: 11.25rem;
+  padding: 0.25rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-10 {
+  width: 8rem;
+  height: 5.375rem;
+  flex-shrink: 0;
+  aspect-ratio: 64/43;
+}
+
+#grid-icon-11-wrapper {
+  display: flex;
+  width: 11.25rem;
+  height: 11.25rem;
+  padding: 0.25rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-11 {
+  width: 8.125rem;
+  height: 8.125rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-12-wrapper {
+  display: flex;
+  width: 11.25rem;
+  height: 11.25rem;
+  padding: 0.25rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+#grid-icon-12 {
+  width: 8rem;
+  height: 7.95744rem;
+  flex-shrink: 0;
 }
