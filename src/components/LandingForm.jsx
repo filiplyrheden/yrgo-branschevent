@@ -2,6 +2,7 @@ import React from "react";
 import "./LandingForm.css";
 import Input from "./Input";
 import Button from "./Button";
+import Label from "./Label";
 
 const LandingForm = () => {
   return (
@@ -42,6 +43,11 @@ const LandingForm = () => {
               fill="black"
             />
           </svg>
+        </div>
+        <div className="label-choice-container">
+          <p>Jag är:</p>
+          <Label text="Företag" />
+          <Label text="Student" />
         </div>
         <div className="input-container">
           <Input />
