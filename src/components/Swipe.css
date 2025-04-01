@@ -1,0 +1,346 @@
+/* Swipe.css */
+.swipe-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #001A52;
+  }
+  
+  .swipe-main {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .card-container {
+    width: 100%;
+    max-width: 700px;
+    height: 550px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin: 20px auto;
+  }
+  
+  .swipe-card {
+    position: absolute;
+    width: 100%;
+    max-width: 700px;
+    height: 550px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: #fff;
+    cursor: grab;
+  }
+  
+  .swipe-card:active {
+    cursor: grabbing;
+  }
+  
+  .card {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .card-left {
+    width: 40%;
+    background-color: #4F4F4F;
+  }
+  
+  .card-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .placeholder-image {
+    width: 160px;
+    height: 160px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .placeholder-image svg {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .card-info {
+    flex: 1;
+    padding: 32px;
+    overflow-y: auto;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .card-info h3 {
+    color: #4F4F4F;
+    font-family: 'Inter', sans-serif;
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+  }
+  
+  .website-container, .email-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  
+  .icon-circle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+  }
+  
+  .card-website,
+  .card-email {
+    color: #E51236;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    margin: 0;
+    text-decoration: none;
+  }
+  
+  .card-attending {
+    color: #4F4F4F;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    margin: 16px 0 8px 0;
+  }
+  
+  .attendance {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .attendance-button {
+    padding: 4px 12px;
+    border: 1px solid #E0E0E0;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  .attendance-button.active {
+    background-color: #001A52;
+    color: white;
+    border-color: #001A52;
+  }
+  
+  .card-specialties {
+    margin-top: 16px;
+  }
+  
+  .card-specialties p {
+    color: #4F4F4F;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    margin: 0 0 8px 0;
+  }
+  
+  .specialty-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0;
+  }
+  
+  .specialty-tag {
+    background-color: #001A52;
+    color: #ffffff;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+  }
+  
+  .card-additional-info {
+    margin-top: 16px;
+  }
+  
+  .card-additional-info p {
+    color: #4F4F4F;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    margin: 0 0 8px 0;
+    font-weight: 600;
+  }
+  
+  .info-box {
+    border: 1px solid #E0E0E0;
+    border-radius: 4px;
+    padding: 16px;
+  }
+  
+  .info-text {
+    color: #4F4F4F !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    margin: 0 !important;
+    line-height: 1.5 !important;
+  }
+  
+  .action-container {
+    margin: 16px 0;
+  }
+  
+  .redigera-button {
+    background-color: white;
+    color: #4F4F4F;
+    border: 1px solid #E0E0E0;
+    border-radius: 50px;
+    padding: 8px 24px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .redigera-button:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .swipe-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 16px;
+    position: absolute;
+    bottom: 20px;
+  }
+  
+  .swipe-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: white;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .swipe-button svg {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .swipe-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 50vh;
+    color: white;
+  }
+  
+  .loading-spinner {
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top: 5px solid #E51236;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .swipe-title {
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 16px;
+  }
+  
+  .swipe-description {
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    margin-bottom: 32px;
+    text-align: center;
+    max-width: 600px;
+  }
+  
+  @media (max-width: 768px) {
+    .card {
+      flex-direction: column;
+    }
+    
+    .card-left {
+      width: 100%;
+      height: 200px;
+    }
+    
+    .swipe-card {
+      height: 650px;
+      max-width: 450px;
+    }
+    
+    .card-container {
+      height: 650px;
+      max-width: 450px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .swipe-main {
+      padding: 16px;
+    }
+    
+    .swipe-card {
+      max-width: 320px;
+      height: 700px;
+    }
+    
+    .card-container {
+      max-width: 320px;
+      height: 700px;
+    }
+    
+    .card-info {
+      padding: 16px;
+    }
+    
+    .card-info h3 {
+      font-size: 24px;
+    }
+  }
