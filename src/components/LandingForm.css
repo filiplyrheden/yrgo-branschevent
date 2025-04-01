@@ -38,6 +38,29 @@ span {
   color: #e51236;
 }
 
+.register-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin: 1rem 0 1rem 0;
+}
+
+#register-text {
+  color: #e51236;
+  font-family: "IBM Plex Mono";
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 2.25rem;
+  margin: 0;
+}
+
+.register-icon {
+  width: 2rem;
+  height: 2rem;
+  aspect-ratio: 1/1;
+}
+
 .input-container {
   display: flex;
   align-items: center;
@@ -89,8 +112,7 @@ button {
   border-radius: 62.4375rem;
   background: #001a52;
   color: #fff;
-  font-family: "IBM Plex Mono";
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-style: normal;
   font-weight: 500;
   line-height: 1rem;
