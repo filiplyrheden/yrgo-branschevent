@@ -1,12 +1,13 @@
 footer {
   display: flex;
-  height: 29.60325rem;
+  width: 90rem;
   flex-direction: column;
   align-items: flex-start;
 }
 
 .footer-content {
   display: flex;
+  width: 90rem;
   padding: 2.5rem 0rem;
   flex-direction: column;
   align-items: center;
@@ -21,9 +22,9 @@ footer {
 
 .bottom-section {
   display: flex;
+  width: 76.25rem;
   flex-direction: column;
   align-items: flex-start;
-  width: 76.25rem;
   gap: 2.5rem;
 }
 
