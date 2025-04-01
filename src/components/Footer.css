@@ -1,3 +1,6 @@
+/* Inter font */
+@import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
 footer {
   display: flex;
   width: 90rem;
@@ -18,6 +21,35 @@ footer {
   align-items: center;
   gap: 18.75rem;
   align-self: stretch;
+}
+
+.icon-logos {
+  display: flex;
+  width: 44.375rem;
+  padding: 0rem 7.5rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.links {
+  display: flex;
+  width: 12.1875rem;
+  height: 6.8125rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-link-text {
+  color: #001a52;
+  font-family: Inter;
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin: 0;
 }
 
 .bottom-section {
