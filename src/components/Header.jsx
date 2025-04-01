@@ -48,11 +48,10 @@ const Header = () => {
         />
       </svg>
       <nav>
-        <a href="#">Text</a>
-        <a href="#">Text</a>
-        <a href="#">Text</a>
-        <a href="#">Text</a>
-        <a href="#">Text</a>
+        <a href="#">Info</a>
+        <a href="#">Swajp</a>
+        <a href="#">Favoriter</a>
+        <a href="#">Profil</a>
       </nav>
     </header>
   );

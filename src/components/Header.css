@@ -1,5 +1,5 @@
 /* Inter font */
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
 header {
   display: flex;
@@ -7,7 +7,7 @@ header {
   justify-content: flex-start;
   align-items: center;
   padding: 0.75rem 1rem;
-
+  gap: 55.75rem;
 }
 
 .yrgo-logo {
@@ -24,8 +24,8 @@ nav {
 
 .nav,
 a {
-  color: #4F4F4F;
-  font-family:  Inter;
+  color: #4f4f4f;
+  font-family: Inter;
   font-size: 1rem;
   font-style: normal;
   font-weight: 500;
@@ -34,4 +34,3 @@ a {
   text-transform: capitalize;
   text-decoration: none;
 }
-
