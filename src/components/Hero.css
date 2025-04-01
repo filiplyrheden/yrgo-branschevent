@@ -136,40 +136,22 @@
 }
 
 #grid-icon-4-wrapper {
-  position: relative;
+  display: flex;
   width: 11.25rem;
   height: 11.25rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  aspect-ratio: 1/1;
 }
 
-#grid-icon-4-white {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  width: 7.83256rem;
-  height: 7.83256rem;
-  transform: rotate(-45deg);
-}
-
-#grid-icon-4-blue {
-  position: absolute;
-  left: 2.626rem;
-  top: 2.9385rem;
-  width: 4.06156rem;
-  height: 4.06156rem;
-  padding: 0.8125rem 0.6875rem;
-  border-radius: 62.4375rem;
-  background: #001a52;
-  z-index: 2;
-}
-
-#grid-icon-4-red {
-  position: absolute;
-  top: 4rem;
-  left: 4rem;
-  width: 2.03075rem;
-  height: 2.03075rem;
-  z-index: 3;
+#grid-icon-4 {
+  width: 8.125rem;
+  height: 8.125rem;
+  flex-shrink: 0;
+  aspect-ratio: 1/1;
+  transform: rotate(180deg);
 }
 
 #grid-icon-5-wrapper {
