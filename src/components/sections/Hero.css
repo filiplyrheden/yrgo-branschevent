@@ -2,7 +2,7 @@
   display: flex;
   height: 47rem;
   align-items: flex-start;
-  background-color: #001a52;
+  background-color: var(--Primary-Navy);
 }
 
 .hero-content {

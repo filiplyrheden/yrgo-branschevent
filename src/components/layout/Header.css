@@ -22,7 +22,7 @@ nav {
 .nav,
 a {
   color: var(--Text-Dark-Grey);
-  font-family: var(--Button-Font-Family);
+  font-family: var(--Font-Inter);
   font-size: var(--Button-Size);
   font-style: normal;
   font-weight: var(--Button-Font-weight);
