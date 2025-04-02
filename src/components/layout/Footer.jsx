@@ -1,5 +1,6 @@
 import React from "react";
 import "./Footer.css";
+import gbgLogo from "../../assets/images/gbg-logo.png";
 
 const Footer = () => {
   return (
@@ -114,7 +115,7 @@ const Footer = () => {
         <div className="bottom-section">
           <div className="red-line"></div>
           <div className="gbg-logo">
-            <img src="public/gbg-logo.png" alt="" />
+            <img src={gbgLogo} alt="Göteborg stad logo" />
           </div>
           <p>© 2025 Yrgo, högre yrkesutbildning Göteborg</p>
         </div>
