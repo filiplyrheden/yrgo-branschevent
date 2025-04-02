@@ -25,13 +25,22 @@ p,
 input,
 label {
   color: #001a52;
-  font-feature-settings: "liga" off, "clig" off;
   font-family: "IBM Plex Mono";
   font-size: 1.25rem;
   font-style: normal;
   font-weight: 400;
   line-height: 2.1875rem;
   margin: 1.5rem 0 1.5rem 0;
+}
+
+#conditions-policy {
+  color: #4f4f4f;
+  font-family: "IBM Plex Mono";
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 2.1875rem;
+  text-decoration: underline;
 }
 
 span {

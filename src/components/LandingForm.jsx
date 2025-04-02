@@ -56,7 +56,10 @@ const LandingForm = () => {
         <div className="checkbox-container">
           <input type="checkbox" id="consent" name="consent" />
           <label htmlFor="consent" id="consent-label">
-            Jag accepterar Villkor och Sekretesspolicy
+            Jag accepterar{" "}
+            <a href="" id="conditions-policy">
+              Villkor och Sekretesspolicy
+            </a>
           </label>
         </div>
         <div className="button-container">
