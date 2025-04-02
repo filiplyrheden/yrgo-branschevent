@@ -3,7 +3,7 @@
 
 .landing-info {
   height: 27rem;
-  background-color: #001a52;
+  background-color: var(--Primary-Navy);
 }
 
 .landing-info-content {
@@ -21,24 +21,24 @@
 }
 
 .info-heading {
-  color: #fff;
-  font-family: Inter;
+  color: var(--Primary-White);
+  font-family: var(--Font-Inter);
   font-size: 2rem;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-  text-align: left; /* Added */
+  text-align: left;
 }
 
 .info-text {
-  color: #fff;
-  font-family: Inter;
+  color: var(--Primary-White);
+  font-family: var(--Font-Inter);
   font-size: 2rem;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
   margin-top: 0;
-  text-align: left; /* Added */
+  text-align: left;
 }
 
 #adress {
