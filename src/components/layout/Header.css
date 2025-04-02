@@ -24,11 +24,11 @@ nav {
 
 .nav,
 a {
-  color: #4f4f4f;
-  font-family: Inter;
-  font-size: 1rem;
+  color: var(--Text-Dark-Grey);
+  font-family: var(--Button-Font-Family);
+  font-size: var(--Button-Size);
   font-style: normal;
-  font-weight: 500;
+  font-weight: var(--Button-Font-weight);
   line-height: normal;
   letter-spacing: 0.05rem;
   text-transform: capitalize;
