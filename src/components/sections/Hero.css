@@ -1,6 +1,3 @@
-/* Inter font */
-@import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
-
 .hero {
   display: flex;
   height: 47rem;
@@ -36,12 +33,12 @@
 }
 
 .hero-title {
-  color: #fff;
+  color: var(--Primary-White);
   font-family: Inter;
   font-size: 5rem;
   font-style: normal;
   font-weight: 900;
-  line-height: 85%; /* 4.25rem */
+  line-height: 85%;
   letter-spacing: -0.2rem;
 }
 
@@ -51,7 +48,7 @@
 }
 
 .hero-date {
-  color: #e51236;
+  color: var(--Primary-Red);
   font-family: Inter;
   font-size: 6.25rem;
   font-style: normal;

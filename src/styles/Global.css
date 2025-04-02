@@ -9,9 +9,10 @@
 :root {
   /* === COLORS === */
   --Primary-White: #fff;
+  --Primary-Red: #e51236;
   --Text-Dark-Grey: #4f4f4f;
 
-  /* === FONTS === */
+  /* === BUTTONS === */
   --Button-Font-Family: Inter;
   --Button-Size: 1rem;
   --Button-Font-weight: 500;
