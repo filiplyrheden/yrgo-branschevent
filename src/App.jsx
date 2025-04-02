@@ -1,9 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home.jsx";
-import About from "./pages/About.jsx";
-import Header from "./components/Header";
-import Footer from "./components/Footer.jsx";
-import "./components/Global.css";
+import Header from "./components/layout/Header";
+import Footer from "./components/layout/Footer.jsx";
+import "./styles/Global.css";
 
 function App() {
   return (
@@ -19,7 +18,6 @@ function App() {
             </>
           }
         />
-        <Route path="/about" element={<About />} />
       </Routes>
     </>
   );

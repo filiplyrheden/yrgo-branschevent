@@ -1,6 +1,6 @@
-import Hero from "../components/Hero";
-import LandingForm from "../components/LandingForm";
-import LandingInfo from "../components/LandingInfo";
+import Hero from "../components/sections/Hero";
+import LandingForm from "../components/sections/LandingForm";
+import LandingInfo from "../components/sections/LandingInfo";
 import { useRef } from "react";
 
 export default function Home() {

@@ -1,8 +1,8 @@
 import React from "react";
 import "./LandingForm.css";
-import Input from "./Input";
-import Button from "./Button";
-import Label from "./Label";
+import Input from "../ui/Input.jsx";
+import Button from "../ui/Button";
+import Label from "../ui/Label.jsx";
 
 const LandingForm = () => {
   return (
