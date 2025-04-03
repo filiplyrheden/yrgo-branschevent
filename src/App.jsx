@@ -23,12 +23,11 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route 
           path="/swajp" 
-          element={
-            <>
-              <Swipe />
-            </>
-          } 
+          element={<Swipe />} 
         />
+        <Route path="/info" element={<Header />} />
+        <Route path="/favoriter" element={<Header />} />
+        <Route path="/profil" element={<Header />} />
       </Routes>
     </>
   );
