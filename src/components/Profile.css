@@ -1,0 +1,221 @@
+/* Profile.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap");
+
+.profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px;
+  font-family: 'Inter', sans-serif;
+  color: #4F4F4F;
+}
+
+.profile-title {
+  font-size: 48px;
+  font-weight: 400;
+  margin-bottom: 32px;
+  color: #000;
+}
+
+.profile-image-container {
+  position: relative;
+  width: 100%;
+  background-color: #4F4F4F;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32px;
+  border-radius: 4px;
+}
+
+.profile-image {
+  width: 160px;
+  height: 140px;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder-image {
+  width: 100px;
+  height: 100px;
+}
+
+.camera-button {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 400;
+  font-size: 16px;
+  color: #4F4F4F;
+}
+
+.required {
+  color: #E51236;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background-color: #F2F2F2;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  color: #333;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.attendance-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.attendance-button {
+  padding: 6px 16px;
+  background: white;
+  border: 1px solid #E0E0E0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: #4F4F4F;
+}
+
+.attendance-button.active {
+  background: #001A52;
+  color: white;
+  border-color: #001A52;
+}
+
+.specialties-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.specialty-button {
+  padding: 6px 16px;
+  background: white;
+  border: 1px solid #E0E0E0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: #4F4F4F;
+}
+
+.specialty-button.active {
+  background: #001A52;
+  color: white;
+  border-color: #001A52;
+}
+
+.profile-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.save-button,
+.logout-button {
+  padding: 12px 24px;
+  border-radius: 30px;
+  border: none;
+  font-weight: 500;
+  font-size: 16px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
+.save-button {
+  background-color: #001A52;
+  color: white;
+}
+
+.logout-button {
+  background-color: #001A52;
+  color: white;
+}
+
+.save-button:hover,
+.logout-button:hover {
+  opacity: 0.9;
+}
+
+.save-button:disabled {
+  background-color: #cccccc;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+}
+
+/* Make sure all text in the profile container has the correct color */
+.profile-container p,
+.profile-container h1,
+.profile-container h2,
+.profile-container h3,
+.profile-container h4,
+.profile-container h5,
+.profile-container h6 {
+  color: #4F4F4F;
+}
+
+/* Exception for profile title which should be black */
+.profile-title {
+  color: #000;
+}
+
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 20px;
+  }
+  
+  .profile-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .save-button,
+  .logout-button {
+    width: 100%;
+    max-width: 300px;
+  }
+}

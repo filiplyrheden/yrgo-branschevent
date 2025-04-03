@@ -58,48 +58,70 @@ const LandingForm = () => {
       if (error) throw error;
 
       if (data?.user) {
-        // Lägg till post i lämplig tabell baserat på användartyp
+        // Kontrollera om användaren redan finns i databasen innan vi lägger till en ny rad
         if (userType === "Företag") {
-          const { error: insertError } = await supabase
+          // Kontrollera om företaget redan finns
+          const { data: existingCompany } = await supabase
             .from("companies")
-            .insert([
-              {
-                id: data.user.id,
-                email: formData.email,
-                coming_to_event: true, // Default till närvarande
-              },
-            ]);
-
-          if (insertError) throw insertError;
-          
-          // Skapa en tom post i additional_info-tabellen
-          const { error: additionalInfoError } = await supabase
-            .from("company_additional_info")
-            .insert([
-              {
-                company_id: data.user.id,
-                additional_work_info: "",
-              },
-            ]);
+            .select("id")
+            .eq("id", data.user.id)
+            .maybeSingle();
             
-          if (additionalInfoError) throw additionalInfoError;
+          if (!existingCompany) {
+            // Skapa ny företagspost
+            const { error: insertError } = await supabase
+              .from("companies")
+              .insert([
+                {
+                  id: data.user.id,
+                  email: formData.email,
+                  coming_to_event: true, // Default till närvarande
+                },
+              ]);
+
+            if (insertError) throw insertError;
+            
+            try {
+              // Skapa en tom post i additional_info-tabellen
+              await supabase
+                .from("company_additional_info")
+                .insert([
+                  {
+                    company_id: data.user.id,
+                    additional_work_info: "",
+                  },
+                ]);
+            } catch (additionalInfoError) {
+              console.error("Error creating additional info:", additionalInfoError);
+              // Fortsätt även om detta misslyckas
+            }
+          }
           
-          // Automatiskt navigera till företagsprofilen
+          // Navigera automatiskt till företagsprofilen
           navigate("/profil");
         } else {
-          // För studenter
-          const { error: insertError } = await supabase
+          // Kontrollera om studenten redan finns
+          const { data: existingStudent } = await supabase
             .from("students")
-            .insert([
-              {
-                id: data.user.id,
-                email: formData.email,
-              },
-            ]);
+            .select("id")
+            .eq("id", data.user.id)
+            .maybeSingle();
+            
+          if (!existingStudent) {
+            // Skapa ny studentpost
+            const { error: insertError } = await supabase
+              .from("students")
+              .insert([
+                {
+                  id: data.user.id,
+                  email: formData.email,
+                },
+              ]);
 
-          if (insertError) throw insertError;
+            if (insertError) throw insertError;
+          }
           
-          // Automatiskt navigera till studentprofilen
+          // Navigera automatiskt till studentprofilen
           navigate("/student-profil");
         }
       }
