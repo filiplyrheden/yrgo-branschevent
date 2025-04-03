@@ -127,3 +127,14 @@ button {
   line-height: 1rem;
   padding: 0.75rem 1.5rem;
 }
+
+.active-label p {
+  background-color: #001a52 !important;
+  color: white !important;
+  border-color: #001a52 !important;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
