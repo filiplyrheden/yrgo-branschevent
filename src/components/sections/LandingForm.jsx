@@ -4,6 +4,7 @@ import Input from "../ui/Input.jsx";
 import Button from "../ui/Button";
 import Label from "../ui/Label.jsx";
 import RegisterPopup from "./RegisterPopup";
+import PolicyPopup from "./PolicyPopup";
 
 const LandingForm = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -14,6 +15,17 @@ const LandingForm = () => {
 
   const closePopup = () => {
     setShowPopup(false);
+  };
+
+  const [showPolicyPopup, setShowPolicyPopup] = useState(false);
+
+  const openPolicyPopup = (e) => {
+    e.preventDefault();
+    setShowPolicyPopup(true);
+  };
+
+  const closePolicyPopup = () => {
+    setShowPolicyPopup(false);
   };
 
   return (
@@ -70,15 +82,16 @@ const LandingForm = () => {
           <input type="checkbox" id="consent" name="consent" />
           <label htmlFor="consent" id="consent-label">
             Jag accepterar{" "}
-            <a href="" id="conditions-policy">
+            <a href="#" id="conditions-policy" onClick={openPolicyPopup}>
               Villkor och Sekretesspolicy
             </a>
           </label>
         </div>
         <div className="button-container">
-          <Button text="Registrera" />
+          <Button text="Stäng" />
         </div>
         {showPopup && <RegisterPopup onClose={closePopup} />}
+        {showPolicyPopup && <PolicyPopup onClose={closePolicyPopup} />}
       </div>
     </div>
   );
