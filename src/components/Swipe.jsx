@@ -1,4 +1,3 @@
-// Swipe.jsx
 import React, { useState, useEffect } from "react";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabaseClient";
@@ -7,38 +6,15 @@ import Footer from "./Footer";
 import "./Swipe.css";
 
 const Swipe = () => {
-  const [companies, setCompanies] = useState([
-    // Sample data until your Supabase is connected
-    {
-      id: 1,
-      name: "Company Name",
-      website: "www.website.se",
-      email: "company@mail.com",
-      logo_url: null,
-      company_specialties: [
-        { specialty: "Digital Design" },
-        { specialty: "Figma" },
-        { specialty: "UX" },
-        { specialty: "Webflow" },
-        { specialty: "Photoshop" },
-        { specialty: "UI" }
-      ],
-      company_additional_info: [
-        { 
-          additional_work_info: "Varje onsdag har vi en massör som kommer in till kontoret så att alla anställda kan få massage!" 
-        }
-      ]
-    }
-  ]);
+  const [companies, setCompanies] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [direction, setDirection] = useState(null);
   const controls = useAnimation();
 
-  // Fetch companies when Supabase is connected
+  // Fetch companies when component mounts
   useEffect(() => {
-    // Uncomment this when your Supabase is ready
-    // fetchCompanies();
+    fetchCompanies();
   }, []);
 
   const fetchCompanies = async () => {
@@ -49,11 +25,15 @@ const Swipe = () => {
         .from('companies')
         .select(`
           *,
-          company_additional_info (*),
+          company_additional_info (additional_work_info),
           company_specialties (specialty)
-        `);
+        `)
+        .eq('coming_to_event', true);
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching companies:", error);
+        throw error;
+      }
       
       if (data) {
         console.log("Companies data:", data);
@@ -80,7 +60,39 @@ const Swipe = () => {
       transition: { duration: 0.3 }
     });
     
-    // In the future, save swipe to Supabase here
+    // If direction is right, save the like to favorites
+    if (direction === 'right') {
+      try {
+        // Get current user
+        const { data: sessionData } = await supabase.auth.getSession();
+        
+        if (sessionData?.session?.user) {
+          const userId = sessionData.session.user.id;
+          
+          // Check if already liked
+          const { data: existingLike } = await supabase
+            .from('favorites')
+            .select('*')
+            .eq('student_id', userId)
+            .eq('company_id', company.id)
+            .single();
+            
+          if (!existingLike) {
+            // Save to favorites
+            await supabase
+              .from('favorites')
+              .insert({
+                student_id: userId,
+                company_id: company.id
+              });
+            
+            console.log("Saved to favorites:", company.company_name);
+          }
+        }
+      } catch (error) {
+        console.error("Error saving favorite:", error);
+      }
+    }
     
     // Move to next card
     setCurrentIndex(prev => prev + 1);
@@ -141,6 +153,24 @@ const Swipe = () => {
     );
   }
 
+  // No companies found
+  if (companies.length === 0 && !loading) {
+    return (
+      <div>
+        <Header />
+        <div className="swipe-container">
+          <div className="swipe-main">
+            <h2 className="swipe-title">Inga företag att visa</h2>
+            <p className="swipe-description">
+              Det finns inga företag tillgängliga just nu. Kom tillbaka senare!
+            </p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   const company = companies[currentIndex];
 
   return (
@@ -167,8 +197,12 @@ const Swipe = () => {
                     <div className="card-image">
                       {company.logo_url ? (
                         <img 
-                          src={company.logo_url} 
-                          alt={`${company.name} logotyp`} 
+                          src={`${supabase.supabaseUrl}/storage/v1/object/public/company_logos/${company.logo_url}`}
+                          alt={`${company.company_name} logotyp`} 
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = ''; // Clear src on error
+                          }}
                         />
                       ) : (
                         <div className="placeholder-image">
@@ -182,68 +216,73 @@ const Swipe = () => {
                   </div>
                   
                   <div className="card-info">
-                    <h3>{company.name}</h3>
+                    <h3>{company.company_name}</h3>
                     
-                    <div className="website-container">
-                      <div className="icon-circle">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E51236" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <line x1="2" y1="12" x2="22" y2="12"></line>
-                          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                        </svg>
+                    {company.website_url && (
+                      <div className="website-container">
+                        <div className="icon-circle">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E51236" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                          </svg>
+                        </div>
+                        <a href={`https://${company.website_url}`} target="_blank" rel="noopener noreferrer" className="card-website">
+                          {company.website_url}
+                        </a>
                       </div>
-                      <a href={`https://${company.website}`} className="card-website">Www.Website.Se</a>
-                    </div>
+                    )}
                     
-                    <div className="email-container">
-                      <div className="icon-circle">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E51236" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                          <polyline points="22,6 12,13 2,6"></polyline>
-                        </svg>
+                    {company.email && (
+                      <div className="email-container">
+                        <div className="icon-circle">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E51236" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                          </svg>
+                        </div>
+                        <a href={`mailto:${company.email}`} className="card-email">
+                          {company.email}
+                        </a>
                       </div>
-                      <a href={`mailto:${company.email}`} className="card-email">Company@Mail.Com</a>
-                    </div>
+                    )}
                     
                     <p className="card-attending">
                       Vi kommer närvara på minglet den 23/4
                     </p>
                     
                     <div className="attendance">
-                      <div className="attendance-button active">Ja</div>
-                      <div className="attendance-button">Nej</div>
+                      <div className={`attendance-button ${company.coming_to_event ? 'active' : ''}`}>Ja</div>
+                      <div className={`attendance-button ${!company.coming_to_event ? 'active' : ''}`}>Nej</div>
                     </div>
                     
-                    <div className="card-specialties">
-                      <p>Vi jobbar med:</p>
-                      <div className="specialty-tags">
-                        {company.company_specialties?.map((specialty, i) => (
-                          <span key={i} className="specialty-tag">
-                            {specialty.specialty}
-                          </span>
-                        ))}
+                    {company.company_specialties && company.company_specialties.length > 0 && (
+                      <div className="card-specialties">
+                        <p>Vi jobbar med:</p>
+                        <div className="specialty-tags">
+                          {company.company_specialties.map((specialty, i) => (
+                            <span key={i} className="specialty-tag">
+                              {specialty.specialty}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
                     
-                    <div className="card-additional-info">
-                      <p>Roligt att veta om oss:</p>
-                      <div className="info-box">
-                        <p className="info-text">
-                          {company.company_additional_info?.[0]?.additional_work_info}
-                        </p>
+                    {company.company_additional_info && company.company_additional_info.length > 0 && company.company_additional_info[0]?.additional_work_info && (
+                      <div className="card-additional-info">
+                        <p>Roligt att veta om oss:</p>
+                        <div className="info-box">
+                          <p className="info-text">
+                            {company.company_additional_info[0].additional_work_info}
+                          </p>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </motion.div>
             </AnimatePresence>
-          </div>
-          
-          {/* This container is hidden with CSS */}
-          <div className="action-container">
-            <button className="redigera-button">
-              Redigera
-            </button>
           </div>
           
           <div className="swipe-buttons">

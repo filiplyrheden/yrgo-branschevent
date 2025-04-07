@@ -51,6 +51,7 @@ const CompanyProfile = () => {
   const fetchCompanyProfile = async (userId) => {
     try {
       setLoading(true);
+      console.log("Fetching company profile for user ID:", userId);
       
       // Hämta företagsdata
       const { data: companyData, error: companyError } = await supabase
@@ -62,7 +63,12 @@ const CompanyProfile = () => {
         .eq("id", userId)
         .single();
       
-      if (companyError) throw companyError;
+      if (companyError) {
+        console.error("Error fetching company data:", companyError);
+        throw companyError;
+      }
+      
+      console.log("Company data retrieved:", companyData);
       
       if (companyData) {
         // Hämta additional info
@@ -73,30 +79,36 @@ const CompanyProfile = () => {
           .single();
           
         if (additionalError && additionalError.code !== "PGRST116") {
-          throw additionalError;
+          console.error("Error fetching additional info:", additionalError);
         }
         
         // Hämta bild om den finns
         let logoUrl = null;
         if (companyData.logo_url) {
-          const { data: logoData } = await supabase.storage
-            .from('company_logos')
-            .download(companyData.logo_url);
-            
-          if (logoData) {
-            logoUrl = URL.createObjectURL(logoData);
+          try {
+            const { data: logoData, error: logoError } = await supabase.storage
+              .from('company_logos')
+              .download(companyData.logo_url);
+              
+            if (logoError) {
+              console.error("Error downloading logo:", logoError);
+            } else if (logoData) {
+              logoUrl = URL.createObjectURL(logoData);
+            }
+          } catch (logoError) {
+            console.error("Error processing logo:", logoError);
           }
         }
         
         // Sätt state med hämtad data
         setCompanyData({
-          name: companyData.company_name || "",
+          name: companyData.company_name === 'NOT NULL' ? '' : companyData.company_name || "",
           website: companyData.website_url || "",
           email: companyData.email || "",
           contactPerson: companyData.contact_name || "",
           phone: companyData.phone || "",
           additionalInfo: additionalInfo?.additional_work_info || "",
-          attending: companyData.coming_to_event,
+          attending: companyData.coming_to_event === false ? false : true,
           specialties: companyData.company_specialties?.map(cs => cs.specialty) || [],
           logo: null,
           logoUrl: logoUrl || null
@@ -107,6 +119,7 @@ const CompanyProfile = () => {
       
     } catch (error) {
       console.error("Error fetching company profile:", error);
+      alert("Ett fel uppstod när profilen skulle hämtas. Vänligen försök igen senare.");
     } finally {
       setLoading(false);
     }
@@ -150,74 +163,175 @@ const CompanyProfile = () => {
     try {
       setLoading(true);
       
-      if (!user) return;
+      // 1. Check authentication
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !sessionData.session) {
+        console.error("Session error:", sessionError);
+        alert("Din session har gått ut. Vänligen logga in igen.");
+        await supabase.auth.signOut();
+        navigate('/');
+        return;
+      }
+      
+      const userId = sessionData.session.user.id;
+      console.log("User ID:", userId);
+      
+      // Validate required fields
+      if (!companyData.name) {
+        alert("Företagets namn är obligatoriskt.");
+        setLoading(false);
+        return;
+      }
+      
+      if (!companyData.email) {
+        alert("E-post är obligatoriskt.");
+        setLoading(false);
+        return;
+      }
+      
+      console.log("Starting save with data:", {
+        ...companyData,
+        logo: companyData.logo ? "File object present" : "No file"
+      });
       
       // Upload logo if exists
       let logoPath = null;
       if (companyData.logo) {
-        const fileName = `${user.id}-${Date.now()}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('company_logos')
-          .upload(fileName, companyData.logo, {
-            upsert: true
-          });
-          
-        if (uploadError) throw uploadError;
-        logoPath = fileName;
+        try {
+          const fileName = `${userId}-${Date.now()}`;
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('company_logos')
+            .upload(fileName, companyData.logo, {
+              upsert: true
+            });
+            
+          if (uploadError) {
+            console.error("Logo upload error:", uploadError);
+          } else {
+            console.log("Logo uploaded successfully:", uploadData);
+            logoPath = fileName;
+          }
+        } catch (logoError) {
+          console.error("Error uploading logo:", logoError);
+          // Continue with save even if logo upload fails
+        }
       }
+      
+      console.log("Updating company table...");
       
       // Update company table
-      const { error: companyError } = await supabase
+      const { data: companyUpdateData, error: companyError } = await supabase
         .from("companies")
         .update({
-          company_name: companyData.name,
-          website_url: companyData.website,
-          email: companyData.email,
-          contact_name: companyData.contactPerson,
-          phone: companyData.phone,
-          coming_to_event: companyData.attending,
-          logo_url: logoPath || companyData.logoUrl,
-          updated_at: new Date(),
+          company_name: companyData.name || "",
+          website_url: companyData.website || null,
+          email: companyData.email || "",
+          contact_name: companyData.contactPerson || null,
+          phone: companyData.phone || null,
+          coming_to_event: companyData.attending === false ? false : true,
+          logo_url: logoPath || companyData.logoUrl || null,
+          updated_at: new Date().toISOString()
         })
-        .eq("id", user.id);
+        .eq("id", userId);
       
-      if (companyError) throw companyError;
-      
-      // Update company_additional_info
-      const { error: additionalError } = await supabase
-        .from("company_additional_info")
-        .upsert({
-          company_id: user.id,
-          additional_work_info: companyData.additionalInfo,
-        });
-      
-      if (additionalError) throw additionalError;
-      
-      // Handle specialties - first delete existing
-      await supabase
-        .from("company_specialties")
-        .delete()
-        .eq("company_id", user.id);
-      
-      // Then insert new specialties
-      if (selectedSpecialties.length > 0) {
-        const specialtyRows = selectedSpecialties.map(specialty => ({
-          company_id: user.id,
-          specialty: specialty,
-        }));
-        
-        const { error: specialtiesError } = await supabase
-          .from("company_specialties")
-          .insert(specialtyRows);
-        
-        if (specialtiesError) throw specialtiesError;
+      if (companyError) {
+        console.error("Company update error:", companyError);
+        throw companyError;
       }
       
-      alert("Profil sparad");
+      console.log("Company updated successfully:", companyUpdateData);
+      
+      // Update company_additional_info - try a separate operation
+      console.log("Updating additional info...");
+      try {
+        const { data: additionalInfoCheck, error: checkError } = await supabase
+          .from("company_additional_info")
+          .select("company_id")
+          .eq("company_id", userId)
+          .single();
+        
+        if (checkError && checkError.code !== "PGRST116") {
+          console.error("Error checking additional info:", checkError);
+        }
+        
+        if (additionalInfoCheck) {
+          // Update existing record
+          const { error: updateError } = await supabase
+            .from("company_additional_info")
+            .update({
+              additional_work_info: companyData.additionalInfo || ""
+            })
+            .eq("company_id", userId);
+            
+          if (updateError) {
+            console.error("Error updating additional info:", updateError);
+          }
+        } else {
+          // Insert new record
+          const { error: insertError } = await supabase
+            .from("company_additional_info")
+            .insert({
+              company_id: userId,
+              additional_work_info: companyData.additionalInfo || ""
+            });
+            
+          if (insertError) {
+            console.error("Error inserting additional info:", insertError);
+          }
+        }
+      } catch (additionalError) {
+        console.error("Error with additional info:", additionalError);
+        // Continue even if this part fails
+      }
+      
+      // Handle specialties - in a try/catch block to isolate errors
+      console.log("Updating specialties...");
+      try {
+        // First delete existing specialties
+        const { error: deleteError } = await supabase
+          .from("company_specialties")
+          .delete()
+          .eq("company_id", userId);
+          
+        if (deleteError) {
+          console.error("Error deleting specialties:", deleteError);
+        }
+        
+        // Then insert new specialties if any selected
+        if (selectedSpecialties.length > 0) {
+          const specialtyRows = selectedSpecialties.map(specialty => ({
+            company_id: userId,
+            specialty: specialty
+          }));
+          
+          const { error: specialtiesError } = await supabase
+            .from("company_specialties")
+            .insert(specialtyRows);
+          
+          if (specialtiesError) {
+            console.error("Specialties insert error:", specialtiesError);
+          }
+        }
+      } catch (specialtiesError) {
+        console.error("Error handling specialties:", specialtiesError);
+        // Continue even if specialties fail
+      }
+      
+      alert("Profil sparad!");
+      
+      // Force reload company data
+      fetchCompanyProfile(userId);
       
     } catch (error) {
       console.error("Error saving profile:", error);
-      alert("Ett fel uppstod när profilen skulle sparas");
+      
+      // More detailed error information
+      if (error.message) console.error("Error message:", error.message);
+      if (error.details) console.error("Error details:", error.details);
+      if (error.hint) console.error("Error hint:", error.hint);
+      
+      alert("Ett fel uppstod när profilen skulle sparas. Se konsolen för detaljer.");
     } finally {
       setLoading(false);
     }
@@ -342,12 +456,14 @@ const CompanyProfile = () => {
             <button 
               className={`attendance-button ${companyData.attending ? 'active' : ''}`}
               onClick={() => handleAttendanceChange(true)}
+              type="button"
             >
               Ja
             </button>
             <button 
               className={`attendance-button ${!companyData.attending ? 'active' : ''}`}
               onClick={() => handleAttendanceChange(false)}
+              type="button"
             >
               Nej
             </button>
@@ -362,6 +478,7 @@ const CompanyProfile = () => {
                 key={specialty}
                 className={`specialty-button ${selectedSpecialties.includes(specialty) ? 'active' : ''}`}
                 onClick={() => handleToggleSpecialty(specialty)}
+                type="button"
               >
                 {specialty}
               </button>
@@ -382,10 +499,10 @@ const CompanyProfile = () => {
         </div>
         
         <div className="profile-buttons">
-          <button className="save-button" onClick={handleSave} disabled={loading}>
-            Spara
+          <button className="save-button" onClick={handleSave} disabled={loading} type="button">
+            {loading ? "Sparar..." : "Spara"}
           </button>
-          <button className="logout-button" onClick={handleLogout}>
+          <button className="logout-button" onClick={handleLogout} type="button">
             Logga Ut
           </button>
         </div>
