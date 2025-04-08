@@ -3,11 +3,29 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import Header from "./Header";
 import Footer from "./Footer";
+import "./Profile.css";
+import Label from "./Label";
 
 const StudentProfile = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState(null);
+  const [user, setUser] = useState(null);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    password: "",
+    interests: []
+  });
+
+  // Lista över alla möjliga intressen (samma som specialties för företag)
+  const allInterests = [
+    "Digital Design", "HTML", "Front End", "Back End", "CSS", "Webflow", "3D",
+    "Motion", "Film", "Foto", "Figma", "Framer", "WordPress", "Illustrator",
+    "Photoshop", "After Effects", "Java Script", "Python", "In Design", "UI", "UX", "Spel"
+  ];
+
+  // State för intresse-val
+  const [selectedInterests, setSelectedInterests] = useState([]);
 
   useEffect(() => {
     // Kontrollera om användaren är inloggad
@@ -19,17 +37,30 @@ const StudentProfile = () => {
         return;
       }
       
+      setUser(data.session.user);
+      
       // Hämta studentdata
       const { data: studentData, error } = await supabase
         .from('students')
-        .select('*')
+        .select(`
+          *,
+          student_interests (interest)
+        `)
         .eq('id', data.session.user.id)
         .single();
         
       if (error) {
         console.error("Fel vid hämtning av studentdata:", error);
-      } else {
-        setUserData(studentData);
+      } else if (studentData) {
+        setFormData({
+          firstName: studentData.name?.split(' ')[0] || '',
+          lastName: studentData.name?.split(' ').slice(1).join(' ') || '',
+          password: "************",
+        });
+        
+        if (studentData.student_interests) {
+          setSelectedInterests(studentData.student_interests.map(item => item.interest));
+        }
       }
       
       setLoading(false);
@@ -38,16 +69,101 @@ const StudentProfile = () => {
     checkUser();
   }, [navigate]);
 
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormData({
+      ...formData,
+      [id]: value
+    });
+  };
+
+  const handleToggleInterest = (interest) => {
+    if (selectedInterests.includes(interest)) {
+      setSelectedInterests(selectedInterests.filter(i => i !== interest));
+    } else {
+      setSelectedInterests([...selectedInterests, interest]);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      setLoading(true);
+      
+      if (!user) {
+        alert("Du måste vara inloggad.");
+        return;
+      }
+      
+      // Skapa fullständigt namn
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+      
+      // Uppdatera students-tabellen
+      const { error: updateError } = await supabase
+        .from('students')
+        .update({
+          name: fullName,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+      
+      if (updateError) {
+        throw updateError;
+      }
+      
+      // Hantera intressen
+      try {
+        // Ta bort befintliga intressen
+        await supabase
+          .from('student_interests')
+          .delete()
+          .eq('student_id', user.id);
+        
+        // Lägg till nya intressen
+        if (selectedInterests.length > 0) {
+          const interestRows = selectedInterests.map(interest => ({
+            student_id: user.id,
+            interest: interest
+          }));
+          
+          const { error: interestsError } = await supabase
+            .from('student_interests')
+            .insert(interestRows);
+          
+          if (interestsError) {
+            console.error("Fel vid sparande av intressen:", interestsError);
+          }
+        }
+      } catch (interestError) {
+        console.error("Fel vid hantering av intressen:", interestError);
+      }
+      
+      alert("Profil sparad!");
+      
+    } catch (error) {
+      console.error("Fel vid sparande av profil:", error);
+      alert("Ett fel uppstod när profilen skulle sparas.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChangePassword = () => {
+    // Implementera lösenordsbyte om det behövs
+    alert("Funktion för att ändra lösenord kommer snart.");
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate('/');
+    navigate("/");
   };
 
   if (loading) {
     return (
       <div>
         <Header />
-        <div className="loading-container">Laddar...</div>
+        <div className="profile-container">
+          <div className="loading">Laddar...</div>
+        </div>
         <Footer />
       </div>
     );
@@ -57,14 +173,81 @@ const StudentProfile = () => {
     <div>
       <Header />
       <div className="profile-container">
-        <h1>Studentprofil</h1>
-        {userData && (
-          <div>
-            <p>E-post: {userData.email}</p>
-            {/* Lägg till fler fält här */}
+        <h1 className="profile-title">Profil</h1>
+        
+        <div className="form-group">
+          <label htmlFor="firstName">Förnamn</label>
+          <input
+            type="text"
+            id="firstName"
+            value={formData.firstName}
+            onChange={handleInputChange}
+            placeholder="Förnamn"
+          />
+        </div>
+        
+        <div className="form-group">
+          <label htmlFor="lastName">Efternamn</label>
+          <input
+            type="text"
+            id="lastName"
+            value={formData.lastName}
+            onChange={handleInputChange}
+            placeholder="Efternamn"
+          />
+        </div>
+        
+        <div className="form-group">
+          <label htmlFor="password">Lösenord</label>
+          <input
+            type="password"
+            id="password"
+            value={formData.password}
+            readOnly
+            placeholder="************"
+          />
+          <button 
+            type="button" 
+            className="password-change-button"
+            onClick={handleChangePassword}
+            style={{
+              background: '#001A52',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              padding: '8px 16px',
+              margin: '8px 0',
+              cursor: 'pointer'
+            }}
+          >
+            Ändra Lösenord
+          </button>
+        </div>
+        
+        <div className="form-group">
+          <label>Jag är intresserad av:</label>
+          <div className="specialties-container">
+            {allInterests.map((interest) => (
+              <button
+                key={interest}
+                type="button"
+                className={`specialty-button ${selectedInterests.includes(interest) ? 'active' : ''}`}
+                onClick={() => handleToggleInterest(interest)}
+              >
+                {interest}
+              </button>
+            ))}
           </div>
-        )}
-        <button onClick={handleLogout}>Logga ut</button>
+        </div>
+        
+        <div className="profile-buttons">
+          <button className="save-button" onClick={handleSave} disabled={loading} type="button">
+            {loading ? "Sparar..." : "Spara"}
+          </button>
+          <button className="logout-button" onClick={handleLogout} type="button">
+            Logga Ut
+          </button>
+        </div>
       </div>
       <Footer />
     </div>

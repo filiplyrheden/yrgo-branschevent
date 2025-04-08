@@ -58,7 +58,6 @@ const LandingForm = () => {
       if (error) throw error;
 
       if (data?.user) {
-        // Kontrollera om användaren redan finns i databasen innan vi lägger till en ny rad
         if (userType === "Företag") {
           // Kontrollera om företaget redan finns
           const { data: existingCompany } = await supabase
@@ -75,6 +74,7 @@ const LandingForm = () => {
                 {
                   id: data.user.id,
                   email: formData.email,
+                  company_name: "",
                   coming_to_event: true, // Default till närvarande
                 },
               ]);
@@ -97,7 +97,7 @@ const LandingForm = () => {
             }
           }
           
-          // Navigera automatiskt till företagsprofilen
+          // Navigera automatiskt till profilsidan
           navigate("/profil");
         } else {
           // Kontrollera om studenten redan finns
@@ -115,14 +115,15 @@ const LandingForm = () => {
                 {
                   id: data.user.id,
                   email: formData.email,
+                  name: ""
                 },
               ]);
 
             if (insertError) throw insertError;
           }
           
-          // Navigera automatiskt till studentprofilen
-          navigate("/student-profil");
+          // Navigera automatiskt till profilsidan (samma sida för både företag och studenter)
+          navigate("/profil");
         }
       }
     } catch (error) {
