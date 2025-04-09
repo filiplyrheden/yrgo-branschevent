@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabaseClient";
-import Header from "./Header";
-import Footer from "./Footer";
 import "./Swipe.css";
+import Header from "./layout/Header";
+import Footer from "./layout/Footer";
 
 const Swipe = () => {
   const [companies, setCompanies] = useState([]);

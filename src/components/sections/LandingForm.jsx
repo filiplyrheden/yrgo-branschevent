@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabaseClient";
+
 import "./LandingForm.css";
 import Input from "../ui/Input.jsx";
 import Button from "../ui/Button";
 import Label from "../ui/Label.jsx";
 import RegisterPopup from "./RegisterPopup";
 import PolicyPopup from "./PolicyPopup";
+import { supabase } from "../../supabaseClient.js";
 
 const LandingForm = () => {
   const navigate = useNavigate();

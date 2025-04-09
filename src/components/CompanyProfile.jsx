@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
-import Header from "./Header";
-import Footer from "./Footer";
+import Header from "../components/layout/Header";
+import Footer from "./layout/Footer";
 import "./Profile.css";
 
 const CompanyProfile = () => {

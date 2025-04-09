@@ -3,6 +3,11 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 
+
+import Header from "./components/layout/Header";
+import Footer from "./components/layout/Footer.jsx";
+import "./styles/Global.css";
+
 // Importera dina komponenter
 import Home from "./pages/Home";
 import CompanyProfile from "./components/CompanyProfile";
@@ -64,18 +69,18 @@ const ProtectedRoute = ({ element }) => {
   
   return authenticated ? element : <Navigate to="/" />;
 };
-import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home.jsx";
-import Header from "./components/layout/Header";
-import Footer from "./components/layout/Footer.jsx";
-import "./styles/Global.css";
+
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      
+      <Route path="/" element={<> <Header/>
+      <Home/>
+      <Footer/> </>} />
       <Route path="/profil" element={<ProfilePage />} />
       <Route path="/swajp" element={<ProtectedRoute element={<Swipe />} />} />
+      
     </Routes>
   );
 }
