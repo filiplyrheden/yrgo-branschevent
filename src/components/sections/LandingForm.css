@@ -1,5 +1,7 @@
 .landing-form {
-  height: 51rem;
+  min-height: 51rem;
+  height: auto;
+  padding-bottom: 2rem;
 }
 
 .landing-form-content {
@@ -96,9 +98,17 @@ input {
 
 .checkbox-container {
   display: flex;
+  flex-direction: row;
   height: 3.75rem;
   gap: 0.625rem;
   align-items: baseline;
+}
+
+#acceptTerms {
+  width: 1.19963rem;
+  height: 1.1875rem;
+  border-radius: 0.3125rem;
+  border: 1px solid var(--Grey-Grey-800, #4f4f4f);
 }
 
 #consent {

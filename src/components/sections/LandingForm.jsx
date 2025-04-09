@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import "./LandingForm.css";
 import Input from "../ui/Input.jsx";
 import Button from "../ui/Button";
@@ -55,9 +54,9 @@ const LandingForm = () => {
         password: formData.password,
         options: {
           data: {
-            user_type: userType
-          }
-        }
+            user_type: userType,
+          },
+        },
       });
 
       if (error) throw error;
@@ -70,7 +69,7 @@ const LandingForm = () => {
             .select("id")
             .eq("id", data.user.id)
             .maybeSingle();
-            
+
           if (!existingCompany) {
             // Skapa ny företagspost
             const { error: insertError } = await supabase
@@ -85,23 +84,24 @@ const LandingForm = () => {
               ]);
 
             if (insertError) throw insertError;
-            
+
             try {
               // Skapa en tom post i additional_info-tabellen
-              await supabase
-                .from("company_additional_info")
-                .insert([
-                  {
-                    company_id: data.user.id,
-                    additional_work_info: "",
-                  },
-                ]);
+              await supabase.from("company_additional_info").insert([
+                {
+                  company_id: data.user.id,
+                  additional_work_info: "",
+                },
+              ]);
             } catch (additionalInfoError) {
-              console.error("Error creating additional info:", additionalInfoError);
+              console.error(
+                "Error creating additional info:",
+                additionalInfoError
+              );
               // Fortsätt även om detta misslyckas
             }
           }
-          
+
           // Navigera automatiskt till profilsidan
           navigate("/profil");
         } else {
@@ -111,7 +111,7 @@ const LandingForm = () => {
             .select("id")
             .eq("id", data.user.id)
             .maybeSingle();
-            
+
           if (!existingStudent) {
             // Skapa ny studentpost
             const { error: insertError } = await supabase
@@ -120,20 +120,22 @@ const LandingForm = () => {
                 {
                   id: data.user.id,
                   email: formData.email,
-                  name: ""
+                  name: "",
                 },
               ]);
 
             if (insertError) throw insertError;
           }
-          
+
           // Navigera automatiskt till profilsidan (samma sida för både företag och studenter)
           navigate("/profil");
         }
       }
     } catch (error) {
       console.error("Error under registrering:", error);
-      setError(error.message || "Ett fel uppstod vid registrering. Försök igen senare.");
+      setError(
+        error.message || "Ett fel uppstod vid registrering. Försök igen senare."
+      );
     } finally {
       setLoading(false);
     }
@@ -204,14 +206,14 @@ const LandingForm = () => {
         <form onSubmit={handleSubmit}>
           <div className="label-choice-container">
             <p>Jag är:</p>
-            <div 
+            <div
               className={userType === "Företag" ? "active-label" : ""}
               style={{ cursor: "pointer" }}
               onClick={() => handleUserTypeChange("Företag")}
             >
               <Label text="Företag" active={userType === "Företag"} />
             </div>
-            <div 
+            <div
               className={userType === "Student" ? "active-label" : ""}
               style={{ cursor: "pointer" }}
               onClick={() => handleUserTypeChange("Student")}
@@ -220,52 +222,48 @@ const LandingForm = () => {
             </div>
           </div>
           <div className="input-container">
-            <div>
-              <label htmlFor="email">Mejl</label>
-              <input 
-                type="email" 
-                id="email" 
-                placeholder="Mejl..." 
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="password">Lösenord</label>
-              <input 
-                type="password" 
-                id="password" 
-                placeholder="Lösenord..." 
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+            <Input
+              id="email"
+              label="Mejl"
+              placeholder="Mejl..."
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+            />
+            <Input
+              id="password"
+              label="Lösenord"
+              placeholder="Lösenord..."
+              type="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              required
+            />
           </div>
           <div className="checkbox-container">
-            <input 
-              type="checkbox" 
-              id="acceptTerms" 
+            <input
+              type="checkbox"
+              id="acceptTerms"
               name="acceptTerms"
               checked={formData.acceptTerms}
               onChange={handleInputChange}
             />
             <label htmlFor="acceptTerms" id="consent-label">
               Jag accepterar{" "}
-            <a href="#" id="conditions-policy" onClick={openPolicyPopup}>
-              Villkor och Sekretesspolicy
-            </a>
+              <a href="#" id="conditions-policy" onClick={openPolicyPopup}>
+                Villkor och Sekretesspolicy
+              </a>
             </label>
           </div>
-          {error && <div style={{ color: "#E51236", margin: "1rem 0" }}>{error}</div>}
+          {error && (
+            <div style={{ color: "#E51236", margin: "1rem 0" }}>{error}</div>
+          )}
           <div className="button-container">
-            <button type="submit" disabled={loading}>
-              {loading ? "Registrerar..." : "Stäng"}
-            </button>
+            <Button text="Registrera" />
           </div>
-        {showPopup && <RegisterPopup onClose={closePopup} />}
-        {showPolicyPopup && <PolicyPopup onClose={closePolicyPopup} />}
+          {showPopup && <RegisterPopup onClose={closePopup} />}
+          {showPolicyPopup && <PolicyPopup onClose={closePolicyPopup} />}
         </form>
       </div>
     </div>
