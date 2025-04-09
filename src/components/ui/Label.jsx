@@ -5,7 +5,8 @@ const StyledLabel = styled.p`
   display: inline-block;
   border-radius: 0.125rem;
   border: 1px solid #4f4f4f;
-  color: #4f4f4f;
+  color: ${props => props.active ? "#fff" : "#4f4f4f"};
+  background-color: ${props => props.active ? "#001a52" : "transparent"};
   font-family: "IBM Plex Mono", monospace;
   font-size: 1rem;
   font-style: normal;
@@ -13,10 +14,15 @@ const StyledLabel = styled.p`
   line-height: normal;
   padding: 0.25rem 0.75rem;
   margin: 0;
+  transition: all 0.2s ease;
 `;
 
-const Label = ({ text }) => {
-  return <StyledLabel>{text}</StyledLabel>;
+const Label = ({ text, active, onClick }) => {
+  return (
+    <StyledLabel active={active} onClick={onClick}>
+      {text}
+    </StyledLabel>
+  );
 };
 
 export default Label;

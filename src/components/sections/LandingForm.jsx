@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 import "./LandingForm.css";
 import Input from "../ui/Input.jsx";
 import Button from "../ui/Button";
@@ -7,6 +9,135 @@ import RegisterPopup from "./RegisterPopup";
 import PolicyPopup from "./PolicyPopup";
 
 const LandingForm = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [userType, setUserType] = useState("Företag");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    acceptTerms: false,
+  });
+  const [error, setError] = useState("");
+
+  const handleUserTypeChange = (type) => {
+    setUserType(type);
+  };
+
+  const handleInputChange = (e) => {
+    const { id, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [id]: type === "checkbox" ? checked : value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!formData.email || !formData.password) {
+      setError("Vänligen fyll i alla obligatoriska fält.");
+      return;
+    }
+
+    if (!formData.acceptTerms) {
+      setError("Du måste acceptera villkoren för att fortsätta.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Registrera användare med Supabase Auth
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            user_type: userType
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.user) {
+        if (userType === "Företag") {
+          // Kontrollera om företaget redan finns
+          const { data: existingCompany } = await supabase
+            .from("companies")
+            .select("id")
+            .eq("id", data.user.id)
+            .maybeSingle();
+            
+          if (!existingCompany) {
+            // Skapa ny företagspost
+            const { error: insertError } = await supabase
+              .from("companies")
+              .insert([
+                {
+                  id: data.user.id,
+                  email: formData.email,
+                  company_name: "",
+                  coming_to_event: true, // Default till närvarande
+                },
+              ]);
+
+            if (insertError) throw insertError;
+            
+            try {
+              // Skapa en tom post i additional_info-tabellen
+              await supabase
+                .from("company_additional_info")
+                .insert([
+                  {
+                    company_id: data.user.id,
+                    additional_work_info: "",
+                  },
+                ]);
+            } catch (additionalInfoError) {
+              console.error("Error creating additional info:", additionalInfoError);
+              // Fortsätt även om detta misslyckas
+            }
+          }
+          
+          // Navigera automatiskt till profilsidan
+          navigate("/profil");
+        } else {
+          // Kontrollera om studenten redan finns
+          const { data: existingStudent } = await supabase
+            .from("students")
+            .select("id")
+            .eq("id", data.user.id)
+            .maybeSingle();
+            
+          if (!existingStudent) {
+            // Skapa ny studentpost
+            const { error: insertError } = await supabase
+              .from("students")
+              .insert([
+                {
+                  id: data.user.id,
+                  email: formData.email,
+                  name: ""
+                },
+              ]);
+
+            if (insertError) throw insertError;
+          }
+          
+          // Navigera automatiskt till profilsidan (samma sida för både företag och studenter)
+          navigate("/profil");
+        }
+      }
+    } catch (error) {
+      console.error("Error under registrering:", error);
+      setError(error.message || "Ett fel uppstod vid registrering. Försök igen senare.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const [showPopup, setShowPopup] = useState(false);
 
   const togglePopup = () => {
@@ -69,29 +200,72 @@ const LandingForm = () => {
             />
           </svg>
         </div>
-        <div className="label-choice-container">
-          <p>Jag är:</p>
-          <Label text="Företag" />
-          <Label text="Student" />
-        </div>
-        <div className="input-container">
-          <Input />
-          <Input label="Lösenord" placeholder="Lösenord..." />
-        </div>
-        <div className="checkbox-container">
-          <input type="checkbox" id="consent" name="consent" />
-          <label htmlFor="consent" id="consent-label">
-            Jag accepterar{" "}
+        <form onSubmit={handleSubmit}>
+          <div className="label-choice-container">
+            <p>Jag är:</p>
+            <div 
+              className={userType === "Företag" ? "active-label" : ""}
+              style={{ cursor: "pointer" }}
+              onClick={() => handleUserTypeChange("Företag")}
+            >
+              <Label text="Företag" active={userType === "Företag"} />
+            </div>
+            <div 
+              className={userType === "Student" ? "active-label" : ""}
+              style={{ cursor: "pointer" }}
+              onClick={() => handleUserTypeChange("Student")}
+            >
+              <Label text="Student" active={userType === "Student"} />
+            </div>
+          </div>
+          <div className="input-container">
+            <div>
+              <label htmlFor="email">Mejl</label>
+              <input 
+                type="email" 
+                id="email" 
+                placeholder="Mejl..." 
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="password">Lösenord</label>
+              <input 
+                type="password" 
+                id="password" 
+                placeholder="Lösenord..." 
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+          </div>
+          <div className="checkbox-container">
+            <input 
+              type="checkbox" 
+              id="acceptTerms" 
+              name="acceptTerms"
+              checked={formData.acceptTerms}
+              onChange={handleInputChange}
+            />
+            <label htmlFor="acceptTerms" id="consent-label">
+              Jag accepterar{" "}
             <a href="#" id="conditions-policy" onClick={openPolicyPopup}>
               Villkor och Sekretesspolicy
             </a>
-          </label>
-        </div>
-        <div className="button-container">
-          <Button text="Stäng" />
-        </div>
+            </label>
+          </div>
+          {error && <div style={{ color: "#E51236", margin: "1rem 0" }}>{error}</div>}
+          <div className="button-container">
+            <button type="submit" disabled={loading}>
+              {loading ? "Registrerar..." : "Stäng"}
+            </button>
+          </div>
         {showPopup && <RegisterPopup onClose={closePopup} />}
         {showPolicyPopup && <PolicyPopup onClose={closePolicyPopup} />}
+        </form>
       </div>
     </div>
   );
