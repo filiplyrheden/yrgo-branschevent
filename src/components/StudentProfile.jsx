@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
-
+import { supabase } from "../supabaseClient";
+import Header from "./layout/Header";
+import Footer from "./layout/Footer";
 
 const StudentProfile = () => {
   const navigate = useNavigate();
