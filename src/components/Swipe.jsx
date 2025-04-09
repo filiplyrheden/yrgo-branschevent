@@ -273,7 +273,7 @@ const Swipe = () => {
                       <div className="card-additional-info">
                         <p>Roligt att veta om oss:</p>
                         <div className="info-box">
-                          <p className="info-text">
+                          <p className="info-swipe-text">
                             {company.company_additional_info[0].additional_work_info}
                           </p>
                         </div>

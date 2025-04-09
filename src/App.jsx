@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 
-
+import Favorites from "./pages/Favorites.jsx";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer.jsx";
 import "./styles/Global.css";
@@ -80,7 +80,7 @@ function App() {
       <Footer/> </>} />
       <Route path="/profil" element={<ProfilePage />} />
       <Route path="/swajp" element={<ProtectedRoute element={<Swipe />} />} />
-      
+      <Route path="/favoriter" element={<ProtectedRoute element={<Favorites />}/>} />
     </Routes>
   );
 }
