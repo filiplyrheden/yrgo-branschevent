@@ -81,7 +81,7 @@ const LandingForm = () => {
         <div className="checkbox-container">
           <input type="checkbox" id="consent" name="consent" />
           <label htmlFor="consent" id="consent-label">
-            Jag accepterar{" "}
+            Jag accepterar
             <a href="#" id="conditions-policy" onClick={openPolicyPopup}>
               Villkor och Sekretesspolicy
             </a>
