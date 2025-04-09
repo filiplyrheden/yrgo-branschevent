@@ -28,6 +28,5 @@ a {
   font-weight: var(--Button-Font-weight);
   line-height: normal;
   letter-spacing: 0.05rem;
-  text-transform: capitalize;
   text-decoration: none;
 }
