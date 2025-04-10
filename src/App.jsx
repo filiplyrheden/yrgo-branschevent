@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import CompanyProfile from "./components/CompanyProfile";
 import StudentProfile from "./components/StudentProfile";
 import Swipe from "./components/Swipe";
+import Login from "./pages/Login";
 
 // Profilsida som dirigerar till rätt komponent baserat på användartyp
 const ProfilePage = () => {
@@ -82,6 +83,7 @@ function App() {
       />
       <Route path="/profil" element={<ProfilePage />} />
       <Route path="/swajp" element={<ProtectedRoute element={<Swipe />} />} />
+      <Route path="/login" element={<Login />} />
     </Routes>
   );
 }
