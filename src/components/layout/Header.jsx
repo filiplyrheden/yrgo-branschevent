@@ -51,7 +51,6 @@ const Header = () => {
         </svg>
       </Link>
       <nav>
-        <Link to="/info">Info</Link>
         <Link to="/swajp">Swajp</Link>
         <Link to="/favoriter">Favoriter</Link>
         <Link to="/profil">Profil</Link>
