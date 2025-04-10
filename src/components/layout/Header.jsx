@@ -1,8 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { supabase } from "../../supabaseClient";
 import "./Header.css";
 
 const Header = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Kolla direkt när komponenten mountar
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setIsLoggedIn(!!data.session);
+    };
+
+    checkSession();
+
+    // Lyssna på in- och utloggningar
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setIsLoggedIn(!!session);
+      }
+    );
+
+    // Städa upp när komponenten avmonteras
+    return () => {
+      listener?.subscription?.unsubscribe?.();
+    };
+  }, []);
   return (
     <header>
       <Link to="/">
@@ -53,8 +77,11 @@ const Header = () => {
       <nav>
         <Link to="/swajp">Swajp</Link>
         <Link to="/favoriter">Favoriter</Link>
-        <Link to="/profil">Profil</Link>
-        <Link to="/login">Logga in</Link>
+        {isLoggedIn ? (
+          <Link to="/profil">Profil</Link>
+        ) : (
+          <Link to="/login">Logga in</Link>
+        )}
       </nav>
     </header>
   );
