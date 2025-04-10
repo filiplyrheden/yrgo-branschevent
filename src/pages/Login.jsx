@@ -8,7 +8,7 @@ export default function Login() {
   return (
     <div>
       <Header />
-      <div className="input-container">
+      <div className="login-container">
         <Input
           id="email"
           label="Mejl"
@@ -16,17 +16,17 @@ export default function Login() {
           type="email"
           required
         />
-        <div className="input-container">
-          <Input
-            id="password"
-            label="Lösenord"
-            placeholder="Lösenord..."
-            type="password"
-            required
-          />
-        </div>
+
+        <Input
+          id="password"
+          label="Lösenord"
+          placeholder="Lösenord..."
+          type="password"
+          required
+        />
+
+        <Button text="Logga in" />
       </div>
-      <Button text="Logga in" />
       <Footer />
     </div>
   );
