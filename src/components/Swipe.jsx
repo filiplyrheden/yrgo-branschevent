@@ -63,31 +63,45 @@ const Swipe = () => {
     // If direction is right, save the like to favorites
     if (direction === 'right') {
       try {
+        console.log("Attempting to save favorite for company:", company.company_name);
         // Get current user
         const { data: sessionData } = await supabase.auth.getSession();
         
         if (sessionData?.session?.user) {
           const userId = sessionData.session.user.id;
+          console.log("User ID:", userId, "Company ID:", company.id);
           
           // Check if already liked
-          const { data: existingLike } = await supabase
+          const { data: existingLike, error: checkError } = await supabase
             .from('favorites')
             .select('*')
             .eq('student_id', userId)
             .eq('company_id', company.id)
             .single();
             
+          if (checkError && checkError.code !== 'PGRST116') {
+            console.error("Error checking existing favorite:", checkError);
+          }
+              
           if (!existingLike) {
             // Save to favorites
-            await supabase
+            const { data, error } = await supabase
               .from('favorites')
               .insert({
                 student_id: userId,
                 company_id: company.id
               });
             
-            console.log("Saved to favorites:", company.company_name);
+            if (error) {
+              console.error("Error saving favorite:", error);
+            } else {
+              console.log("Saved to favorites:", company.company_name, data);
+            }
+          } else {
+            console.log("Company already in favorites:", company.company_name);
           }
+        } else {
+          console.log("No user session found");
         }
       } catch (error) {
         console.error("Error saving favorite:", error);

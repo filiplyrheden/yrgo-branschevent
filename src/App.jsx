@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 
-import Favorites from "./pages/Favorites.jsx";
+
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer.jsx";
 import "./styles/Global.css";
@@ -13,6 +13,7 @@ import Home from "./pages/Home";
 import CompanyProfile from "./components/CompanyProfile";
 import StudentProfile from "./components/StudentProfile";
 import Swipe from "./components/swipe";
+import Favorites from "./pages/Favorites";
 
 // Profilsida som dirigerar till rätt komponent baserat på användartyp
 const ProfilePage = () => {
@@ -80,7 +81,8 @@ function App() {
       <Footer/> </>} />
       <Route path="/profil" element={<ProfilePage />} />
       <Route path="/swajp" element={<ProtectedRoute element={<Swipe />} />} />
-      <Route path="/favoriter" element={<ProtectedRoute element={<Favorites />}/>} />
+      <Route path="/favoriter" element={<ProtectedRoute element={<Favorites />} />} /> {/* Ny route för favoritsidan */}
+      
     </Routes>
   );
 }

@@ -20,3 +20,145 @@
     padding: 2rem;
     font-size: 1.2rem;
   }
+  
+  .error-message {
+    background-color: rgba(229, 18, 54, 0.1);
+    color: #E51236;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 1px solid #E51236;
+  }
+  
+  .favorite-card {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #001A52;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    height: 100%;
+  }
+  
+  .favorite-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .favorite-card-image {
+    height: 200px;
+    background-color: #4F4F4F;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .favorite-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .placeholder-image {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .favorite-card-footer {
+    padding: 1rem;
+    color: white;
+  }
+  
+  .favorite-card-footer h3 {
+    margin: 0 0 0.5rem 0;
+    color: white;
+    font-size: 1.2rem;
+  }
+  
+  .company-specialties {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .specialty-tag {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+  }
+  
+  .more-specialties {
+    background-color: rgba(229, 18, 54, 0.1);
+    color: #E51236;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+  }
+  
+  .remove-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  
+  .remove-button:hover {
+    background-color: #f8f8f8;
+  }
+  
+  .no-favorites {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 1rem;
+    background-color: rgba(0, 26, 82, 0.05);
+    border-radius: 8px;
+  }
+  
+  .no-favorites p {
+    font-size: 1.1rem;
+    color: #333;
+  }
+  
+  .no-favorites a {
+    color: #E51236;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .no-favorites a:hover {
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 768px) {
+    .favorites-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    
+    .favorites-title {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .favorites-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .favorites-container {
+      padding: 1rem;
+    }
+  }
