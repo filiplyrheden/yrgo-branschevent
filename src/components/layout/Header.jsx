@@ -54,6 +54,7 @@ const Header = () => {
         <Link to="/swajp">Swajp</Link>
         <Link to="/favoriter">Favoriter</Link>
         <Link to="/profil">Profil</Link>
+        <Link to="/login">Logga in</Link>
       </nav>
     </header>
   );
