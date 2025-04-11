@@ -29,7 +29,6 @@ const Favorites = () => {
         
         // Kontrollera om användaren är student
         const userType = sessionData.session.user.user_metadata?.user_type;
-        console.log("User type:", userType);
         if (userType !== "Student") {
           navigate('/profil');
           return;
@@ -50,69 +49,72 @@ const Favorites = () => {
   const fetchFavorites = async (userId) => {
     try {
       setLoading(true);
-      
       console.log("Fetching favorites for user ID:", userId);
       
       // Försök först med en enklare query
-      const { data, error } = await supabase
+      const { data: favoriteIds, error: favoritesError } = await supabase
         .from('favorites')
-        .select('id, company_id, student_id')
+        .select('id, company_id')
         .eq('student_id', userId);
       
-      if (error) {
-        console.error("Error fetching favorites:", error);
-        throw error;
+      if (favoritesError) {
+        console.error("Error fetching favorite IDs:", favoritesError);
+        throw favoritesError;
       }
       
-      console.log("Fetched basic favorites:", data);
+      console.log("Fetched favorite IDs:", favoriteIds);
       
-      if (data && data.length > 0) {
-        // Om vi har grundläggande favoriter, hämta nu företagsdetaljer
-        const favoritePromises = data.map(async (favorite) => {
-          const { data: companyData, error: companyError } = await supabase
-            .from('companies')
-            .select(`
-              id,
-              company_name,
-              logo_url,
-              website_url,
-              email
-            `)
-            .eq('id', favorite.company_id)
-            .single();
-            
-          if (companyError) {
-            console.error("Error fetching company data:", companyError);
-            return favorite;
-          }
-          
-          // Hämta specialties separat
-          const { data: specialties, error: specialtiesError } = await supabase
-            .from('company_specialties')
-            .select('specialty')
-            .eq('company_id', favorite.company_id);
-            
-          if (specialtiesError) {
-            console.error("Error fetching specialties:", specialtiesError);
-          }
-          
-          return {
-            ...favorite,
-            companies: {
-              ...companyData,
-              company_specialties: specialties || []
+      if (favoriteIds && favoriteIds.length > 0) {
+        // För varje favorit, hämta företagsinformation separat
+        const enrichedFavorites = await Promise.all(
+          favoriteIds.map(async (favorite) => {
+            try {
+              // Hämta grundläggande företagsinformation
+              const { data: company, error: companyError } = await supabase
+                .from('companies')
+                .select('id, company_name, logo_url, email, website_url')
+                .eq('id', favorite.company_id)
+                .single();
+                
+              if (companyError) {
+                console.error(`Error fetching company ${favorite.company_id}:`, companyError);
+                return {
+                  ...favorite,
+                  companies: { company_name: 'Okänt företag' }
+                };
+              }
+              
+              // Hämta specialties
+              const { data: specialties, error: specialtiesError } = await supabase
+                .from('company_specialties')
+                .select('specialty')
+                .eq('company_id', favorite.company_id);
+                
+              if (specialtiesError) {
+                console.error(`Error fetching specialties for company ${favorite.company_id}:`, specialtiesError);
+              }
+              
+              return {
+                ...favorite,
+                companies: {
+                  ...company,
+                  company_specialties: specialties || []
+                }
+              };
+            } catch (err) {
+              console.error(`Error processing company ${favorite.company_id}:`, err);
+              return favorite;
             }
-          };
-        });
+          })
+        );
         
-        const enrichedFavorites = await Promise.all(favoritePromises);
         console.log("Enriched favorites:", enrichedFavorites);
         setFavorites(enrichedFavorites);
       } else {
         setFavorites([]);
       }
     } catch (error) {
-      console.error("Error fetching favorites:", error);
+      console.error("Error in fetchFavorites:", error);
       setError("Ett fel uppstod när dina favoriter skulle hämtas");
     } finally {
       setLoading(false);
@@ -172,7 +174,12 @@ const Favorites = () => {
         <div className="favorites-grid">
           {favorites.length > 0 ? (
             favorites.map(favorite => (
-              <div key={favorite.id} className="favorite-card">
+              <div 
+                key={favorite.id} 
+                className="favorite-card"
+                onClick={() => navigate(`/company/${favorite.company_id}`)}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="favorite-card-image">
                   {favorite.companies && favorite.companies.logo_url ? (
                     <img 
@@ -212,7 +219,10 @@ const Favorites = () => {
                 
                 <button 
                   className="remove-button" 
-                  onClick={() => handleRemoveFavorite(favorite.id)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Förhindrar att hela kortet klickas när ta bort-knappen klickas
+                    handleRemoveFavorite(favorite.id);
+                  }}
                   aria-label="Ta bort från favoriter"
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

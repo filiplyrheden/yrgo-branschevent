@@ -8,7 +8,7 @@ import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer.jsx";
 import "./styles/Global.css";
 
-// Importera dina komponenter
+import CompanyDetails from "./pages/CompanyDetails.jsx";
 import Home from "./pages/Home";
 import CompanyProfile from "./components/CompanyProfile";
 import StudentProfile from "./components/StudentProfile";
@@ -82,6 +82,7 @@ function App() {
       <Route path="/profil" element={<ProfilePage />} />
       <Route path="/swajp" element={<ProtectedRoute element={<Swipe />} />} />
       <Route path="/favoriter" element={<ProtectedRoute element={<Favorites />} />} /> {/* Ny route för favoritsidan */}
+      <Route path="/company/:id" element={<ProtectedRoute element={<CompanyDetails />} />} />
       
     </Routes>
   );
