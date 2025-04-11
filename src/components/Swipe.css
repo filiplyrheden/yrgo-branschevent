@@ -1,9 +1,8 @@
-/* Swipe.css */
 .swipe-container {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 124px); /* Adjust for header and footer */
-  background-color: #001a52;
+  min-height: calc(100vh - 124px);
+  background-color: var(--Primary-Navy);
 }
 
 .swipe-main {
@@ -30,11 +29,9 @@
 
 .swipe-card {
   position: absolute;
-  width: 100%;
-  max-width: 800px; /* Increased card width */
+  width: 76.875rem;
   height: 550px;
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
   background-color: #fff;
   cursor: grab;
 }
@@ -46,14 +43,13 @@
 .card {
   width: 100%;
   height: 100%;
-  border-radius: 10px;
   overflow: hidden;
   display: flex;
   flex-direction: row;
 }
 
 .card-left {
-  width: 50%;
+  width: 34.375rem;
   background-color: #4f4f4f;
 }
 
@@ -86,7 +82,7 @@
 }
 
 .card-info {
-  width: 50%;
+  width: 43.75rem;
   padding: 32px;
   overflow-y: auto;
   background-color: #fff;
