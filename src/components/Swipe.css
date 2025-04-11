@@ -92,11 +92,12 @@
 }
 
 .card-info h3 {
-  color: #4f4f4f;
-  font-family: "Inter", sans-serif;
-  font-size: 32px;
-  font-weight: 600;
-  margin: 0 0 8px 0;
+  color: var(--Text-Dark-Grey);
+  font-family: var(--Font-Inter);
+  font-size: 3.125rem;
+  font-weight: 500;
+  line-height: 2.75rem;
+  letter-spacing: 0.0625rem;
 }
 
 .website-container,
@@ -117,16 +118,17 @@
 
 .card-website,
 .card-email {
-  color: #e51236;
-  font-family: "Inter", sans-serif;
-  font-size: 16px;
-  margin: 0;
+  color: var(--Primary-Red);
+  font-family: var(--Font-Inter);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 2.25rem;
   text-decoration: none;
 }
 
 .card-attending {
   color: #4f4f4f;
-  font-family: "Inter", sans-serif;
+  font-family: var(--Font-Inter);
   font-size: 16px;
   margin: 16px 0 8px 0;
 }
