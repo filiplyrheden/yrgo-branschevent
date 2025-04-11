@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
+import TrashIcon from "../components/ui/TrashIcon";
 import "../components/layout/Favorites.css";
 
 const Favorites = () => {
@@ -11,11 +12,10 @@ const Favorites = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Hämta favoriter när komponenten laddas
   useEffect(() => {
     const checkAuthAndFetchFavorites = async () => {
       try {
-        // Kontrollera om användaren är inloggad
+        // Check if user is logged in
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -27,14 +27,14 @@ const Favorites = () => {
           return;
         }
         
-        // Kontrollera om användaren är student
+        // Check if user is a student
         const userType = sessionData.session.user.user_metadata?.user_type;
         if (userType !== "Student") {
           navigate('/profil');
           return;
         }
         
-        // Hämta favoriter
+        // Fetch favorites
         await fetchFavorites(sessionData.session.user.id);
       } catch (error) {
         console.error("Error checking auth:", error);
@@ -45,13 +45,11 @@ const Favorites = () => {
     checkAuthAndFetchFavorites();
   }, [navigate]);
 
-  // Funktion för att hämta favoriter från databasen
   const fetchFavorites = async (userId) => {
     try {
       setLoading(true);
       console.log("Fetching favorites for user ID:", userId);
       
-      // Försök först med en enklare query
       const { data: favoriteIds, error: favoritesError } = await supabase
         .from('favorites')
         .select('id, company_id')
@@ -65,11 +63,9 @@ const Favorites = () => {
       console.log("Fetched favorite IDs:", favoriteIds);
       
       if (favoriteIds && favoriteIds.length > 0) {
-        // För varje favorit, hämta företagsinformation separat
         const enrichedFavorites = await Promise.all(
           favoriteIds.map(async (favorite) => {
             try {
-              // Hämta grundläggande företagsinformation
               const { data: company, error: companyError } = await supabase
                 .from('companies')
                 .select('id, company_name, logo_url, email, website_url')
@@ -84,7 +80,6 @@ const Favorites = () => {
                 };
               }
               
-              // Hämta specialties
               const { data: specialties, error: specialtiesError } = await supabase
                 .from('company_specialties')
                 .select('specialty')
@@ -121,15 +116,12 @@ const Favorites = () => {
     }
   };
 
-  // Funktion för att ta bort favorit
   const handleRemoveFavorite = async (favoriteId) => {
     try {
-      // Visa bekräftelsedialog
       if (!window.confirm("Är du säker på att du vill ta bort företaget från dina favoriter?")) {
         return;
       }
       
-      // Ta bort från databasen
       const { error } = await supabase
         .from('favorites')
         .delete()
@@ -137,7 +129,6 @@ const Favorites = () => {
         
       if (error) throw error;
       
-      // Uppdatera listan genom att filtrera bort den borttagna favoriten
       setFavorites(favorites.filter(fav => fav.id !== favoriteId));
       
     } catch (error) {
@@ -146,7 +137,6 @@ const Favorites = () => {
     }
   };
 
-  // Visa laddningsmeddelande
   if (loading) {
     return (
       <div>
@@ -193,8 +183,10 @@ const Favorites = () => {
                   ) : (
                     <div className="placeholder-image">
                       <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="50" cy="35" r="25" fill="#4F4F4F" />
-                        <path d="M100 100 H0 V70 C0 50 25 50 50 60 C75 50 100 50 100 70 Z" fill="#4F4F4F" />
+                        <rect width="100" height="100" fill="#4F4F4F" />
+                        <text x="50%" y="50%" fill="white" fontSize="14" textAnchor="middle" dominantBaseline="middle">
+                          Bild
+                        </text>
                       </svg>
                     </div>
                   )}
@@ -202,32 +194,17 @@ const Favorites = () => {
                 
                 <div className="favorite-card-footer">
                   <h3>{favorite.companies ? favorite.companies.company_name : 'Företag'}</h3>
-                  
-                  {favorite.companies && favorite.companies.company_specialties && favorite.companies.company_specialties.length > 0 && (
-                    <div className="company-specialties">
-                      {favorite.companies.company_specialties.slice(0, 3).map((specialtyObj, index) => (
-                        <span key={index} className="specialty-tag">
-                          {specialtyObj.specialty}
-                        </span>
-                      ))}
-                      {favorite.companies.company_specialties.length > 3 && (
-                        <span className="more-specialties">+{favorite.companies.company_specialties.length - 3}</span>
-                      )}
-                    </div>
-                  )}
                 </div>
                 
                 <button 
-                  className="remove-button" 
+                  className="trash-button" 
                   onClick={(e) => {
-                    e.stopPropagation(); // Förhindrar att hela kortet klickas när ta bort-knappen klickas
+                    e.stopPropagation(); // Prevent the entire card from being clicked
                     handleRemoveFavorite(favorite.id);
                   }}
                   aria-label="Ta bort från favoriter"
                 >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18 6L6 18M6 6L18 18" stroke="#E51236" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                  <TrashIcon />
                 </button>
               </div>
             ))
