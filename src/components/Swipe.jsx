@@ -214,11 +214,11 @@ const Swipe = () => {
                     <div className="card-image">
                       {company.logo_url ? (
                         <img
-                          src={`${supabase.supabaseUrl}/storage/v1/object/public/company_logos/${company.logo_url}`}
+                          src={company.logo_url}
                           alt={`${company.company_name} logotyp`}
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = ""; // Clear src on error
+                            e.target.src = "";
                           }}
                         />
                       ) : (
