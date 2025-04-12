@@ -3,7 +3,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 
-
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer.jsx";
 import "./styles/Global.css";
@@ -49,16 +48,29 @@ const ProfilePage = () => {
   return userType === "Företag" ? <CompanyProfile /> : <StudentProfile />;
 };
 
-// Skyddad route-komponent
-const ProtectedRoute = ({ element }) => {
+// Skyddad route-komponent med kontroll för användartyp
+const ProtectedRoute = ({ element, allowedUserTypes = ["Student", "Företag"] }) => {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
+  const [userType, setUserType] = useState(null);
   
   useEffect(() => {
     const checkAuth = async () => {
-      const { data } = await supabase.auth.getSession();
-      setAuthenticated(!!data.session);
-      setLoading(false);
+      try {
+        const { data } = await supabase.auth.getSession();
+        
+        if (data.session) {
+          setAuthenticated(true);
+          // Hämta användartyp från metadata
+          const userType = data.session.user.user_metadata?.user_type;
+          setUserType(userType);
+        }
+        
+        setLoading(false);
+      } catch (error) {
+        console.error("Auth check error:", error);
+        setLoading(false);
+      }
     };
     
     checkAuth();
@@ -68,22 +80,41 @@ const ProtectedRoute = ({ element }) => {
     return <div>Laddar...</div>;
   }
   
-  return authenticated ? element : <Navigate to="/" />;
+  // Redirect if not authenticated
+  if (!authenticated) {
+    return <Navigate to="/" />;
+  }
+  
+  // Redirect if not allowed user type
+  if (!allowedUserTypes.includes(userType)) {
+    return <Navigate to="/profil" />;
+  }
+  
+  return element;
 };
 
+// Student-only protected route
+const StudentRoute = ({ element }) => {
+  return <ProtectedRoute element={element} allowedUserTypes={["Student"]} />;
+};
 
 function App() {
   return (
     <Routes>
-      
-      <Route path="/" element={<> <Header/>
-      <Home/>
-      <Footer/> </>} />
+      <Route 
+        path="/" 
+        element={
+          <> 
+            <Header/>
+            <Home/>
+            <Footer/> 
+          </>
+        } 
+      />
       <Route path="/profil" element={<ProfilePage />} />
-      <Route path="/swajp" element={<ProtectedRoute element={<Swipe />} />} />
-      <Route path="/favoriter" element={<ProtectedRoute element={<Favorites />} />} /> {/* Ny route för favoritsidan */}
-      <Route path="/company/:id" element={<ProtectedRoute element={<CompanyDetails />} />} />
-      
+      <Route path="/swajp" element={<StudentRoute element={<Swipe />} />} />
+      <Route path="/favoriter" element={<StudentRoute element={<Favorites />} />} />
+      <Route path="/company/:id" element={<StudentRoute element={<CompanyDetails />} />} />
     </Routes>
   );
 }

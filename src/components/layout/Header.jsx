@@ -1,8 +1,33 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { SupabaseClient } from "@supabase/supabase-js";
 import "./Header.css";
 
 const Header = () => {
+  const [userType, setUserType] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkUserType = async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        
+        if (data.session) {
+          // Hämta användartyp från metadata
+          const userType = data.session.user.user_metadata?.user_type;
+          setUserType(userType);
+        }
+        
+        setLoading(false);
+      } catch (error) {
+        console.error("Error checking user type:", error);
+        setLoading(false);
+      }
+    };
+    
+    checkUserType();
+  }, []);
+
   return (
     <header>
       <svg
@@ -50,8 +75,15 @@ const Header = () => {
       </svg>
       <nav>
         <Link to="/info">Info</Link>
-        <Link to="/swajp">Swajp</Link>
-        <Link to="/favoriter">Favoriter</Link>
+        
+        {/* Visa Swajp och Favoriter länkar endast för studenter */}
+        {!loading && userType === "Student" && (
+          <>
+            <Link to="/swajp">Swajp</Link>
+            <Link to="/favoriter">Favoriter</Link>
+          </>
+        )}
+        
         <Link to="/profil">Profil</Link>
       </nav>
     </header>
