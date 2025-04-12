@@ -104,22 +104,9 @@ const CompanyProfile = () => {
           console.error("Error fetching additional info:", additionalError);
         }
 
-        // Hämta bild om den finns
         let logoUrl = null;
         if (companyData.logo_url) {
-          try {
-            const { data: logoData, error: logoError } = await supabase.storage
-              .from("company_logos")
-              .download(companyData.logo_url);
-
-            if (logoError) {
-              console.error("Error downloading logo:", logoError);
-            } else if (logoData) {
-              logoUrl = URL.createObjectURL(logoData);
-            }
-          } catch (logoError) {
-            console.error("Error processing logo:", logoError);
-          }
+          logoUrl = companyData.logo_url;
         }
 
         // Sätt state med hämtad data
