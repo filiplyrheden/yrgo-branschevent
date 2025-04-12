@@ -112,6 +112,7 @@ function App() {
         } 
       />
       <Route path="/profil" element={<ProfilePage />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/swajp" element={<StudentRoute element={<Swipe />} />} />
       <Route path="/favoriter" element={<StudentRoute element={<Favorites />} />} />
       <Route path="/company/:id" element={<StudentRoute element={<CompanyDetails />} />} />
