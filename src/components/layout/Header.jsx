@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { SupabaseClient } from "@supabase/supabase-js";
+import { supabase } from "../../supabaseClient";
 import "./Header.css";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userType, setUserType] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Kolla direkt när komponenten mountar
@@ -27,8 +29,6 @@ const Header = () => {
       listener?.subscription?.unsubscribe?.();
     };
   }, []);
-  const [userType, setUserType] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkUserType = async () => {
@@ -99,17 +99,16 @@ const Header = () => {
         </svg>
       </Link>
       <nav>
-        
         {/* Visa Swajp och Favoriter länkar endast för studenter */}
         {!loading && userType === "Student" && (
           <>
             <Link to="/swajp">Swajp</Link>
             <Link to="/favoriter">Favoriter</Link>
-        {isLoggedIn ? (
-            </>
+          </>
         )}
         
-        <Link to="/profil">Profil</Link>
+        {isLoggedIn ? (
+          <Link to="/profil">Profil</Link>
         ) : (
           <Link to="/login">Logga in</Link>
         )}
