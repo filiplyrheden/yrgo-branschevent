@@ -99,10 +99,11 @@ const Header = () => {
         </svg>
       </Link>
       <nav>
-        {/* Visa Swajp och Favoriter länkar endast för studenter */}
+        {/* Visa navigationsalternativ för studenter */}
         {!loading && userType === "Student" && (
           <>
             <Link to="/swajp">Swajp</Link>
+            <Link to="/foretag">Företag</Link> {/* Add link to Companies page */}
             <Link to="/favoriter">Favoriter</Link>
           </>
         )}

@@ -8,6 +8,7 @@ import "./styles/Global.css";
 
 import CompanyDetails from "./pages/CompanyDetails.jsx";
 import Home from "./pages/Home";
+import Companies from "./pages/Companies"; // Import the new Companies component
 import CompanyProfile from "./components/CompanyProfile";
 import StudentProfile from "./components/StudentProfile";
 import Swipe from "./components/Swipe";
@@ -115,6 +116,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/swajp" element={<StudentRoute element={<Swipe />} />} />
       <Route path="/favoriter" element={<StudentRoute element={<Favorites />} />} />
+      <Route path="/foretag" element={<StudentRoute element={<Companies />} />} /> {/* Add the new route */}
       <Route path="/company/:id" element={<StudentRoute element={<CompanyDetails />} />} />
     </Routes>
   );
