@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { supabase } from "../../supabaseClient";
+import { SupabaseClient } from "@supabase/supabase-js";
 import "./Header.css";
 
 const Header = () => {
@@ -27,6 +27,30 @@ const Header = () => {
       listener?.subscription?.unsubscribe?.();
     };
   }, []);
+  const [userType, setUserType] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkUserType = async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        
+        if (data.session) {
+          // Hämta användartyp från metadata
+          const userType = data.session.user.user_metadata?.user_type;
+          setUserType(userType);
+        }
+        
+        setLoading(false);
+      } catch (error) {
+        console.error("Error checking user type:", error);
+        setLoading(false);
+      }
+    };
+    
+    checkUserType();
+  }, []);
+
   return (
     <header>
       <Link to="/">
@@ -75,10 +99,17 @@ const Header = () => {
         </svg>
       </Link>
       <nav>
-        <Link to="/swajp">Swajp</Link>
-        <Link to="/favoriter">Favoriter</Link>
+        
+        {/* Visa Swajp och Favoriter länkar endast för studenter */}
+        {!loading && userType === "Student" && (
+          <>
+            <Link to="/swajp">Swajp</Link>
+            <Link to="/favoriter">Favoriter</Link>
         {isLoggedIn ? (
-          <Link to="/profil">Profil</Link>
+            </>
+        )}
+        
+        <Link to="/profil">Profil</Link>
         ) : (
           <Link to="/login">Logga in</Link>
         )}
