@@ -17,10 +17,15 @@ const Companies = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [specialtyFilters, setSpecialtyFilters] = useState([]);
   const { addNotification } = useNotification();
+  // Lägg till companiesFetched state
+  const [companiesFetched, setCompaniesFetched] = useState(false);
 
   useEffect(() => {
     const checkAuthAndFetchCompanies = async () => {
       try {
+        // Undvik att köra om företagen redan har hämtats
+        if (companiesFetched) return;
+        
         // Check if user is logged in
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         
@@ -50,8 +55,11 @@ const Companies = () => {
           return;
         }
         
-        // Fetch all companies
-        await fetchCompanies();
+        // Fetch all companies - skicka med true för att visa notifikationer
+        await fetchCompanies(true);
+        
+        // Markera att företagen har hämtats
+        setCompaniesFetched(true);
       } catch (error) {
         console.error("Error checking auth:", error);
         setError("Ett fel uppstod vid inloggningskontroll");
@@ -64,7 +72,7 @@ const Companies = () => {
     };
     
     checkAuthAndFetchCompanies();
-  }, [navigate, addNotification]);
+  }, [navigate, addNotification, companiesFetched]); // Lägg till companiesFetched som dependency
 
   useEffect(() => {
     // Apply filters when companies or filters change
@@ -73,7 +81,7 @@ const Companies = () => {
     }
   }, [companies, activeFilter]);
 
-  const fetchCompanies = async () => {
+  const fetchCompanies = async (showNotifications = false) => {
     try {
       setLoading(true);
       
@@ -116,26 +124,30 @@ const Companies = () => {
         // Extract unique specialties for filters
         const allSpecialties = new Set();
         enrichedCompanies.forEach(company => {
-          company.company_specialties.forEach(spec => {
-            allSpecialties.add(spec.specialty);
+          company.company_specialties && company.company_specialties.forEach(spec => {
+            if (spec.specialty) allSpecialties.add(spec.specialty);
           });
         });
         setSpecialtyFilters(Array.from(allSpecialties).sort());
         
-        // Show success notification
-        showSuccess(
-          addNotification, 
-          `${enrichedCompanies.length} företag hämtades framgångsrikt.`,
-          "Data laddad"
-        );
+        // Show success notification only if requested
+        if (showNotifications) {
+          showSuccess(
+            addNotification, 
+            `${enrichedCompanies.length} företag hämtades framgångsrikt.`,
+            "Data laddad"
+          );
+        }
       } else {
         setCompanies([]);
         setFilteredCompanies([]);
-        showInfo(
-          addNotification, 
-          "Inga företag hittades i databasen.",
-          "Inga företag"
-        );
+        if (showNotifications) {
+          showInfo(
+            addNotification, 
+            "Inga företag hittades i databasen.",
+            "Inga företag"
+          );
+        }
       }
     } catch (error) {
       console.error("Error in fetchCompanies:", error);
@@ -164,21 +176,26 @@ const Companies = () => {
     
     // Announce filter results to screen readers
     const resultMessage = `Visar ${filtered.length} av ${companies.length} företag.`;
-    document.getElementById('filter-results-live').textContent = resultMessage;
+    const filterResults = document.getElementById('filter-results-live');
+    if (filterResults) {
+      filterResults.textContent = resultMessage;
+    }
     
-    // Show info notification about filter results
-    showInfo(
-      addNotification, 
-      `Visar ${filtered.length} av ${companies.length} företag.`,
-      "Filter applicerat"
-    );
+    // Show info notification about filter results - bara om vi har hämtat företag tidigare
+    if (companiesFetched) {
+      showInfo(
+        addNotification, 
+        `Visar ${filtered.length} av ${companies.length} företag.`,
+        "Filter applicerat"
+      );
+    }
   };
 
   const handleFilterChange = (filter) => {
     setActiveFilter(filter);
   };
 
-  if (loading) {
+  if (loading && !companiesFetched) {
     return (
       <div>
         <Header />
@@ -274,7 +291,7 @@ const Companies = () => {
                   <div className="favorite-card-image">
                     {company.logo_url ? (
                       <img 
-                        src={`${supabase.supabaseUrl}/storage/v1/object/public/company_logos/${company.logo_url}`}
+                        src={company.logo_url}
                         alt={`${company.company_name} logotyp`} 
                         onError={(e) => {
                           e.target.onerror = null;

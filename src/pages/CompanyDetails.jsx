@@ -14,10 +14,15 @@ const CompanyDetails = () => {
   const [company, setCompany] = useState(null);
   const [error, setError] = useState(null);
   const { addNotification } = useNotification();
+  // Lägg till en state-variabel för att hålla reda på om företagsdetaljer har hämtats
+  const [detailsFetched, setDetailsFetched] = useState(false);
 
   useEffect(() => {
     const checkAuthAndFetchDetails = async () => {
       try {
+        // Om företagsdetaljer redan har hämtats, avsluta direkt
+        if (detailsFetched) return;
+        
         // Check if user is logged in
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         
@@ -47,8 +52,11 @@ const CompanyDetails = () => {
           return;
         }
         
-        // Fetch company details
-        fetchCompanyDetails();
+        // Fetch company details - skicka med true för att visa notifikationer
+        await fetchCompanyDetails(true);
+        
+        // Markera att företagsdetaljer har hämtats
+        setDetailsFetched(true);
       } catch (error) {
         console.error("Auth check error:", error);
         showError(
@@ -60,9 +68,9 @@ const CompanyDetails = () => {
     };
     
     checkAuthAndFetchDetails();
-  }, [id, navigate, addNotification]);
+  }, [id, navigate, addNotification, detailsFetched]); // Lägg till detailsFetched som dependency
 
-  const fetchCompanyDetails = async () => {
+  const fetchCompanyDetails = async (showNotifications = false) => {
     try {
       setLoading(true);
       
@@ -90,18 +98,25 @@ const CompanyDetails = () => {
       
       if (companyData) {
         setCompany(companyData);
-        showSuccess(
-          addNotification, 
-          `Företagsinformation för ${companyData.company_name} laddad`,
-          "Företagsdetaljer"
-        );
+        
+        // Visa endast framgångsmeddelande om det är begärt
+        if (showNotifications) {
+          showSuccess(
+            addNotification, 
+            `Företagsinformation för ${companyData.company_name} laddad`,
+            "Företagsdetaljer"
+          );
+        }
       } else {
         setError("Företaget hittades inte");
-        showError(
-          addNotification, 
-          "Företaget hittades inte i databasen",
-          "Ingen data"
-        );
+        
+        if (showNotifications) {
+          showError(
+            addNotification, 
+            "Företaget hittades inte i databasen",
+            "Ingen data"
+          );
+        }
       }
     } catch (error) {
       console.error("Error fetching company:", error);
@@ -111,7 +126,7 @@ const CompanyDetails = () => {
     }
   };
 
-  if (loading) {
+  if (loading && !detailsFetched) {
     return (
       <div>
         <Header />
@@ -161,7 +176,7 @@ const CompanyDetails = () => {
             <div className="profile-image">
               {company.logo_url ? (
                 <img 
-                  src={`${supabase.supabaseUrl}/storage/v1/object/public/company_logos/${company.logo_url}`}
+                  src={company.logo_url}
                   alt={`${company.company_name} logotyp`} 
                   onError={(e) => {
                     e.target.onerror = null;
