@@ -4,12 +4,19 @@ import { supabase } from "../supabaseClient";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import "../components/layout/Favorites.css";
+import "../components/layout/Companies.css";
+import { useNotification } from "../components/notifications/NotificationSystem";
+import { showSuccess, showError, showInfo } from "../components/utils/notifications";
 
 const Companies = () => {
   const navigate = useNavigate();
   const [companies, setCompanies] = useState([]);
+  const [filteredCompanies, setFilteredCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [specialtyFilters, setSpecialtyFilters] = useState([]);
+  const { addNotification } = useNotification();
 
   useEffect(() => {
     const checkAuthAndFetchCompanies = async () => {
@@ -22,6 +29,11 @@ const Companies = () => {
         }
         
         if (!sessionData.session) {
+          showError(
+            addNotification, 
+            "Du måste vara inloggad för att se företag", 
+            "Åtkomst nekad"
+          );
           navigate('/');
           return;
         }
@@ -29,6 +41,11 @@ const Companies = () => {
         // Check if user is a student
         const userType = sessionData.session.user.user_metadata?.user_type;
         if (userType !== "Student") {
+          showError(
+            addNotification, 
+            "Endast studenter kan se företagslistan", 
+            "Åtkomst nekad"
+          );
           navigate('/profil');
           return;
         }
@@ -38,11 +55,23 @@ const Companies = () => {
       } catch (error) {
         console.error("Error checking auth:", error);
         setError("Ett fel uppstod vid inloggningskontroll");
+        showError(
+          addNotification, 
+          "Ett fel uppstod vid inloggningskontroll",
+          "Autentiseringsfel"
+        );
       }
     };
     
     checkAuthAndFetchCompanies();
-  }, [navigate]);
+  }, [navigate, addNotification]);
+
+  useEffect(() => {
+    // Apply filters when companies or filters change
+    if (companies.length > 0) {
+      applyFilters();
+    }
+  }, [companies, activeFilter]);
 
   const fetchCompanies = async () => {
     try {
@@ -82,24 +111,86 @@ const Companies = () => {
         );
         
         setCompanies(enrichedCompanies);
+        setFilteredCompanies(enrichedCompanies);
+        
+        // Extract unique specialties for filters
+        const allSpecialties = new Set();
+        enrichedCompanies.forEach(company => {
+          company.company_specialties.forEach(spec => {
+            allSpecialties.add(spec.specialty);
+          });
+        });
+        setSpecialtyFilters(Array.from(allSpecialties).sort());
+        
+        // Show success notification
+        showSuccess(
+          addNotification, 
+          `${enrichedCompanies.length} företag hämtades framgångsrikt.`,
+          "Data laddad"
+        );
       } else {
         setCompanies([]);
+        setFilteredCompanies([]);
+        showInfo(
+          addNotification, 
+          "Inga företag hittades i databasen.",
+          "Inga företag"
+        );
       }
     } catch (error) {
       console.error("Error in fetchCompanies:", error);
       setError("Ett fel uppstod när företagen skulle hämtas");
+      showError(
+        addNotification, 
+        "Ett fel uppstod när företagen skulle hämtas.",
+        "Datahämtningsfel"
+      );
     } finally {
       setLoading(false);
     }
+  };
+
+  const applyFilters = () => {
+    let filtered = [...companies];
+    
+    // Apply attendance filter
+    if (activeFilter === 'attending') {
+      filtered = filtered.filter(company => company.coming_to_event === true);
+    } else if (activeFilter === 'not-attending') {
+      filtered = filtered.filter(company => company.coming_to_event === false);
+    }
+    
+    setFilteredCompanies(filtered);
+    
+    // Announce filter results to screen readers
+    const resultMessage = `Visar ${filtered.length} av ${companies.length} företag.`;
+    document.getElementById('filter-results-live').textContent = resultMessage;
+    
+    // Show info notification about filter results
+    showInfo(
+      addNotification, 
+      `Visar ${filtered.length} av ${companies.length} företag.`,
+      "Filter applicerat"
+    );
+  };
+
+  const handleFilterChange = (filter) => {
+    setActiveFilter(filter);
   };
 
   if (loading) {
     return (
       <div>
         <Header />
-        <div className="favorites-container">
-          <div className="loading">Laddar...</div>
-        </div>
+        <main>
+          <div className="favorites-container">
+            <div className="loading" role="status" aria-live="polite">
+              <span className="visually-hidden">Laddar företag...</span>
+              <div className="loading-spinner" aria-hidden="true"></div>
+              Laddar...
+            </div>
+          </div>
+        </main>
         <Footer />
       </div>
     );
@@ -108,64 +199,159 @@ const Companies = () => {
   return (
     <div>
       <Header />
-      <div className="favorites-container">
-        <h1 className="favorites-title">Alla företag</h1>
-        
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
-        
-        <div className="favorites-grid">
-          {companies.length > 0 ? (
-            companies.map(company => (
-              <div 
-                key={company.id} 
-                className="favorite-card"
-                onClick={() => navigate(`/company/${company.id}`)}
-                style={{ cursor: 'pointer' }}
+      <main>
+        <div className="favorites-container">
+          <h1 className="favorites-title">Alla företag</h1>
+          
+          {/* Filter controls */}
+          <div className="filters-section" role="region" aria-labelledby="filter-heading">
+            <h2 id="filter-heading" className="filter-heading">Filtrera företag</h2>
+            <div className="filters-container">
+              <button 
+                className={`filter-button ${activeFilter === 'all' ? 'active' : ''}`}
+                onClick={() => handleFilterChange('all')}
+                aria-pressed={activeFilter === 'all'}
               >
-                <div className="favorite-card-image">
-                  {company.logo_url ? (
-                    <img 
-                      src={`${supabase.supabaseUrl}/storage/v1/object/public/company_logos/${company.logo_url}`}
-                      alt={`${company.company_name} logotyp`} 
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = ''; // Clear src on error
-                      }}
-                    />
-                  ) : (
-                    <div className="placeholder-image">
-                      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="100" height="100" fill="#4F4F4F" />
-                        <text x="50%" y="50%" fill="white" fontSize="14" textAnchor="middle" dominantBaseline="middle">
-                          Bild
-                        </text>
-                      </svg>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="favorite-card-footer">
-                  <h3>{company.company_name || 'Företag'}</h3>
-                  {company.coming_to_event && (
-                    <div className="company-attending">
-                      <span>Deltar på minglet</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="no-favorites">
-              <p>Inga företag har registrerat sig än.</p>
+                Alla företag
+              </button>
+              <button 
+                className={`filter-button ${activeFilter === 'attending' ? 'active' : ''}`}
+                onClick={() => handleFilterChange('attending')}
+                aria-pressed={activeFilter === 'attending'}
+              >
+                Deltar på minglet
+              </button>
+              <button 
+                className={`filter-button ${activeFilter === 'not-attending' ? 'active' : ''}`}
+                onClick={() => handleFilterChange('not-attending')}
+                aria-pressed={activeFilter === 'not-attending'}
+              >
+                Deltar inte
+              </button>
+            </div>
+            
+            {/* Live region for filter results */}
+            <div 
+              id="filter-results-live" 
+              className="visually-hidden" 
+              aria-live="polite"
+              role="status"
+            ></div>
+          </div>
+          
+          {error && (
+            <div 
+              className="error-message" 
+              role="alert"
+              aria-live="assertive"
+            >
+              {error}
             </div>
           )}
+          
+          <div 
+            className="favorites-grid" 
+            role="list"
+            aria-label="Lista av företag"
+          >
+            {filteredCompanies.length > 0 ? (
+              filteredCompanies.map(company => (
+                <div 
+                  key={company.id} 
+                  className="favorite-card"
+                  onClick={() => navigate(`/company/${company.id}`)}
+                  style={{ cursor: 'pointer' }}
+                  role="listitem"
+                  aria-label={`${company.company_name || 'Företag'}${company.coming_to_event ? ', deltar på minglet' : ''}`}
+                  tabIndex="0"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      navigate(`/company/${company.id}`);
+                    }
+                  }}
+                >
+                  <div className="favorite-card-image">
+                    {company.logo_url ? (
+                      <img 
+                        src={`${supabase.supabaseUrl}/storage/v1/object/public/company_logos/${company.logo_url}`}
+                        alt={`${company.company_name} logotyp`} 
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = ''; // Clear src on error
+                        }}
+                      />
+                    ) : (
+                      <div className="placeholder-image" aria-hidden="true">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                          <rect width="100" height="100" fill="#4F4F4F" />
+                          <text x="50%" y="50%" fill="white" fontSize="14" textAnchor="middle" dominantBaseline="middle">
+                            Bild
+                          </text>
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="favorite-card-footer">
+                    <h3>{company.company_name || 'Företag'}</h3>
+                    {company.coming_to_event && (
+                      <div className="company-attending">
+                        <span>Deltar på minglet</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div 
+                className="no-favorites"
+                role="status"
+              >
+                <p>Inga företag hittades med de valda filtren.</p>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </main>
       <Footer />
+      
+      {/* Hidden styles for accessibility */}
+      <style jsx>{`
+        .visually-hidden {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border-width: 0;
+        }
+        
+        .filter-heading {
+          font-size: 1.2rem;
+          margin-bottom: 1rem;
+        }
+        
+        .loading-spinner {
+          display: inline-block;
+          width: 2rem;
+          height: 2rem;
+          border: 0.25rem solid rgba(0, 26, 82, 0.2);
+          border-radius: 50%;
+          border-top-color: var(--Primary-Navy);
+          animation: spin 1s linear infinite;
+          margin-right: 1rem;
+        }
+        
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
     </div>
   );
 };
