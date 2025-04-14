@@ -53,6 +53,7 @@ const StudentProfile = () => {
 
   useEffect(() => {
     // Kontrollera om användaren är inloggad och hämta profildata
+    
     const checkUser = async () => {
       try {
         // Undvik att köra om profilen redan har hämtats

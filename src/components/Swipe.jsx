@@ -12,16 +12,23 @@ const Swipe = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [direction, setDirection] = useState(null);
+  const [notificationShown, setNotificationShown] = useState(false);
   const controls = useAnimation();
   const { addNotification } = useNotification();
 
   // Fetch companies when component mounts
   useEffect(() => {
-    fetchCompanies();
-  }, []);
+    if (!notificationShown) {
+      fetchCompanies();
+      setNotificationShown(true);
+    }
+  }, [notificationShown]);
 
   const fetchCompanies = async () => {
     try {
+      // Kontrollera om vi redan laddar för att undvika dubbla anrop
+      if (loading) return;
+      
       setLoading(true);
 
       const { data, error } = await supabase
@@ -45,19 +52,22 @@ const Swipe = () => {
         console.log("Companies data:", data);
         setCompanies(data);
         
-        if (data.length === 0) {
-          showInfo(
-            addNotification, 
-            "Inga företag finns tillgängliga för swipe just nu. Kom tillbaka senare!", 
-            "Inga företag"
-          );
-        } else {
-          showSuccess(
-            addNotification, 
-            `${data.length} företag laddade. Swipa höger för att visa intresse!`, 
-            "Företag laddade"
-          );
-        }
+        // Använd en timeout för att förhindra att notifieringar visas för snabbt efter varandra
+        setTimeout(() => {
+          if (data.length === 0) {
+            showInfo(
+              addNotification, 
+              "Inga företag finns tillgängliga för swipe just nu. Kom tillbaka senare!", 
+              "Inga företag"
+            );
+          } else {
+            showSuccess(
+              addNotification, 
+              `${data.length} företag laddade. Swipa höger för att visa intresse!`, 
+              "Företag laddade"
+            );
+          }
+        }, 300);
       }
     } catch (error) {
       console.error("Error fetching companies:", error.message);
@@ -246,12 +256,8 @@ const Swipe = () => {
             <button
               className="redigera-button"
               onClick={() => {
+                setNotificationShown(false); // Återställ så att notifieringen kan visas igen
                 fetchCompanies();
-                showInfo(
-                  addNotification, 
-                  "Uppdaterar företagslistan...",
-                  "Uppdaterar"
-                );
               }}
             >
               Uppdatera listan
