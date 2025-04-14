@@ -5,8 +5,8 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px;
-  font-family: 'Inter', sans-serif;
-  color: #4F4F4F;
+  font-family: "Inter", sans-serif;
+  color: #4f4f4f;
 }
 
 .profile-title {
@@ -17,9 +17,10 @@
 }
 
 .profile-image-container {
-  position: relative;
-  width: 100%;
-  background-color: #4F4F4F;
+  display: flex;
+  flex-direction: column;
+  width: 18.5rem;
+  background-color: #4f4f4f;
   height: 240px;
   display: flex;
   align-items: center;
@@ -49,20 +50,6 @@
   height: 100px;
 }
 
-.camera-button {
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  width: 40px;
-  height: 40px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .form-group {
   margin-bottom: 24px;
 }
@@ -72,11 +59,11 @@
   margin-bottom: 8px;
   font-weight: 400;
   font-size: 16px;
-  color: #4F4F4F;
+  color: #4f4f4f;
 }
 
 .required {
-  color: #E51236;
+  color: #e51236;
 }
 
 input,
@@ -84,9 +71,9 @@ textarea {
   width: 100%;
   padding: 12px 16px;
   border: none;
-  background-color: #F2F2F2;
+  background-color: #f2f2f2;
   border-radius: 4px;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 16px;
   color: #333;
 }
@@ -104,18 +91,18 @@ textarea {
 .attendance-button {
   padding: 6px 16px;
   background: white;
-  border: 1px solid #E0E0E0;
+  border: 1px solid #e0e0e0;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  font-family: 'Inter', sans-serif;
-  color: #4F4F4F;
+  font-family: "Inter", sans-serif;
+  color: #4f4f4f;
 }
 
 .attendance-button.active {
-  background: #001A52;
+  background: #001a52;
   color: white;
-  border-color: #001A52;
+  border-color: #001a52;
 }
 
 .specialties-container {
@@ -128,18 +115,18 @@ textarea {
 .specialty-button {
   padding: 6px 16px;
   background: white;
-  border: 1px solid #E0E0E0;
+  border: 1px solid #e0e0e0;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  font-family: 'Inter', sans-serif;
-  color: #4F4F4F;
+  font-family: "Inter", sans-serif;
+  color: #4f4f4f;
 }
 
 .specialty-button.active {
-  background: #001A52;
+  background: #001a52;
   color: white;
-  border-color: #001A52;
+  border-color: #001a52;
 }
 
 .profile-buttons {
@@ -157,16 +144,16 @@ textarea {
   font-weight: 500;
   font-size: 16px;
   cursor: pointer;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .save-button {
-  background-color: #001A52;
+  background-color: #001a52;
   color: white;
 }
 
 .logout-button {
-  background-color: #001A52;
+  background-color: #001a52;
   color: white;
 }
 
@@ -195,7 +182,7 @@ textarea {
 .profile-container h4,
 .profile-container h5,
 .profile-container h6 {
-  color: #4F4F4F;
+  color: #4f4f4f;
 }
 
 /* Exception for profile title which should be black */
@@ -207,12 +194,12 @@ textarea {
   .profile-container {
     padding: 20px;
   }
-  
+
   .profile-buttons {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .save-button,
   .logout-button {
     width: 100%;
