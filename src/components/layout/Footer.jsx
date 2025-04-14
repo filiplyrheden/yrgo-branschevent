@@ -1,8 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "./Footer.css";
 import gbgLogo from "../../assets/images/gbg-logo.png";
+import PolicyPopup from "../sections/PolicyPopup";
 
 const Footer = () => {
+  const [showPolicyPopup, setShowPolicyPopup] = useState(false);
+
+  const openPolicyPopup = (e) => {
+    e.preventDefault();
+    setShowPolicyPopup(true);
+  };
+
   return (
     <footer>
       <div className="footer-content">
@@ -50,76 +59,109 @@ const Footer = () => {
               />
             </svg>
             <div className="social-icons">
-              <svg
-                id="fb-logo"
-                xmlns="http://www.w3.org/2000/svg"
-                width="44"
-                height="44"
-                viewBox="0 0 44 44"
-                fill="none"
+              <a
+                href="https://www.facebook.com/yrgogoteborg/"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M36.8315 22C36.8315 30.3278 30.1358 37.0787 21.8764 37.0787C13.617 37.0787 6.92134 30.3278 6.92134 22C6.92134 13.6723 13.617 6.92139 21.8764 6.92139C30.1358 6.92139 36.8315 13.6723 36.8315 22"
-                  fill="#001A52"
-                />
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M17.5506 19.2382H19.3513V17.5992C19.3513 16.8762 19.3707 15.7617 19.9313 15.0714C20.5218 14.34 21.3324 13.8428 22.7267 13.8428C24.9984 13.8428 25.9551 14.1461 25.9551 14.1461L25.5049 16.6449C25.5049 16.6449 24.7543 16.4416 24.0543 16.4416C23.3538 16.4416 22.7267 16.6767 22.7267 17.3324V19.2382H25.5986L25.398 21.6788H22.7267V30.1574H19.3513V21.6788H17.5506V19.2382Z"
-                  fill="white"
-                />
-              </svg>
-              <svg
-                id="insta-logo"
-                xmlns="http://www.w3.org/2000/svg"
-                width="44"
-                height="44"
-                viewBox="0 0 44 44"
-                fill="none"
+                <svg
+                  id="fb-logo"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="44"
+                  height="44"
+                  viewBox="0 0 44 44"
+                  fill="none"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M36.8315 22C36.8315 30.3278 30.1358 37.0787 21.8764 37.0787C13.617 37.0787 6.92134 30.3278 6.92134 22C6.92134 13.6723 13.617 6.92139 21.8764 6.92139C30.1358 6.92139 36.8315 13.6723 36.8315 22"
+                    fill="#001A52"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M17.5506 19.2382H19.3513V17.5992C19.3513 16.8762 19.3707 15.7617 19.9313 15.0714C20.5218 14.34 21.3324 13.8428 22.7267 13.8428C24.9984 13.8428 25.9551 14.1461 25.9551 14.1461L25.5049 16.6449C25.5049 16.6449 24.7543 16.4416 24.0543 16.4416C23.3538 16.4416 22.7267 16.6767 22.7267 17.3324V19.2382H25.5986L25.398 21.6788H22.7267V30.1574H19.3513V21.6788H17.5506V19.2382Z"
+                    fill="white"
+                  />
+                </svg>
+              </a>
+              <a
+                href="https://www.instagram.com/yrgo_digital_designer/"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M37.014 21.9999C37.014 30.3246 30.292 37.0731 22 37.0731C13.708 37.0731 6.98602 30.3246 6.98602 21.9999C6.98602 13.6753 13.708 6.92676 22 6.92676C30.292 6.92676 37.014 13.6753 37.014 21.9999"
-                  fill="#001A52"
-                />
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M22.0382 17.8296C19.7561 17.8296 17.9061 19.6797 17.9061 21.9618C17.9061 24.2439 19.7561 26.0939 22.0382 26.0939C24.3203 26.0939 26.1704 24.2439 26.1704 21.9618C26.1704 19.6797 24.3203 17.8296 22.0382 17.8296M22.0382 19.1305C23.5994 19.1305 24.8695 20.4006 24.8695 21.9618C24.8695 23.523 23.5994 24.7931 22.0382 24.7931C20.4771 24.7931 19.2069 23.523 19.2069 21.9618C19.2069 20.4006 20.4771 19.1305 22.0382 19.1305"
-                  fill="white"
-                />
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M26.3269 16.8354C25.8198 16.8354 25.4086 17.2466 25.4086 17.7537C25.4086 18.2608 25.8198 18.672 26.3269 18.672C26.834 18.672 27.2452 18.2608 27.2452 17.7537C27.2452 17.2466 26.834 16.8354 26.3269 16.8354"
-                  fill="white"
-                />
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M25.7174 14.1936H18.2826C16.0337 14.1936 14.1935 16.0337 14.1935 18.2827V25.7174C14.1935 27.9664 16.0337 29.8065 18.2826 29.8065H25.7174C27.9663 29.8065 29.8064 27.9664 29.8064 25.7174V18.2827C29.8064 16.0337 27.9663 14.1936 25.7174 14.1936M25.7174 15.4575C27.2752 15.4575 28.5425 16.7249 28.5425 18.2827V25.7174C28.5425 27.2752 27.2752 28.5427 25.7174 28.5427H18.2826C16.7248 28.5427 15.4575 27.2752 15.4575 25.7174V18.2827C15.4575 16.7249 16.7248 15.4575 18.2826 15.4575H25.7174"
-                  fill="white"
-                />
-              </svg>
+                <svg
+                  id="insta-logo"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="44"
+                  height="44"
+                  viewBox="0 0 44 44"
+                  fill="none"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M37.014 21.9999C37.014 30.3246 30.292 37.0731 22 37.0731C13.708 37.0731 6.98602 30.3246 6.98602 21.9999C6.98602 13.6753 13.708 6.92676 22 6.92676C30.292 6.92676 37.014 13.6753 37.014 21.9999"
+                    fill="#001A52"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M22.0382 17.8296C19.7561 17.8296 17.9061 19.6797 17.9061 21.9618C17.9061 24.2439 19.7561 26.0939 22.0382 26.0939C24.3203 26.0939 26.1704 24.2439 26.1704 21.9618C26.1704 19.6797 24.3203 17.8296 22.0382 17.8296M22.0382 19.1305C23.5994 19.1305 24.8695 20.4006 24.8695 21.9618C24.8695 23.523 23.5994 24.7931 22.0382 24.7931C20.4771 24.7931 19.2069 23.523 19.2069 21.9618C19.2069 20.4006 20.4771 19.1305 22.0382 19.1305"
+                    fill="white"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M26.3269 16.8354C25.8198 16.8354 25.4086 17.2466 25.4086 17.7537C25.4086 18.2608 25.8198 18.672 26.3269 18.672C26.834 18.672 27.2452 18.2608 27.2452 17.7537C27.2452 17.2466 26.834 16.8354 26.3269 16.8354"
+                    fill="white"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M25.7174 14.1936H18.2826C16.0337 14.1936 14.1935 16.0337 14.1935 18.2827V25.7174C14.1935 27.9664 16.0337 29.8065 18.2826 29.8065H25.7174C27.9663 29.8065 29.8064 27.9664 29.8064 25.7174V18.2827C29.8064 16.0337 27.9663 14.1936 25.7174 14.1936M25.7174 15.4575C27.2752 15.4575 28.5425 16.7249 28.5425 18.2827V25.7174C28.5425 27.2752 27.2752 28.5427 25.7174 28.5427H18.2826C16.7248 28.5427 15.4575 27.2752 15.4575 25.7174V18.2827C15.4575 16.7249 16.7248 15.4575 18.2826 15.4575H25.7174"
+                    fill="white"
+                  />
+                </svg>
+              </a>
             </div>
           </div>
           <div className="links">
-            <p className="footer-link-text">YRGO</p>
-            <p className="footer-link-text">Om eventet</p>
-            <p className="footer-link-text">Integritetspolicy</p>
+            <a
+              href="https://www.yrgo.se/"
+              className="footer-link-text"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              YRGO
+            </a>
+            <Link to="/" className="footer-link-text">
+              Om eventet
+            </Link>
+            <a href="#" className="footer-link-text" onClick={openPolicyPopup}>
+              Integritetspolicy
+            </a>
           </div>
         </div>
         <div className="bottom-section">
           <div className="red-line"></div>
           <div className="gbg-logo">
-            <img src={gbgLogo} alt="Göteborg stad logo" />
+            <a
+              href="https://goteborg.se/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img src={gbgLogo} alt="Göteborg stad logo" />
+            </a>
           </div>
           <p>© 2025 Yrgo, högre yrkesutbildning Göteborg</p>
         </div>
       </div>
+
+      {showPolicyPopup && (
+        <PolicyPopup onClose={() => setShowPolicyPopup(false)} />
+      )}
     </footer>
   );
 };
