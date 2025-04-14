@@ -39,7 +39,10 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    border: 2px solid #001A52;
+    /*border: 2px solid #001A52;/*/
+    border-right: 16px solid #001A52;
+    border-left: 16px solid #001A52;
+    border-top: 16px solid #001A52;
   }
   
   .favorite-card:hover {
