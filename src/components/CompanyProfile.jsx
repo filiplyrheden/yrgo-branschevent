@@ -70,7 +70,6 @@ const CompanyProfile = () => {
             await fetchCompanyProfile(data.session.user.id);
           }
         } else {
-
           addNotification({
             type: "error",
             title: "Inte inloggad",
@@ -432,8 +431,8 @@ const CompanyProfile = () => {
         liveRegion.textContent = "Profil sparad framgångsrikt.";
       }
 
-      // Navigate to another page
-      navigate("/companyconfirmation"); // Replace with your desired route
+      // Navigate to confirmation page
+      navigate("/companyconfirmation");
 
       // No need to refetch everything, just update local state
       setProfileFetched(true);

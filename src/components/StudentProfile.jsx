@@ -5,7 +5,11 @@ import { supabase } from "../supabaseClient";
 import Header from "./layout/Header";
 import Footer from "./layout/Footer";
 import { useNotification } from "./notifications/NotificationSystem";
-import { showSuccess, showError, showInfo } from "../components/utils/notifications";
+import {
+  showSuccess,
+  showError,
+  showInfo,
+} from "../components/utils/notifications";
 
 const StudentProfile = () => {
   const navigate = useNavigate();
@@ -53,14 +57,15 @@ const StudentProfile = () => {
 
   useEffect(() => {
     // Kontrollera om användaren är inloggad och hämta profildata
-    
+
     const checkUser = async () => {
       try {
         // Undvik att köra om profilen redan har hämtats
         if (profileFetched) return;
 
         setLoading(true);
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        const { data: sessionData, error: sessionError } =
+          await supabase.auth.getSession();
 
         if (sessionError) {
           throw sessionError;
@@ -73,13 +78,13 @@ const StudentProfile = () => {
 
         // Spara användardata
         setUser(sessionData.session.user);
-        
+
         // Hämta studentdata med user.id som auth_id
         await fetchStudentProfile(sessionData.session.user.id);
       } catch (error) {
         console.error("Fel vid inläsning av användarprofil:", error);
         showError(
-          addNotification, 
+          addNotification,
           "Ett fel uppstod när profilen skulle laddas",
           "Laddningsfel"
         );
@@ -94,18 +99,19 @@ const StudentProfile = () => {
   const fetchStudentProfile = async (userId) => {
     try {
       console.log("Hämtar studentprofil för användar-ID:", userId);
-      
+
       // Försök först hämta användarens e-post från Supabase Auth
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
+
       if (userError) {
         console.error("Fel vid hämtning av användardata:", userError);
         throw userError;
       }
-      
+
       const userEmail = userData?.user?.email || "";
       console.log("Användarens e-post:", userEmail);
-      
+
       // Steg 1: Kontrollera om studenten finns baserat på auth_id
       let { data: existingStudents, error: fetchError } = await supabase
         .from("students")
@@ -114,32 +120,35 @@ const StudentProfile = () => {
 
       // Om inget hittas, försök söka med e-postadressen som backup
       if ((!existingStudents || existingStudents.length === 0) && userEmail) {
-        console.log("Hittade ingen student på auth_id, provar med e-post:", userEmail);
+        console.log(
+          "Hittade ingen student på auth_id, provar med e-post:",
+          userEmail
+        );
         const { data: studentsByEmail, error: emailFetchError } = await supabase
           .from("students")
           .select("id, name, auth_id, email")
           .eq("email", userEmail);
-          
+
         if (!emailFetchError && studentsByEmail && studentsByEmail.length > 0) {
           existingStudents = studentsByEmail;
           console.log("Hittade student via e-post:", studentsByEmail);
         }
       }
-      
+
       if (fetchError) {
         console.error("Fel vid hämtning av studentdata:", fetchError);
         throw fetchError;
       }
 
       console.log("Hämtad studentdata:", existingStudents);
-      
+
       let student;
-      
+
       // Om studenten redan finns
       if (existingStudents && existingStudents.length > 0) {
         student = existingStudents[0];
         console.log("Hittade existerande student:", student);
-        
+
         // Kontrollera att auth_id är korrekt, uppdatera om det behövs
         if (student.auth_id !== userId) {
           console.log("Uppdaterar auth_id för studentpost:", student.id);
@@ -148,44 +157,44 @@ const StudentProfile = () => {
             .update({ auth_id: userId })
             .eq("id", student.id);
         }
-        
+
         // Spara studentens databas-id
         setStudentDbId(student.id);
-        
+
         // Dela upp namnet i för- och efternamn
         let firstName = "";
         let lastName = "";
-        
+
         if (student.name) {
           const nameParts = student.name.split(" ");
           firstName = nameParts[0] || "";
           lastName = nameParts.slice(1).join(" ") || "";
         }
-        
+
         // Uppdatera formData
         setFormData({
           firstName,
           lastName,
           password: "************", // Lösenordet visas aldrig i klartext
         });
-        
+
         // Hämta studentintressen
         const { data: interests, error: interestsError } = await supabase
           .from("student_interests")
           .select("interest")
           .eq("student_id", student.id);
-        
+
         if (interestsError) {
           console.error("Fel vid hämtning av intressen:", interestsError);
         } else if (interests && interests.length > 0) {
           // Uppdatera selectedInterests
-          setSelectedInterests(interests.map(item => item.interest));
+          setSelectedInterests(interests.map((item) => item.interest));
         }
-        
+
         // Visa bara notifiering om detta är första laddningen
         if (!profileFetched) {
           showSuccess(
-            addNotification, 
+            addNotification,
             "Din studentprofil har laddats",
             "Profil laddad"
           );
@@ -194,38 +203,38 @@ const StudentProfile = () => {
         // Om studenten inte finns, skapa en ny post i students-tabellen
         // Generera ett defaultnamn för att undvika not null-fel
         const defaultName = "Ny Student";
-        
+
         console.log("Skapar ny studentprofil med e-post:", userEmail);
-        
+
         const { data: newStudent, error: insertError } = await supabase
           .from("students")
           .insert([
-            { 
+            {
               auth_id: userId,
               name: defaultName,
-              email: userEmail || `user-${userId}@example.com` // Fallback för att undvika not null-fel
-            }
+              email: userEmail || `user-${userId}@example.com`, // Fallback för att undvika not null-fel
+            },
           ])
           .select();
-        
+
         if (insertError) {
           console.error("Fel vid skapande av studentprofil:", insertError);
           throw insertError;
         }
-        
+
         if (newStudent && newStudent.length > 0) {
           student = newStudent[0];
           setStudentDbId(student.id);
-          
+
           // Sätt för- och efternamn till tomma initialt
           setFormData({
             firstName: "",
             lastName: "",
             password: "************",
           });
-          
+
           showInfo(
-            addNotification, 
+            addNotification,
             "En ny studentprofil har skapats. Vänligen fyll i dina uppgifter.",
             "Ny profil"
           );
@@ -233,14 +242,13 @@ const StudentProfile = () => {
           throw new Error("Kunde inte skapa studentprofil");
         }
       }
-      
+
       // Markera att profilen har hämtats framgångsrikt
       setProfileFetched(true);
-      
     } catch (error) {
       console.error("Fel vid hämtning av studentprofil:", error);
       showError(
-        addNotification, 
+        addNotification,
         "Ett fel uppstod när din profil skulle hämtas. Vänligen försök igen senare.",
         "Laddningsfel"
       );
@@ -253,12 +261,12 @@ const StudentProfile = () => {
       ...formData,
       [id]: value,
     });
-    
+
     // Rensa fel när användaren börjar skriva
     if (formErrors[id]) {
       setFormErrors({
         ...formErrors,
-        [id]: null
+        [id]: null,
       });
     }
   };
@@ -273,15 +281,15 @@ const StudentProfile = () => {
 
   const validateForm = () => {
     const errors = {};
-    
+
     if (!formData.firstName.trim()) {
       errors.firstName = "Förnamn kan inte vara tomt";
     }
-    
+
     if (!formData.lastName.trim()) {
       errors.lastName = "Efternamn kan inte vara tomt";
     }
-    
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -291,41 +299,41 @@ const StudentProfile = () => {
       // Validera formuläret
       if (!validateForm()) {
         showError(
-          addNotification, 
+          addNotification,
           "Vänligen fyll i alla obligatoriska fält",
           "Valideringsfel"
         );
-        
+
         // Fokusera första fältet med fel
         const firstErrorField = Object.keys(formErrors)[0];
         if (firstErrorField) {
           document.getElementById(firstErrorField)?.focus();
         }
-        
+
         return;
       }
-      
+
       setSaveInProgress(true);
       setLoading(true);
 
       if (!user) {
         showError(
-          addNotification, 
+          addNotification,
           "Du måste vara inloggad för att spara",
           "Sessionsfel"
         );
         return;
       }
-      
+
       // Om studentDbId saknas, försök hämta profilen igen
       if (!studentDbId) {
         console.log("studentDbId saknas, försöker hämta profil igen");
         await fetchStudentProfile(user.id);
-        
+
         // Om vi fortfarande inte har ett studentDbId
         if (!studentDbId) {
           showError(
-            addNotification, 
+            addNotification,
             "Kunde inte hitta din profil. Försök logga ut och in igen.",
             "Profilfel"
           );
@@ -342,29 +350,32 @@ const StudentProfile = () => {
 
       console.log("Sparar studentprofil med ID:", studentDbId);
       console.log("Fullständigt namn:", fullName);
-      
+
       // Hämta aktuell e-postadress från auth
       const { data: userData } = await supabase.auth.getUser();
       const userEmail = userData?.user?.email || "";
-      
+
       // Uppdatera students-tabellen
       const { data: updateData, error: updateError } = await supabase
         .from("students")
         .update({
           name: fullName,
           auth_id: user.id, // Säkerställ att auth_id är korrekt
-          email: userEmail // Uppdatera e-post för säkerhets skull
+          email: userEmail, // Uppdatera e-post för säkerhets skull
         })
         .eq("id", studentDbId)
         .select();
 
       if (updateError) {
         console.error("Fel vid uppdatering av studentdata:", updateError);
-        
+
         // Om uppdatering misslyckades, kontrollera om det är ett "not null"-fel
-        if (updateError.message && updateError.message.includes("violates not-null constraint")) {
+        if (
+          updateError.message &&
+          updateError.message.includes("violates not-null constraint")
+        ) {
           showError(
-            addNotification, 
+            addNotification,
             "Ett obligatoriskt fält saknas. Kontrollera att du har fyllt i alla fält.",
             "Valideringsfel"
           );
@@ -373,19 +384,19 @@ const StudentProfile = () => {
         }
         return;
       }
-      
+
       console.log("Uppdaterad studentdata:", updateData);
 
       // Hantera intressen - använd en mer robust try-catch-struktur
       let interestsSuccess = true;
-      
+
       try {
         // Ta bort befintliga intressen
         const { error: deleteError } = await supabase
           .from("student_interests")
           .delete()
           .eq("student_id", studentDbId);
-          
+
         if (deleteError) {
           console.error("Fel vid borttagning av intressen:", deleteError);
           interestsSuccess = false;
@@ -414,55 +425,54 @@ const StudentProfile = () => {
 
       if (interestsSuccess) {
         showSuccess(
-          addNotification, 
+          addNotification,
           "Din profil har sparats framgångsrikt",
           "Profil sparad"
         );
       } else {
         showSuccess(
-          addNotification, 
+          addNotification,
           "Din profil har sparats, men det uppstod ett problem med dina intressen",
           "Delvis sparat"
         );
       }
-      
+
       // Announce to screen readers
       const liveRegion = document.getElementById("profile-live-region");
       if (liveRegion) {
         liveRegion.textContent = "Profil sparad framgångsrikt.";
       }
-      
     } catch (error) {
       console.error("Fel vid sparande av profil:", error);
-      
+
       // Mer detaljerad felhantering
       let errorMessage = "Ett fel uppstod när profilen skulle sparas";
-      
+
       if (error.message) {
         if (error.message.includes("duplicate key")) {
           errorMessage = "E-postadressen används redan av ett annat konto";
         } else if (error.message.includes("not-null constraint")) {
-          errorMessage = "Ett obligatoriskt fält saknas. Kontrollera alla fält.";
+          errorMessage =
+            "Ett obligatoriskt fält saknas. Kontrollera alla fält.";
         } else if (error.message.includes("foreign key constraint")) {
-          errorMessage = "Referensfel i databasen. Försök igen eller kontakta support.";
+          errorMessage =
+            "Referensfel i databasen. Försök igen eller kontakta support.";
         }
       }
-      
-      showError(
-        addNotification, 
-        errorMessage,
-        "Sparfel"
-      );
+
+      showError(addNotification, errorMessage, "Sparfel");
     } finally {
       setSaveInProgress(false);
       setLoading(false);
     }
+
+    navigate("/swajp");
   };
 
   const handleChangePassword = () => {
     // Implementera lösenordsbyte om det behövs
     showInfo(
-      addNotification, 
+      addNotification,
       "Funktion för att ändra lösenord kommer snart",
       "Kommer snart"
     );
@@ -472,7 +482,7 @@ const StudentProfile = () => {
     try {
       await supabase.auth.signOut();
       showSuccess(
-        addNotification, 
+        addNotification,
         "Du har loggats ut från ditt konto",
         "Utloggad"
       );
@@ -480,7 +490,7 @@ const StudentProfile = () => {
     } catch (error) {
       console.error("Fel vid utloggning:", error);
       showError(
-        addNotification, 
+        addNotification,
         "Ett fel uppstod vid utloggning",
         "Utloggningsfel"
       );
@@ -492,7 +502,9 @@ const StudentProfile = () => {
       <div>
         <Header />
         <div className="profile-container">
-          <div className="loading" role="status" aria-live="polite">Laddar...</div>
+          <div className="loading" role="status" aria-live="polite">
+            Laddar...
+          </div>
         </div>
         <Footer />
       </div>
@@ -508,7 +520,10 @@ const StudentProfile = () => {
 
           <div className="form-group">
             <label htmlFor="firstName">
-              Förnamn <span className="required" aria-hidden="true">*</span>
+              Förnamn{" "}
+              <span className="required" aria-hidden="true">
+                *
+              </span>
             </label>
             <input
               type="text"
@@ -519,7 +534,9 @@ const StudentProfile = () => {
               required
               aria-required="true"
               aria-invalid={formErrors.firstName ? "true" : "false"}
-              aria-describedby={formErrors.firstName ? "firstName-error" : undefined}
+              aria-describedby={
+                formErrors.firstName ? "firstName-error" : undefined
+              }
             />
             {formErrors.firstName && (
               <div id="firstName-error" className="error-message" role="alert">
@@ -530,7 +547,10 @@ const StudentProfile = () => {
 
           <div className="form-group">
             <label htmlFor="lastName">
-              Efternamn <span className="required" aria-hidden="true">*</span>
+              Efternamn{" "}
+              <span className="required" aria-hidden="true">
+                *
+              </span>
             </label>
             <input
               type="text"
@@ -541,7 +561,9 @@ const StudentProfile = () => {
               required
               aria-required="true"
               aria-invalid={formErrors.lastName ? "true" : "false"}
-              aria-describedby={formErrors.lastName ? "lastName-error" : undefined}
+              aria-describedby={
+                formErrors.lastName ? "lastName-error" : undefined
+              }
             />
             {formErrors.lastName && (
               <div id="lastName-error" className="error-message" role="alert">
@@ -579,9 +601,9 @@ const StudentProfile = () => {
 
           <div className="form-group">
             <label id="interests-label">Jag är intresserad av:</label>
-            <div 
-              className="specialties-container" 
-              role="group" 
+            <div
+              className="specialties-container"
+              role="group"
               aria-labelledby="interests-label"
             >
               {allInterests.map((interest) => (
@@ -618,18 +640,18 @@ const StudentProfile = () => {
               Logga Ut
             </button>
           </div>
-          
+
           {/* Hidden live region for screen reader announcements */}
-          <div 
-            id="profile-live-region" 
-            className="visually-hidden" 
-            aria-live="assertive" 
+          <div
+            id="profile-live-region"
+            className="visually-hidden"
+            aria-live="assertive"
             role="status"
           ></div>
         </div>
       </main>
       <Footer />
-      
+
       {/* Hidden styles for accessibility */}
       <style jsx>{`
         .visually-hidden {
@@ -643,22 +665,22 @@ const StudentProfile = () => {
           white-space: nowrap;
           border-width: 0;
         }
-        
+
         .error-message {
-          color: #E51236;
+          color: #e51236;
           font-size: 0.875rem;
           margin-top: 0.5rem;
           display: block;
         }
-        
+
         input[aria-invalid="true"],
         textarea[aria-invalid="true"] {
-          border-color: #E51236;
+          border-color: #e51236;
           background-color: rgba(229, 18, 54, 0.05);
         }
-        
+
         .required {
-          color: #E51236;
+          color: #e51236;
           margin-left: 4px;
         }
       `}</style>
