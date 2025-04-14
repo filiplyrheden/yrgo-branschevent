@@ -1,21 +1,75 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { supabase } from "./supabaseClient";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer.jsx";
 import "./styles/Global.css";
-import { NotificationProvider } from "./components/notifications/NotificationSystem";
+import { NotificationProvider, useNotification } from "./components/notifications/NotificationSystem";
 
 import CompanyDetails from "./pages/CompanyDetails.jsx";
 import Home from "./pages/Home";
 import Companies from "./pages/Companies";
 import CompanyProfile from "./components/CompanyProfile";
 import StudentProfile from "./components/StudentProfile";
-import Swipe from "./components/Swipe";
+import Swipe from "./components/swipe.jsx";
 import Login from "./pages/Login";
 import Favorites from "./pages/Favorites";
 import CompanyConfirmation from "./pages/CompanyConfirmation";
+
+// Wrapper-komponent för att hantera globala notifikationer
+const AppWithNotifications = () => {
+  const { addNotification } = useNotification();
+
+  useEffect(() => {
+    // Kontrollera om användaren just har raderat sitt konto
+    const accountDeleted = sessionStorage.getItem('accountDeleted');
+    
+    if (accountDeleted === 'true') {
+      // Visa bekräftelsemeddelande
+      addNotification({
+        type: "success",
+        title: "Konto raderat",
+        message: "Ditt konto har raderats framgångsrikt.",
+        duration: 5000
+      });
+      
+      // Ta bort flaggan från sessionStorage så att meddelandet inte visas igen
+      sessionStorage.removeItem('accountDeleted');
+    }
+  }, [addNotification]);
+
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <>
+            <Header />
+            <Home />
+            <Footer />
+          </>
+        }
+      />
+      <Route path="/profil" element={<ProfilePage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/swajp" element={<StudentRoute element={<Swipe />} />} />
+      <Route
+        path="/favoriter"
+        element={<StudentRoute element={<Favorites />} />}
+      />
+      <Route
+        path="/foretag"
+        element={<StudentRoute element={<Companies />} />}
+      />
+      <Route
+        path="/company/:id"
+        element={<StudentRoute element={<CompanyDetails />} />}
+      />
+      <Route path="/companyconfirmation" element={<CompanyConfirmation />} />
+    </Routes>
+  );
+};
 
 // Profilsida som dirigerar till rätt komponent baserat på användartyp
 const ProfilePage = () => {
@@ -115,34 +169,7 @@ const StudentRoute = ({ element }) => {
 function App() {
   return (
     <NotificationProvider>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <Header />
-              <Home />
-              <Footer />
-            </>
-          }
-        />
-        <Route path="/profil" element={<ProfilePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/swajp" element={<StudentRoute element={<Swipe />} />} />
-        <Route
-          path="/favoriter"
-          element={<StudentRoute element={<Favorites />} />}
-        />
-        <Route
-          path="/foretag"
-          element={<StudentRoute element={<Companies />} />}
-        />
-        <Route
-          path="/company/:id"
-          element={<StudentRoute element={<CompanyDetails />} />}
-        />
-        <Route path="/companyconfirmation" element={<CompanyConfirmation />} />
-      </Routes>
+      <AppWithNotifications />
     </NotificationProvider>
   );
 }

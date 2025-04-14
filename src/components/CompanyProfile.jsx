@@ -11,6 +11,8 @@ const CompanyProfile = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saveInProgress, setSaveInProgress] = useState(false);
+  const [deleteInProgress, setDeleteInProgress] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [user, setUser] = useState(null);
   const [companyData, setCompanyData] = useState({
     name: "",
@@ -24,16 +26,16 @@ const CompanyProfile = () => {
     logo: null,
     logoUrl: null,
   });
-
+  
   // Använd useRef istället för state
   const profileFetchedRef = useRef(false);
-
+  
   const [formErrors, setFormErrors] = useState({});
   const { addNotification } = useNotification();
 
   // Lista över alla möjliga specialties
   const allSpecialties = [
-    "Digital Design",
+   "Digital Design",
     "PHP",
     "Frontend",
     "Backend",
@@ -65,7 +67,7 @@ const CompanyProfile = () => {
     "Sanity",
     "Swift",
     "HTML",
-    "CSS",
+    "CSS"
   ];
 
   // State för specialty selection
@@ -93,7 +95,7 @@ const CompanyProfile = () => {
           type: "error",
           title: "Sessionsfel",
           message: "Kunde inte hämta användarinformation.",
-          duration: 5000,
+          duration: 5000
         });
       }
     };
@@ -104,7 +106,7 @@ const CompanyProfile = () => {
   const fetchCompanyProfile = async (userId) => {
     // Guard against multiple simultaneous fetch attempts
     if (loading && profileFetchedRef.current) return;
-
+    
     try {
       setLoading(true);
       console.log("Fetching company profile for user ID:", userId);
@@ -166,13 +168,14 @@ const CompanyProfile = () => {
         setSelectedSpecialties(
           companyData.company_specialties?.map((cs) => cs.specialty) || []
         );
-
+        
         // Show success notification for data loading only on first successful load
         if (!profileFetchedRef.current) {
           // Använd setTimeout för att förhindra dubbla notifieringar
-          setTimeout(() => {}, 300);
+          setTimeout(() => {
+          }, 300);
         }
-
+        
         // Mark profile as fetched to prevent duplicate fetches
         profileFetchedRef.current = true;
       }
@@ -181,9 +184,8 @@ const CompanyProfile = () => {
       addNotification({
         type: "error",
         title: "Laddningsfel",
-        message:
-          "Ett fel uppstod när profilen skulle hämtas. Vänligen försök igen senare.",
-        duration: 5000,
+        message: "Ett fel uppstod när profilen skulle hämtas. Vänligen försök igen senare.",
+        duration: 5000
       });
     } finally {
       setLoading(false);
@@ -206,12 +208,12 @@ const CompanyProfile = () => {
       ...companyData,
       [name]: value,
     });
-
+    
     // Clear error when user starts typing
     if (formErrors[name]) {
       setFormErrors({
         ...formErrors,
-        [name]: null,
+        [name]: null
       });
     }
   };
@@ -229,46 +231,36 @@ const CompanyProfile = () => {
       logoUrl: fileInfo.cdnUrl,
       logo: null, // vi behöver inte längre filobjektet
     });
-
+    
     addNotification({
       type: "success",
       title: "Logotyp uppladdad",
       message: "Din logotyp har laddats upp framgångsrikt.",
-      duration: 3000,
+      duration: 3000
     });
   };
 
   const validateForm = () => {
     const errors = {};
-
+    
     if (!companyData.name.trim()) {
       errors.name = "Företagets namn är obligatoriskt";
     }
-
+    
     if (!companyData.email.trim()) {
       errors.email = "E-post är obligatoriskt";
     } else if (!/\S+@\S+\.\S+/.test(companyData.email)) {
       errors.email = "Ogiltig e-postadress";
     }
-
-    if (
-      companyData.website &&
-      !/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/.test(
-        companyData.website
-      )
-    ) {
+    
+    if (companyData.website && !/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/.test(companyData.website)) {
       errors.website = "Ogiltig webbadress";
     }
-
-    if (
-      companyData.phone &&
-      !/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/.test(
-        companyData.phone
-      )
-    ) {
+    
+    if (companyData.phone && !/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/.test(companyData.phone)) {
       errors.phone = "Ogiltigt telefonnummer";
     }
-
+    
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -280,35 +272,33 @@ const CompanyProfile = () => {
         addNotification({
           type: "error",
           title: "Valideringsfel",
-          message:
-            "Det finns fel i formuläret. Kontrollera de markerade fälten.",
-          duration: 5000,
+          message: "Det finns fel i formuläret. Kontrollera de markerade fälten.",
+          duration: 5000
         });
-
+        
         // Focus the first field with an error
         const firstErrorField = Object.keys(formErrors)[0];
         if (firstErrorField) {
           document.getElementById(firstErrorField)?.focus();
         }
-
+        
         return;
       }
-
+      
       setSaveInProgress(true);
       setLoading(true);
 
       // 1. Check authentication
-      const { data: sessionData, error: sessionError } =
-        await supabase.auth.getSession();
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
       if (sessionError || !sessionData.session) {
         addNotification({
           type: "error",
           title: "Sessionsfel",
           message: "Din session har gått ut. Vänligen logga in igen.",
-          duration: 5000,
+          duration: 5000
         });
-
+        
         await supabase.auth.signOut();
         navigate("/");
         return;
@@ -427,7 +417,7 @@ const CompanyProfile = () => {
         type: "success",
         title: "Profil sparad",
         message: "Din företagsprofil har uppdaterats framgångsrikt.",
-        duration: 4000,
+        duration: 4000
       });
 
       // Announce to screen readers
@@ -451,7 +441,7 @@ const CompanyProfile = () => {
 
       // More detailed error messages
       let errorMessage = "Ett fel uppstod när profilen skulle sparas.";
-
+      
       if (error.message) {
         if (error.message.includes("duplicate key")) {
           errorMessage = "E-postadressen används redan av ett annat konto.";
@@ -459,13 +449,13 @@ const CompanyProfile = () => {
           errorMessage = "Nätverksfel. Kontrollera din internetanslutning.";
         }
       }
-
+      
       // Show error notification
       addNotification({
         type: "error",
         title: "Sparfel",
         message: errorMessage,
-        duration: 5000,
+        duration: 5000
       });
 
       // Announce to screen readers
@@ -484,14 +474,96 @@ const CompanyProfile = () => {
     navigate("/");
   };
 
+  const handleShowDeleteConfirmation = () => {
+    setShowDeleteConfirmation(true);
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirmation(false);
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      setDeleteInProgress(true);
+  
+      // 1. Kontrollera autentisering
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+  
+      if (sessionError || !sessionData.session) {
+        addNotification({
+          type: "error",
+          title: "Sessionsfel",
+          message: "Din session har gått ut. Vänligen logga in igen.",
+          duration: 5000
+        });
+        navigate("/");
+        return;
+      }
+  
+      const userId = sessionData.session.user.id;
+      
+      // 2. Ta bort data i denna ordning för att respektera referensintegritet:
+      
+      // a) Ta bort specialties först
+      const { error: specialtiesError } = await supabase
+        .from("company_specialties")
+        .delete()
+        .eq("company_id", userId);
+  
+      if (specialtiesError) {
+        console.error("Error deleting specialties:", specialtiesError);
+      }
+  
+      // b) Ta bort additional info
+      const { error: additionalInfoError } = await supabase
+        .from("company_additional_info")
+        .delete()
+        .eq("company_id", userId);
+  
+      if (additionalInfoError) {
+        console.error("Error deleting additional info:", additionalInfoError);
+      }
+  
+      // c) Ta bort företagsposten
+      const { error: companyError } = await supabase
+        .from("companies")
+        .delete()
+        .eq("id", userId);
+  
+      if (companyError) {
+        console.error("Error deleting company:", companyError);
+        throw companyError;
+      }
+  
+      // Spara en temporär flagga i sessionStorage innan vi loggar ut användaren
+      sessionStorage.setItem('accountDeleted', 'true');
+  
+      // Logga ut användaren och navigera till startsidan
+      await supabase.auth.signOut();
+      navigate("/");
+      
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      
+      addNotification({
+        type: "error",
+        title: "Raderingsfel",
+        message: "Ett fel uppstod när kontot skulle raderas. Vänligen försök igen senare.",
+        duration: 5000
+      });
+      
+      setShowDeleteConfirmation(false);
+    } finally {
+      setDeleteInProgress(false);
+    }
+  };
+
   if (loading && !saveInProgress && !profileFetchedRef.current) {
     return (
       <div>
         <Header />
         <div className="profile-container">
-          <div className="loading" role="status" aria-live="polite">
-            Laddar...
-          </div>
+          <div className="loading" role="status" aria-live="polite">Laddar...</div>
         </div>
         <Footer />
       </div>
@@ -510,15 +582,8 @@ const CompanyProfile = () => {
               {companyData.logoUrl ? (
                 <img src={companyData.logoUrl} alt="Företagslogotyp" />
               ) : (
-                <div
-                  className="placeholder-image"
-                  aria-label="Platshållare för logotyp"
-                >
-                  <svg
-                    viewBox="0 0 100 100"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                  >
+                <div className="placeholder-image" aria-label="Platshållare för logotyp">
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <circle cx="50" cy="35" r="25" fill="#4F4F4F" />
                     <path
                       d="M100 100 H0 V70 C0 50 25 50 50 60 C75 50 100 50 100 70 Z"
@@ -528,7 +593,31 @@ const CompanyProfile = () => {
                 </div>
               )}
             </div>
-
+            <label htmlFor="file-upload" className="camera-button">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M23 19C23 19.5304 22.7893 20.0391 22.4142 20.4142C22.0391 20.7893 21.5304 21 21 21H3C2.46957 21 1.96086 20.7893 1.58579 20.4142C1.21071 20.0391 1 19.5304 1 19V8C1 7.46957 1.21071 6.96086 1.58579 6.58579C1.96086 6.21071 2.46957 6 3 6H7L9 3H15L17 6H21C21.5304 6 22.0391 6.21071 22.4142 6.58579C22.7893 6.96086 23 7.46957 23 8V19Z"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 17C14.2091 17 16 15.2091 16 13C16 10.7909 14.2091 9 12 9C9.79086 9 8 10.7909 8 13C8 15.2091 9.79086 17 12 17Z"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </label>
             <Widget
               publicKey="52e299605c6ee85fd0a3"
               onChange={handleUpload}
@@ -540,10 +629,7 @@ const CompanyProfile = () => {
 
           <div className="form-group">
             <label htmlFor="companyName">
-              Företagets namn{" "}
-              <span className="required" aria-hidden="true">
-                *
-              </span>
+              Företagets namn <span className="required" aria-hidden="true">*</span>
             </label>
             <input
               type="text"
@@ -555,16 +641,10 @@ const CompanyProfile = () => {
               required
               aria-required="true"
               aria-invalid={formErrors.name ? "true" : "false"}
-              aria-describedby={
-                formErrors.name ? "companyName-error" : undefined
-              }
+              aria-describedby={formErrors.name ? "companyName-error" : undefined}
             />
             {formErrors.name && (
-              <div
-                id="companyName-error"
-                className="error-message"
-                role="alert"
-              >
+              <div id="companyName-error" className="error-message" role="alert">
                 {formErrors.name}
               </div>
             )}
@@ -580,9 +660,7 @@ const CompanyProfile = () => {
               onChange={handleInputChange}
               placeholder="www.företag.se"
               aria-invalid={formErrors.website ? "true" : "false"}
-              aria-describedby={
-                formErrors.website ? "website-error" : undefined
-              }
+              aria-describedby={formErrors.website ? "website-error" : undefined}
             />
             {formErrors.website && (
               <div id="website-error" className="error-message" role="alert">
@@ -593,10 +671,7 @@ const CompanyProfile = () => {
 
           <div className="form-group">
             <label htmlFor="email">
-              Mailadress för kontakt{" "}
-              <span className="required" aria-hidden="true">
-                *
-              </span>
+              Mailadress för kontakt <span className="required" aria-hidden="true">*</span>
             </label>
             <input
               type="email"
@@ -649,14 +724,8 @@ const CompanyProfile = () => {
           </div>
 
           <div className="form-group">
-            <label id="attendance-label">
-              Vi kommer närvara på minglet den 23/4
-            </label>
-            <div
-              className="attendance-buttons"
-              role="radiogroup"
-              aria-labelledby="attendance-label"
-            >
+            <label id="attendance-label">Vi kommer närvara på minglet den 23/4</label>
+            <div className="attendance-buttons" role="radiogroup" aria-labelledby="attendance-label">
               <button
                 className={`attendance-button ${
                   companyData.attending ? "active" : ""
@@ -684,9 +753,9 @@ const CompanyProfile = () => {
 
           <div className="form-group">
             <label id="specialties-label">Vi jobbar med:</label>
-            <div
-              className="specialties-container"
-              role="group"
+            <div 
+              className="specialties-container" 
+              role="group" 
               aria-labelledby="specialties-label"
             >
               {allSpecialties.map((specialty) => (
@@ -734,46 +803,55 @@ const CompanyProfile = () => {
             >
               Logga Ut
             </button>
+            <button
+              className="delete-button"
+              onClick={handleShowDeleteConfirmation}
+              type="button"
+              disabled={deleteInProgress}
+            >
+              Radera konto
+            </button>
           </div>
-
+          
+          {/* Bekräftelsedialog för radering av konto */}
+          {showDeleteConfirmation && (
+            <div className="delete-confirmation-overlay">
+              <div className="delete-confirmation-dialog" role="alertdialog" aria-labelledby="delete-title" aria-describedby="delete-description">
+                <h2 id="delete-title">Bekräfta radering</h2>
+                <p id="delete-description">Är du säker på att du vill radera ditt konto? Denna åtgärd kan inte ångras och all din data kommer att tas bort permanent.</p>
+                
+                <div className="confirmation-buttons">
+                  <button 
+                    className="cancel-button" 
+                    onClick={handleCancelDelete}
+                    type="button"
+                  >
+                    Avbryt
+                  </button>
+                  <button 
+                    className="confirm-delete-button" 
+                    onClick={handleDeleteAccount}
+                    type="button"
+                    disabled={deleteInProgress}
+                    aria-busy={deleteInProgress ? "true" : "false"}
+                  >
+                    {deleteInProgress ? "Raderar..." : "Ja, radera mitt konto"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {/* Hidden live region for screen reader announcements */}
-          <div
-            id="profile-live-region"
-            className="visually-hidden"
-            aria-live="assertive"
+          <div 
+            id="profile-live-region" 
+            className="visually-hidden" 
+            aria-live="assertive" 
             role="status"
           ></div>
         </div>
       </main>
       <Footer />
-
-      {/* Hidden styles for accessibility */}
-      <style jsx>{`
-        .visually-hidden {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          padding: 0;
-          margin: -1px;
-          overflow: hidden;
-          clip: rect(0, 0, 0, 0);
-          white-space: nowrap;
-          border-width: 0;
-        }
-
-        .error-message {
-          color: #e51236;
-          font-size: 0.875rem;
-          margin-top: 0.5rem;
-          display: block;
-        }
-
-        input[aria-invalid="true"],
-        textarea[aria-invalid="true"] {
-          border-color: #e51236;
-          background-color: rgba(229, 18, 54, 0.05);
-        }
-      `}</style>
     </div>
   );
 };
