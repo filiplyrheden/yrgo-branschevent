@@ -534,13 +534,13 @@ const Swipe = () => {
       {showPopup && (
         <div className="welcome-popup-overlay">
           <div className="welcome-popup">
-            <h2 className="welcome-popup-title">Välkommen till Swipe!</h2>
+            <h2 className="welcome-popup-title">Välkommen till Swajp!</h2>
             <div className="welcome-popup-content">
               <p>
                 Här kan du "dejta" olika företag som deltar i branschminglet.
               </p>
               <p>
-                Swipa höger för att lägga till företag i dina favoriter eller
+                Swajpa höger för att lägga till företag i dina favoriter eller
                 vänster för att skippa.
               </p>
             </div>
