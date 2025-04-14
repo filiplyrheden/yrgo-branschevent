@@ -1,0 +1,52 @@
+.company-confirmation {
+  height: 27rem;
+  background-color: var(--Primary-White);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.company-confirmation-content {
+  display: flex;
+  flex-direction: row;
+  padding: 2.5rem 7.5rem;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.company-confirmation-info {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.info-heading {
+  color: var(--Primary-Navy);
+  font-family: var(--Font-IBM-Plex-Mono);
+  font-size: 2rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin: 1.5rem 0 1.5rem 0;
+}
+
+.info-text {
+  color: var(--Primary-Navy);
+  font-family: var(--Font-IBM-Plex-Mono);
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 2.1875rem;
+  margin: 1.5rem 0 1.5rem 0;
+}
+
+.calendar-button-container {
+  margin-top: 1rem;
+}
+
+.time-text {
+  margin: 0;
+}

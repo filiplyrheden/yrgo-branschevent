@@ -15,6 +15,7 @@ import StudentProfile from "./components/StudentProfile";
 import Swipe from "./components/Swipe";
 import Login from "./pages/Login";
 import Favorites from "./pages/Favorites";
+import CompanyConfirmation from "./pages/CompanyConfirmation";
 
 // Profilsida som dirigerar till rätt komponent baserat på användartyp
 const ProfilePage = () => {
@@ -40,7 +41,11 @@ const ProfilePage = () => {
   }, []);
 
   if (loading) {
-    return <div aria-live="polite" role="status">Laddar...</div>;
+    return (
+      <div aria-live="polite" role="status">
+        Laddar...
+      </div>
+    );
   }
 
   if (!authenticated) {
@@ -51,23 +56,26 @@ const ProfilePage = () => {
 };
 
 // Skyddad route-komponent med kontroll för användartyp
-const ProtectedRoute = ({ element, allowedUserTypes = ["Student", "Företag"] }) => {
+const ProtectedRoute = ({
+  element,
+  allowedUserTypes = ["Student", "Företag"],
+}) => {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const [userType, setUserType] = useState(null);
-  
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const { data } = await supabase.auth.getSession();
-        
+
         if (data.session) {
           setAuthenticated(true);
           // Hämta användartyp från metadata
           const userType = data.session.user.user_metadata?.user_type;
           setUserType(userType);
         }
-        
+
         setLoading(false);
       } catch (error) {
         console.error("Auth check error:", error);
@@ -79,19 +87,23 @@ const ProtectedRoute = ({ element, allowedUserTypes = ["Student", "Företag"] })
   }, []);
 
   if (loading) {
-    return <div aria-live="polite" role="status">Laddar...</div>;
+    return (
+      <div aria-live="polite" role="status">
+        Laddar...
+      </div>
+    );
   }
-  
+
   // Redirect if not authenticated
   if (!authenticated) {
     return <Navigate to="/" />;
   }
-  
+
   // Redirect if not allowed user type
   if (!allowedUserTypes.includes(userType)) {
     return <Navigate to="/profil" />;
   }
-  
+
   return element;
 };
 
@@ -104,22 +116,32 @@ function App() {
   return (
     <NotificationProvider>
       <Routes>
-        <Route 
-          path="/" 
+        <Route
+          path="/"
           element={
-            <> 
-              <Header/>
-              <Home/>
-              <Footer/> 
+            <>
+              <Header />
+              <Home />
+              <Footer />
             </>
-          } 
+          }
         />
         <Route path="/profil" element={<ProfilePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/swajp" element={<StudentRoute element={<Swipe />} />} />
-        <Route path="/favoriter" element={<StudentRoute element={<Favorites />} />} />
-        <Route path="/foretag" element={<StudentRoute element={<Companies />} />} />
-        <Route path="/company/:id" element={<StudentRoute element={<CompanyDetails />} />} />
+        <Route
+          path="/favoriter"
+          element={<StudentRoute element={<Favorites />} />}
+        />
+        <Route
+          path="/foretag"
+          element={<StudentRoute element={<Companies />} />}
+        />
+        <Route
+          path="/company/:id"
+          element={<StudentRoute element={<CompanyDetails />} />}
+        />
+        <Route path="/companyconfirmation" element={<CompanyConfirmation />} />
       </Routes>
     </NotificationProvider>
   );
