@@ -537,7 +537,7 @@ const Swipe = () => {
             <h2 className="welcome-popup-title">Välkommen till Swipe!</h2>
             <div className="welcome-popup-content">
               <p>
-                Här kan du utforska olika företag som deltar i branschminglet.
+                Här kan du "dejta" olika företag som deltar i branschminglet.
               </p>
               <p>
                 Swipa höger för att lägga till företag i dina favoriter eller

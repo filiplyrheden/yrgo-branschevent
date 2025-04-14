@@ -391,13 +391,17 @@
 }
 
 .welcome-popup-title {
-  color: #e51236;
-  margin-bottom: 16px;
-  font-size: 1.5rem;
+  color: var(--Primary-Navy);
+  font-family: var(--Font-IBM-Plex-Mono);
+  font-size: 2rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin: 1.5rem 0 1.5rem 0;
 }
 
 .welcome-popup-content {
-  margin-bottom: 24px;
+  margin-bottom: 2rem;
   line-height: 1.5;
 }
 
