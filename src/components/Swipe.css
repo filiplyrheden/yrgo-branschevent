@@ -234,15 +234,14 @@
 .swipe-buttons {
   display: flex;
   justify-content: center;
-  gap: 32px;
-  margin-top: 16px;
+  gap: 3rem;
+  margin-top: 1.5rem;
   position: relative;
-  bottom: -20px;
 }
 
 .swipe-button {
-  width: 70px; /* Increased button size */
-  height: 70px; /* Increased button size */
+  width: 5rem;
+  height: 5rem;
   border-radius: 50%;
   background-color: white;
   border: none;
