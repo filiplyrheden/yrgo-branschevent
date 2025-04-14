@@ -52,9 +52,9 @@ const NotificationItem = styled.div`
       case "success":
         return "#28a745";
       case "error":
-        return "#E51236";
+        return "var(--Primary-Red)";
       case "info":
-        return "#001A52";
+        return "var(--Primary-Red)";
       default:
         return "#001A52";
     }
@@ -82,6 +82,7 @@ const NotificationMessage = styled.p`
   margin: 0;
   font-size: 14px;
   font-family: var(--Font-Inter);
+  color: #fff;
 `;
 
 // Close button
@@ -127,7 +128,7 @@ export const NotificationProvider = ({ children }) => {
       type: notification.type || "info",
       title: notification.title || "",
       message: notification.message,
-      duration: notification.duration || 5000, // Default 5 seconds
+      duration: notification.duration || 3000, // Default 3 seconds
       isExiting: false,
     };
 

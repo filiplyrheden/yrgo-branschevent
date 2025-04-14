@@ -200,7 +200,7 @@ const Favorites = () => {
           <div className="loading" role="status" aria-live="polite">
             <span className="visually-hidden">Laddar favoriter...</span>
             <div className="loading-spinner" aria-hidden="true"></div>
-            Laddar...
+            
           </div>
         </div>
         <Footer />
