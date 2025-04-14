@@ -66,11 +66,6 @@ const StudentProfile = () => {
         }
 
         if (!sessionData.session) {
-          showError(
-            addNotification, 
-            "Du måste vara inloggad för att se din profil",
-            "Åtkomst nekad"
-          );
           navigate("/");
           return;
         }

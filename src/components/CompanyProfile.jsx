@@ -70,6 +70,7 @@ const CompanyProfile = () => {
             await fetchCompanyProfile(data.session.user.id);
           }
         } else {
+
           addNotification({
             type: "error",
             title: "Inte inloggad",
