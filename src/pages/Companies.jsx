@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import Header from "../components/layout/Header";
@@ -17,14 +17,17 @@ const Companies = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [specialtyFilters, setSpecialtyFilters] = useState([]);
   const { addNotification } = useNotification();
-  // Lägg till companiesFetched state
-  const [companiesFetched, setCompaniesFetched] = useState(false);
+  
+  // Använd useRef istället för useState för att spåra om företag har hämtats
+  const companiesFetchedRef = useRef(false);
+  // Ref för att spåra föregående filter
+  const previousFilterRef = useRef('all');
 
   useEffect(() => {
     const checkAuthAndFetchCompanies = async () => {
       try {
         // Undvik att köra om företagen redan har hämtats
-        if (companiesFetched) return;
+        if (companiesFetchedRef.current) return;
         
         // Check if user is logged in
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
@@ -59,7 +62,7 @@ const Companies = () => {
         await fetchCompanies(true);
         
         // Markera att företagen har hämtats
-        setCompaniesFetched(true);
+        companiesFetchedRef.current = true;
       } catch (error) {
         console.error("Error checking auth:", error);
         setError("Ett fel uppstod vid inloggningskontroll");
@@ -72,7 +75,7 @@ const Companies = () => {
     };
     
     checkAuthAndFetchCompanies();
-  }, [navigate, addNotification, companiesFetched]); // Lägg till companiesFetched som dependency
+  }, [navigate, addNotification]); // Ta bort companiesFetched som dependency
 
   useEffect(() => {
     // Apply filters when companies or filters change
@@ -130,23 +133,21 @@ const Companies = () => {
         });
         setSpecialtyFilters(Array.from(allSpecialties).sort());
         
-        // Show success notification only if requested
-        if (showNotifications) {
-          showSuccess(
-            addNotification, 
-            `${enrichedCompanies.length} företag hämtades framgångsrikt.`,
-            "Data laddad"
-          );
+        // Show success notification only if requested AND not shown before
+        if (showNotifications && !companiesFetchedRef.current) {
+         
         }
       } else {
         setCompanies([]);
         setFilteredCompanies([]);
-        if (showNotifications) {
-          showInfo(
-            addNotification, 
-            "Inga företag hittades i databasen.",
-            "Inga företag"
-          );
+        if (showNotifications && !companiesFetchedRef.current) {
+          setTimeout(() => {
+            showInfo(
+              addNotification, 
+              "Inga företag hittades i databasen.",
+              "Inga företag"
+            );
+          }, 300);
         }
       }
     } catch (error) {
@@ -181,21 +182,20 @@ const Companies = () => {
       filterResults.textContent = resultMessage;
     }
     
-    // Show info notification about filter results - bara om vi har hämtat företag tidigare
-    if (companiesFetched) {
-      showInfo(
-        addNotification, 
-        `Visar ${filtered.length} av ${companies.length} företag.`,
-        "Filter applicerat"
-      );
+    // Endast visa notifiering om filtret har ändrats
+    if (companiesFetchedRef.current && previousFilterRef.current !== activeFilter) {
+     
+      previousFilterRef.current = activeFilter;
     }
   };
 
   const handleFilterChange = (filter) => {
-    setActiveFilter(filter);
+    if (activeFilter !== filter) {
+      setActiveFilter(filter);
+    }
   };
 
-  if (loading && !companiesFetched) {
+  if (loading && !companiesFetchedRef.current) {
     return (
       <div>
         <Header />
