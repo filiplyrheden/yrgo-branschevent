@@ -5,8 +5,8 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px;
-  font-family: "Inter", sans-serif;
-  color: #4f4f4f;
+  font-family: 'Inter', sans-serif;
+  color: #4F4F4F;
 }
 
 .profile-title {
@@ -17,10 +17,9 @@
 }
 
 .profile-image-container {
-  display: flex;
-  flex-direction: column;
-  width: 18.5rem;
-  background-color: #4f4f4f;
+  position: relative;
+  width: 100%;
+  background-color: #4F4F4F;
   height: 240px;
   display: flex;
   align-items: center;
@@ -50,6 +49,20 @@
   height: 100px;
 }
 
+.camera-button {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .form-group {
   margin-bottom: 24px;
 }
@@ -59,11 +72,11 @@
   margin-bottom: 8px;
   font-weight: 400;
   font-size: 16px;
-  color: #4f4f4f;
+  color: #4F4F4F;
 }
 
 .required {
-  color: #e51236;
+  color: #E51236;
 }
 
 input,
@@ -71,9 +84,9 @@ textarea {
   width: 100%;
   padding: 12px 16px;
   border: none;
-  background-color: #f2f2f2;
+  background-color: #F2F2F2;
   border-radius: 4px;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 16px;
   color: #333;
 }
@@ -91,18 +104,18 @@ textarea {
 .attendance-button {
   padding: 6px 16px;
   background: white;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #E0E0E0;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  font-family: "Inter", sans-serif;
-  color: #4f4f4f;
+  font-family: 'Inter', sans-serif;
+  color: #4F4F4F;
 }
 
 .attendance-button.active {
-  background: #001a52;
+  background: #001A52;
   color: white;
-  border-color: #001a52;
+  border-color: #001A52;
 }
 
 .specialties-container {
@@ -115,45 +128,56 @@ textarea {
 .specialty-button {
   padding: 6px 16px;
   background: white;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #E0E0E0;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  font-family: "Inter", sans-serif;
-  color: #4f4f4f;
+  font-family: 'Inter', sans-serif;
+  color: #4F4F4F;
 }
 
 .specialty-button.active {
-  background: #001a52;
+  background: #001A52;
   color: white;
-  border-color: #001a52;
+  border-color: #001A52;
 }
 
+/* Uppdaterade knappcontainern för att ha knapparna på rad */
 .profile-buttons {
   display: flex;
   justify-content: center;
   gap: 24px;
   margin-top: 40px;
+  flex-wrap: wrap;
 }
 
 .save-button,
-.logout-button {
+.logout-button,
+.delete-button {
   padding: 12px 24px;
   border-radius: 30px;
   border: none;
   font-weight: 500;
   font-size: 16px;
   cursor: pointer;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
+  width: auto;
+  min-width: 150px;
 }
 
 .save-button {
-  background-color: #001a52;
+  background-color: #001A52;
   color: white;
 }
 
 .logout-button {
-  background-color: #001a52;
+  background-color: #001A52;
+  color: white;
+}
+
+/* Ny stil för radera konto-knappen */
+.delete-button {
+  background-color: #E51236;
   color: white;
 }
 
@@ -162,8 +186,18 @@ textarea {
   opacity: 0.9;
 }
 
+.delete-button:hover {
+  background-color: #c60f2e;
+}
+
 .save-button:disabled {
   background-color: #cccccc;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.delete-button:disabled {
+  background-color: #f5a5b1;
   opacity: 0.7;
   cursor: not-allowed;
 }
@@ -182,7 +216,7 @@ textarea {
 .profile-container h4,
 .profile-container h5,
 .profile-container h6 {
-  color: #4f4f4f;
+  color: #4F4F4F;
 }
 
 /* Exception for profile title which should be black */
@@ -190,19 +224,139 @@ textarea {
   color: #000;
 }
 
+/* Stilar för raderingsdialogen */
+.delete-confirmation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.delete-confirmation-dialog {
+  background-color: white;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.delete-confirmation-dialog h2 {
+  font-size: 24px;
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: #4F4F4F;
+}
+
+.delete-confirmation-dialog p {
+  margin-bottom: 24px;
+  line-height: 1.5;
+  color: #4F4F4F;
+}
+
+.confirmation-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancel-button {
+  padding: 10px 16px;
+  border-radius: 30px;
+  border: 1px solid #E0E0E0;
+  background-color: white;
+  color: #4F4F4F;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
+.confirm-delete-button {
+  padding: 10px 16px;
+  border-radius: 30px;
+  border: none;
+  background-color: #E51236;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
+.confirm-delete-button:hover {
+  background-color: #c60f2e;
+}
+
+.confirm-delete-button:disabled {
+  background-color: #f5a5b1;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Hjälpklass för skärmläsare */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Felmeddelanden */
+.error-message {
+  color: #E51236;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+input[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+  border-color: #E51236;
+  background-color: rgba(229, 18, 54, 0.05);
+}
+
+/* Responsiva stilar */
 @media (max-width: 768px) {
   .profile-container {
     padding: 20px;
   }
-
+  
   .profile-buttons {
     flex-direction: column;
     align-items: center;
   }
-
+  
   .save-button,
-  .logout-button {
+  .logout-button,
+  .delete-button {
     width: 100%;
     max-width: 300px;
+  }
+  
+  .delete-confirmation-dialog {
+    width: 95%;
+    padding: 16px;
+  }
+  
+  .confirmation-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .cancel-button,
+  .confirm-delete-button {
+    width: 100%;
   }
 }
