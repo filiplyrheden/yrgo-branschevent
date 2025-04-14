@@ -23,7 +23,7 @@
   justify-content: center;
 }
 
-.info-heading {
+.confirmation-info-heading {
   color: var(--Primary-Navy);
   font-family: var(--Font-IBM-Plex-Mono);
   font-size: 2rem;
@@ -33,7 +33,7 @@
   margin: 1.5rem 0 1.5rem 0;
 }
 
-.info-text {
+.confirmation-info-text {
   color: var(--Primary-Navy);
   font-family: var(--Font-IBM-Plex-Mono);
   font-size: 1.25rem;

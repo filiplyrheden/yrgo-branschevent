@@ -11,8 +11,10 @@ const CompanyConfirmation = () => {
       <main className="company-confirmation">
         <div className="company-confirmation-content">
           <div className="company-confirmation-info">
-            <h1 className="info-heading">Tack för att du registrerade dig!</h1>
-            <p className="info-text">
+            <h1 className="confirmation-info-heading">
+              Tack för att du registrerade dig!
+            </h1>
+            <p className="confirmation-info-text">
               Varmt välkommen den 24 april på Dev & Designer Mingel hos Yrgo.
             </p>
 
