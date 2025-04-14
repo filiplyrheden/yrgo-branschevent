@@ -70,12 +70,6 @@ const CompanyProfile = () => {
             await fetchCompanyProfile(data.session.user.id);
           }
         } else {
-          addNotification({
-            type: "error",
-            title: "Inte inloggad",
-            message: "Du måste logga in för att komma åt din profil",
-            duration: 5000
-          });
           navigate("/");
         }
       } catch (error) {

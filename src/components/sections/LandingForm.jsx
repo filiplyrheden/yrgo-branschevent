@@ -24,7 +24,6 @@ const LandingForm = () => {
 
   const handleUserTypeChange = (type) => {
     setUserType(type);
-    showInfo(addNotification, `Du registreras som ${type}`);
   };
 
   const handleInputChange = (e) => {
