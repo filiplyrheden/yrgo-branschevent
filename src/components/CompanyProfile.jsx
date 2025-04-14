@@ -33,11 +33,11 @@ const CompanyProfile = () => {
 
   // Lista över alla möjliga specialties
   const allSpecialties = [
-    "Digital Design",
-    "HTML",
-    "Front End",
-    "Back End",
-    "CSS",
+   "Digital Design",
+    "PHP",
+    "Frontend",
+    "Backend",
+    "TypeScript",
     "Webflow",
     "3D",
     "Motion",
@@ -50,11 +50,22 @@ const CompanyProfile = () => {
     "Photoshop",
     "After Effects",
     "Java Script",
-    "Python",
+    "React",
     "In Design",
     "UI",
     "UX",
     "Spel",
+    "C#",
+    "Next.js",
+    "Angular",
+    "Node.js",
+    "Laravel",
+    "Supabase",
+    "MongoDB",
+    "Sanity",
+    "Swift",
+    "HTML",
+    "CSS"
   ];
 
   // State för specialty selection

@@ -30,7 +30,7 @@ const StudentProfile = () => {
 
   // Lista över alla möjliga intressen (samma som specialties för företag)
   const allInterests = [
-    "Digital Design",
+   "Digital Design",
     "PHP",
     "Frontend",
     "Backend",
@@ -60,7 +60,9 @@ const StudentProfile = () => {
     "Supabase",
     "MongoDB",
     "Sanity",
-    "Swift"
+    "Swift",
+    "HTML",
+    "CSS"
   ];
 
   // State för intresse-val
