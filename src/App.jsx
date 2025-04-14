@@ -5,10 +5,11 @@ import { supabase } from "./supabaseClient";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer.jsx";
 import "./styles/Global.css";
+import { NotificationProvider } from "./components/notifications/NotificationSystem";
 
 import CompanyDetails from "./pages/CompanyDetails.jsx";
 import Home from "./pages/Home";
-import Companies from "./pages/Companies"; // Import the new Companies component
+import Companies from "./pages/Companies";
 import CompanyProfile from "./components/CompanyProfile";
 import StudentProfile from "./components/StudentProfile";
 import Swipe from "./components/Swipe";
@@ -39,7 +40,7 @@ const ProfilePage = () => {
   }, []);
 
   if (loading) {
-    return <div>Laddar...</div>;
+    return <div aria-live="polite" role="status">Laddar...</div>;
   }
 
   if (!authenticated) {
@@ -78,7 +79,7 @@ const ProtectedRoute = ({ element, allowedUserTypes = ["Student", "Företag"] })
   }, []);
 
   if (loading) {
-    return <div>Laddar...</div>;
+    return <div aria-live="polite" role="status">Laddar...</div>;
   }
   
   // Redirect if not authenticated
@@ -101,24 +102,26 @@ const StudentRoute = ({ element }) => {
 
 function App() {
   return (
-    <Routes>
-      <Route 
-        path="/" 
-        element={
-          <> 
-            <Header/>
-            <Home/>
-            <Footer/> 
-          </>
-        } 
-      />
-      <Route path="/profil" element={<ProfilePage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/swajp" element={<StudentRoute element={<Swipe />} />} />
-      <Route path="/favoriter" element={<StudentRoute element={<Favorites />} />} />
-      <Route path="/foretag" element={<StudentRoute element={<Companies />} />} /> {/* Add the new route */}
-      <Route path="/company/:id" element={<StudentRoute element={<CompanyDetails />} />} />
-    </Routes>
+    <NotificationProvider>
+      <Routes>
+        <Route 
+          path="/" 
+          element={
+            <> 
+              <Header/>
+              <Home/>
+              <Footer/> 
+            </>
+          } 
+        />
+        <Route path="/profil" element={<ProfilePage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/swajp" element={<StudentRoute element={<Swipe />} />} />
+        <Route path="/favoriter" element={<StudentRoute element={<Favorites />} />} />
+        <Route path="/foretag" element={<StudentRoute element={<Companies />} />} />
+        <Route path="/company/:id" element={<StudentRoute element={<CompanyDetails />} />} />
+      </Routes>
+    </NotificationProvider>
   );
 }
 

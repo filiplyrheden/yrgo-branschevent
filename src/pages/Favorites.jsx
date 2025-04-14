@@ -5,16 +5,23 @@ import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import TrashIcon from "../components/ui/TrashIcon";
 import "../components/layout/Favorites.css";
+import { useNotification } from "../components/notifications/NotificationSystem";
+import { showSuccess, showError, showInfo } from "../components/utils/notifications";
 
 const Favorites = () => {
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { addNotification } = useNotification();
+  const [favoritesFetched, setFavoritesFetched] = useState(false); // Ny state-variabel för att undvika upprepade hämtningar
 
   useEffect(() => {
     const checkAuthAndFetchFavorites = async () => {
       try {
+        // Om favoriter redan hämtats, avsluta direkt
+        if (favoritesFetched) return;
+        
         // Check if user is logged in
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         
@@ -23,6 +30,11 @@ const Favorites = () => {
         }
         
         if (!sessionData.session) {
+          showError(
+            addNotification, 
+            "Du måste vara inloggad för att se dina favoriter",
+            "Åtkomst nekad"
+          );
           navigate('/');
           return;
         }
@@ -30,22 +42,35 @@ const Favorites = () => {
         // Check if user is a student
         const userType = sessionData.session.user.user_metadata?.user_type;
         if (userType !== "Student") {
+          showError(
+            addNotification, 
+            "Endast studenter kan se favoriter",
+            "Åtkomst nekad"
+          );
           navigate('/profil');
           return;
         }
         
-        // Fetch favorites
-        await fetchFavorites(sessionData.session.user.id);
+        // Fetch favorites - Skicka med true för att visa notifikationer
+        await fetchFavorites(sessionData.session.user.id, true);
+        
+        // Markera att favoriter har hämtats så vi inte gör det igen
+        setFavoritesFetched(true);
       } catch (error) {
         console.error("Error checking auth:", error);
         setError("Ett fel uppstod vid inloggningskontroll");
+        showError(
+          addNotification, 
+          "Ett fel uppstod vid inloggningskontroll",
+          "Autentiseringsfel"
+        );
       }
     };
     
     checkAuthAndFetchFavorites();
-  }, [navigate]);
+  }, [navigate, addNotification, favoritesFetched]); // Lägg till favoritesFetched som dependency
 
-  const fetchFavorites = async (userId) => {
+  const fetchFavorites = async (userId, showNotifications = false) => {
     try {
       setLoading(true);
       console.log("Fetching favorites for user ID:", userId);
@@ -105,18 +130,41 @@ const Favorites = () => {
         
         console.log("Enriched favorites:", enrichedFavorites);
         setFavorites(enrichedFavorites);
+        
+        // Visa endast framgångsmeddelande om showNotifications är true
+        if (showNotifications) {
+          showSuccess(
+            addNotification, 
+            `${enrichedFavorites.length} favoriter laddade.`,
+            "Favoriter laddade"
+          );
+        }
       } else {
         setFavorites([]);
+        
+        // Visa endast infomeddelande om showNotifications är true
+        if (showNotifications) {
+          showInfo(
+            addNotification, 
+            "Du har inga favoriter än. Gå till Swajp för att hitta företag!",
+            "Inga favoriter"
+          );
+        }
       }
     } catch (error) {
       console.error("Error in fetchFavorites:", error);
       setError("Ett fel uppstod när dina favoriter skulle hämtas");
+      showError(
+        addNotification, 
+        "Ett fel uppstod när dina favoriter skulle hämtas",
+        "Hämtningsfel"
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRemoveFavorite = async (favoriteId) => {
+  const handleRemoveFavorite = async (favoriteId, companyName) => {
     try {
       if (!window.confirm("Är du säker på att du vill ta bort företaget från dina favoriter?")) {
         return;
@@ -131,18 +179,33 @@ const Favorites = () => {
       
       setFavorites(favorites.filter(fav => fav.id !== favoriteId));
       
+      showSuccess(
+        addNotification, 
+        `${companyName || 'Företaget'} har tagits bort från dina favoriter.`,
+        "Favorit borttagen"
+      );
+      
     } catch (error) {
       console.error("Error removing favorite:", error);
       setError("Ett fel uppstod när favoriten skulle tas bort");
+      showError(
+        addNotification, 
+        "Ett fel uppstod när favoriten skulle tas bort",
+        "Borttagningsfel"
+      );
     }
   };
 
-  if (loading) {
+  if (loading && !favoritesFetched) {
     return (
       <div>
         <Header />
         <div className="favorites-container">
-          <div className="loading">Laddar...</div>
+          <div className="loading" role="status" aria-live="polite">
+            <span className="visually-hidden">Laddar favoriter...</span>
+            <div className="loading-spinner" aria-hidden="true"></div>
+            Laddar...
+          </div>
         </div>
         <Footer />
       </div>
@@ -152,70 +215,127 @@ const Favorites = () => {
   return (
     <div>
       <Header />
-      <div className="favorites-container">
-        <h1 className="favorites-title">Favoriter</h1>
-        
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
-        
-        <div className="favorites-grid">
-          {favorites.length > 0 ? (
-            favorites.map(favorite => (
-              <div 
-                key={favorite.id} 
-                className="favorite-card"
-                onClick={() => navigate(`/company/${favorite.company_id}`)}
-                style={{ cursor: 'pointer' }}
-              >
-                <div className="favorite-card-image">
-                  {favorite.companies && favorite.companies.logo_url ? (
-                    <img 
-                      src={`${supabase.supabaseUrl}/storage/v1/object/public/company_logos/${favorite.companies.logo_url}`}
-                      alt={`${favorite.companies.company_name} logotyp`} 
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = ''; // Clear src on error
-                      }}
-                    />
-                  ) : (
-                    <div className="placeholder-image">
-                      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="100" height="100" fill="#4F4F4F" />
-                        <text x="50%" y="50%" fill="white" fontSize="14" textAnchor="middle" dominantBaseline="middle">
-                          Bild
-                        </text>
-                      </svg>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="favorite-card-footer">
-                  <h3>{favorite.companies ? favorite.companies.company_name : 'Företag'}</h3>
-                </div>
-                
-                <button 
-                  className="trash-button" 
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent the entire card from being clicked
-                    handleRemoveFavorite(favorite.id);
-                  }}
-                  aria-label="Ta bort från favoriter"
-                >
-                  <TrashIcon />
-                </button>
-              </div>
-            ))
-          ) : (
-            <div className="no-favorites">
-              <p>Du har inga favoriter än. Gå till <a href="/swajp">Swajp</a> för att hitta företag!</p>
+      <main>
+        <div className="favorites-container">
+          <h1 className="favorites-title">Favoriter</h1>
+          
+          {error && (
+            <div 
+              className="error-message" 
+              role="alert"
+              aria-live="assertive"
+            >
+              {error}
             </div>
           )}
+          
+          <div 
+            className="favorites-grid" 
+            role="list"
+            aria-label="Lista av favoritföretag"
+          >
+            {favorites.length > 0 ? (
+              favorites.map(favorite => (
+                <div 
+                  key={favorite.id} 
+                  className="favorite-card"
+                  onClick={() => navigate(`/company/${favorite.company_id}`)}
+                  style={{ cursor: 'pointer' }}
+                  role="listitem"
+                  aria-label={`${favorite.companies ? favorite.companies.company_name : 'Företag'}`}
+                  tabIndex="0"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      navigate(`/company/${favorite.company_id}`);
+                    }
+                  }}
+                >
+                  <div className="favorite-card-image">
+                    {favorite.companies && favorite.companies.logo_url ? (
+                      <img 
+                        src={favorite.companies.logo_url}
+                        alt={`${favorite.companies.company_name} logotyp`} 
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = ''; // Clear src on error
+                        }}
+                      />
+                    ) : (
+                      <div className="placeholder-image" aria-hidden="true">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                          <rect width="100" height="100" fill="#4F4F4F" />
+                          <text x="50%" y="50%" fill="white" fontSize="14" textAnchor="middle" dominantBaseline="middle">
+                            Bild
+                          </text>
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="favorite-card-footer">
+                    <h3>{favorite.companies ? favorite.companies.company_name : 'Företag'}</h3>
+                  </div>
+                  
+                  <button 
+                    className="trash-button" 
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent the entire card from being clicked
+                      handleRemoveFavorite(
+                        favorite.id, 
+                        favorite.companies ? favorite.companies.company_name : 'Företaget'
+                      );
+                    }}
+                    aria-label={`Ta bort ${favorite.companies ? favorite.companies.company_name : 'företaget'} från favoriter`}
+                  >
+                    <TrashIcon />
+                  </button>
+                </div>
+              ))
+            ) : (
+              <div 
+                className="no-favorites"
+                role="status"
+              >
+                <p>Du har inga favoriter än. Gå till <a href="/swajp">Swajp</a> för att hitta företag!</p>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </main>
       <Footer />
+      
+      {/* Styles for accessibility */}
+      <style jsx>{`
+        .visually-hidden {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border-width: 0;
+        }
+        
+        .loading-spinner {
+          display: inline-block;
+          width: 2rem;
+          height: 2rem;
+          border: 0.25rem solid rgba(0, 26, 82, 0.2);
+          border-radius: 50%;
+          border-top-color: var(--Primary-Navy);
+          animation: spin 1s linear infinite;
+          margin-right: 1rem;
+        }
+        
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
     </div>
   );
 };
