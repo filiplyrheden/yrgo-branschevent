@@ -57,6 +57,16 @@ const PolicyPopupText = styled.p`
   font-weight: 400;
 `;
 
+const PolicyPopupLink = styled.a`
+  font-family: var(--Font-Inter);
+  color: var(--Primary-Navy);
+  text-align: left;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 0;
+  text-decoration: underline;
+`;
+
 const PolicyPopup = ({ onClose }) => {
   return (
     <PolicyPopupContainer>
@@ -92,7 +102,11 @@ const PolicyPopup = ({ onClose }) => {
           Du har rätt att: Begära tillgång till de uppgifter vi har om dig,
           rätta felaktiga uppgifter, begära radering av dina uppgifter efter
           eventet, om det inte strider mot lagliga krav. För att utöva dessa
-          rättigheter, kontakta oss på [din kontaktmejl].
+          rättigheter, kontakta oss{" "}
+          <PolicyPopupLink href="mailto:filip.lyrheden@gmail.com">
+            via mejl
+          </PolicyPopupLink>
+          .
         </PolicyPopupText>
         <PolicyPopupBold>5. Lösenord och kontosäkerhet </PolicyPopupBold>
         <PolicyPopupText>
@@ -105,7 +119,11 @@ const PolicyPopup = ({ onClose }) => {
           Vi kan komma att uppdatera denna policy vid behov. Den senaste
           versionen kommer alltid att finnas tillgänglig på vår webbplats. Om du
           har frågor om vår policy eller hantering av dina uppgifter, kontakta
-          oss på [din kontaktmejl].
+          oss kontakta oss{" "}
+          <PolicyPopupLink href="mailto:filip.lyrheden@gmail.com">
+            via mejl
+          </PolicyPopupLink>
+          .
         </PolicyPopupText>
         <Button onClick={onClose} text="Stäng" />
       </PolicyPopupContent>
