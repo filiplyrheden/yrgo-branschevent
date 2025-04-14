@@ -5,7 +5,11 @@ import "./Swipe.css";
 import Header from "./layout/Header";
 import Footer from "./layout/Footer";
 import { useNotification } from "./notifications/NotificationSystem";
-import { showSuccess, showError, showInfo } from "../components/utils/notifications";
+import {
+  showSuccess,
+  showError,
+  showInfo,
+} from "../components/utils/notifications";
 
 const Swipe = () => {
   const [companies, setCompanies] = useState([]);
@@ -13,8 +17,20 @@ const Swipe = () => {
   const [loading, setLoading] = useState(false);
   const [direction, setDirection] = useState(null);
   const [notificationShown, setNotificationShown] = useState(false);
+  // Add new state for popup
+  const [showPopup, setShowPopup] = useState(() => {
+    // Check if the user has seen the popup before
+    return localStorage.getItem("swipePopupSeen") !== "true";
+  });
   const controls = useAnimation();
   const { addNotification } = useNotification();
+
+  // Add the closePopup function
+  const closePopup = () => {
+    setShowPopup(false);
+    // Save to localStorage that the user has seen the popup
+    localStorage.setItem("swipePopupSeen", "true");
+  };
 
   // Fetch companies when component mounts
   useEffect(() => {
@@ -28,7 +44,7 @@ const Swipe = () => {
     try {
       // Kontrollera om vi redan laddar för att undvika dubbla anrop
       if (loading) return;
-      
+
       setLoading(true);
 
       const { data, error } = await supabase
@@ -44,26 +60,30 @@ const Swipe = () => {
 
       if (error) {
         console.error("Error fetching companies:", error);
-        showError(addNotification, "Kunde inte hämta företagsinformation", "Datahämtningsfel");
+        showError(
+          addNotification,
+          "Kunde inte hämta företagsinformation",
+          "Datahämtningsfel"
+        );
         throw error;
       }
 
       if (data) {
         console.log("Companies data:", data);
         setCompanies(data);
-        
+
         // Använd en timeout för att förhindra att notifieringar visas för snabbt efter varandra
         setTimeout(() => {
           if (data.length === 0) {
             showInfo(
-              addNotification, 
-              "Inga företag finns tillgängliga för swipe just nu. Kom tillbaka senare!", 
+              addNotification,
+              "Inga företag finns tillgängliga för swipe just nu. Kom tillbaka senare!",
               "Inga företag"
             );
           } else {
             showSuccess(
-              addNotification, 
-              `${data.length} företag laddade. Swipa höger för att visa intresse!`, 
+              addNotification,
+              `${data.length} företag laddade. Swipa höger för att visa intresse!`,
               "Företag laddade"
             );
           }
@@ -72,8 +92,8 @@ const Swipe = () => {
     } catch (error) {
       console.error("Error fetching companies:", error.message);
       showError(
-        addNotification, 
-        "Ett fel uppstod när företagsinformation skulle hämtas. Vänligen försök igen senare.", 
+        addNotification,
+        "Ett fel uppstod när företagsinformation skulle hämtas. Vänligen försök igen senare.",
         "Hämtningsfel"
       );
     } finally {
@@ -98,54 +118,55 @@ const Swipe = () => {
     // If direction is right, save the like to favorites
     if (direction === "right") {
       try {
-        console.log("Attempting to save favorite for company:", company.company_name);
+        console.log(
+          "Attempting to save favorite for company:",
+          company.company_name
+        );
         // Get current user
         const { data: sessionData } = await supabase.auth.getSession();
 
         if (sessionData?.session?.user) {
           const userId = sessionData.session.user.id;
           console.log("User ID:", userId, "Company ID:", company.id);
-          
+
           // Check if already liked
           const { data: existingLike, error: checkError } = await supabase
-            .from('favorites')
-            .select('*')
-            .eq('student_id', userId)
-            .eq('company_id', company.id)
+            .from("favorites")
+            .select("*")
+            .eq("student_id", userId)
+            .eq("company_id", company.id)
             .single();
-            
-          if (checkError && checkError.code !== 'PGRST116') {
+
+          if (checkError && checkError.code !== "PGRST116") {
             console.error("Error checking existing favorite:", checkError);
           }
-              
+
           if (!existingLike) {
             // Save to favorites
-            const { data, error } = await supabase
-              .from('favorites')
-              .insert({
-                student_id: userId,
-                company_id: company.id
-              });
-            
+            const { data, error } = await supabase.from("favorites").insert({
+              student_id: userId,
+              company_id: company.id,
+            });
+
             if (error) {
               console.error("Error saving favorite:", error);
               showError(
-                addNotification, 
-                "Kunde inte lägga till företaget i favoriter", 
+                addNotification,
+                "Kunde inte lägga till företaget i favoriter",
                 "Sparfel"
               );
             } else {
               console.log("Saved to favorites:", company.company_name, data);
               showSuccess(
-                addNotification, 
-                `${company.company_name} har lagts till i dina favoriter!`, 
+                addNotification,
+                `${company.company_name} har lagts till i dina favoriter!`,
                 "Favorit sparad"
               );
             }
           } else {
             console.log("Company already in favorites:", company.company_name);
             showInfo(
-              addNotification, 
+              addNotification,
               `${company.company_name} finns redan i dina favoriter`,
               "Information"
             );
@@ -153,23 +174,23 @@ const Swipe = () => {
         } else {
           console.log("No user session found");
           showError(
-            addNotification, 
-            "Du måste vara inloggad för att spara favoriter", 
+            addNotification,
+            "Du måste vara inloggad för att spara favoriter",
             "Sessionsfel"
           );
         }
       } catch (error) {
         console.error("Error saving favorite:", error);
         showError(
-          addNotification, 
-          "Kunde inte spara företaget som favorit", 
+          addNotification,
+          "Kunde inte spara företaget som favorit",
           "Fel"
         );
       }
     } else {
       // Left swipe - "nej tack"
       showInfo(
-        addNotification, 
+        addNotification,
         `Du valde att skippa ${company.company_name}`,
         "Skip"
       );
@@ -227,7 +248,7 @@ const Swipe = () => {
               onClick={() => {
                 setCurrentIndex(0);
                 showInfo(
-                  addNotification, 
+                  addNotification,
                   "Swipe-listan har börjat om från början",
                   "Börjar om"
                 );
@@ -416,15 +437,19 @@ const Swipe = () => {
                           </div>
                         </div>
                       )}
-                    
-                    {company.company_additional_info && 
-                      company.company_additional_info.length > 0 && 
-                      company.company_additional_info[0]?.additional_work_info && (
+
+                    {company.company_additional_info &&
+                      company.company_additional_info.length > 0 &&
+                      company.company_additional_info[0]
+                        ?.additional_work_info && (
                         <div className="card-additional-info">
                           <p>Roligt att veta om oss:</p>
                           <div className="info-box">
                             <p className="info-swipe-text">
-                              {company.company_additional_info[0].additional_work_info}
+                              {
+                                company.company_additional_info[0]
+                                  .additional_work_info
+                              }
                             </p>
                           </div>
                         </div>
@@ -456,7 +481,7 @@ const Swipe = () => {
               </svg>
             </button>
 
-            <button 
+            <button
               className="swipe-button back"
               aria-label="Återställ senaste företag (inte implementerat)"
               disabled={true}
@@ -504,6 +529,30 @@ const Swipe = () => {
         </div>
       </div>
       <Footer />
+
+      {/* Add the popup component */}
+      {showPopup && (
+        <div className="welcome-popup-overlay">
+          <div className="welcome-popup">
+            <h2 className="welcome-popup-title">Välkommen till Swipe!</h2>
+            <div className="welcome-popup-content">
+              <p>
+                Här kan du utforska olika företag som deltar i branschminglet.
+              </p>
+              <p>
+                Swipa höger för att lägga till företag i dina favoriter eller
+                vänster för att skippa.
+              </p>
+            </div>
+            <button
+              className="welcome-popup-button"
+              onClick={() => closePopup()}
+            >
+              Kom igång
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
