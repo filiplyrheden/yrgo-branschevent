@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 import { supabase } from "../supabaseClient";
@@ -20,15 +20,17 @@ const StudentProfile = () => {
   });
   const [formErrors, setFormErrors] = useState({});
   const { addNotification } = useNotification();
-  const [profileFetched, setProfileFetched] = useState(false);
+  
+  // Använd useRef istället för useState för att spåra om profilen har hämtats
+  const profileFetchedRef = useRef(false);
 
   // Lista över alla möjliga intressen (samma som specialties för företag)
   const allInterests = [
     "Digital Design",
-    "HTML",
-    "Front End",
-    "Back End",
-    "CSS",
+    "PHP",
+    "Frontend",
+    "Backend",
+    "TypeScript",
     "Webflow",
     "3D",
     "Motion",
@@ -41,23 +43,31 @@ const StudentProfile = () => {
     "Photoshop",
     "After Effects",
     "Java Script",
-    "Python",
+    "React",
     "In Design",
     "UI",
     "UX",
     "Spel",
+    "C#",
+    "Next.js",
+    "Angular",
+    "Node.js",
+    "Laravel",
+    "Supabase",
+    "MongoDB",
+    "Sanity",
+    "Swift"
   ];
 
   // State för intresse-val
   const [selectedInterests, setSelectedInterests] = useState([]);
 
   useEffect(() => {
-    // Kontrollera om användaren är inloggad och hämta profildata
-    
+    // Kontrollera om användaren är inloggad och hämta profildata    
     const checkUser = async () => {
       try {
         // Undvik att köra om profilen redan har hämtats
-        if (profileFetched) return;
+        if (profileFetchedRef.current) return;
 
         setLoading(true);
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
@@ -78,18 +88,13 @@ const StudentProfile = () => {
         await fetchStudentProfile(sessionData.session.user.id);
       } catch (error) {
         console.error("Fel vid inläsning av användarprofil:", error);
-        showError(
-          addNotification, 
-          "Ett fel uppstod när profilen skulle laddas",
-          "Laddningsfel"
-        );
       } finally {
         setLoading(false);
       }
     };
 
     checkUser();
-  }, [navigate, addNotification, profileFetched]); // Inkludera profileFetched i beroenden
+  }, [navigate, addNotification]); // Ta bort profileFetched beroendet
 
   const fetchStudentProfile = async (userId) => {
     try {
@@ -183,12 +188,7 @@ const StudentProfile = () => {
         }
         
         // Visa bara notifiering om detta är första laddningen
-        if (!profileFetched) {
-          showSuccess(
-            addNotification, 
-            "Din studentprofil har laddats",
-            "Profil laddad"
-          );
+        if (!profileFetchedRef.current) {
         }
       } else {
         // Om studenten inte finns, skapa en ny post i students-tabellen
@@ -224,26 +224,19 @@ const StudentProfile = () => {
             password: "************",
           });
           
-          showInfo(
-            addNotification, 
-            "En ny studentprofil har skapats. Vänligen fyll i dina uppgifter.",
-            "Ny profil"
-          );
+          // Använd setTimeout för att förhindra dubbla notifieringar
+          setTimeout(() => {
+          }, 300);
         } else {
           throw new Error("Kunde inte skapa studentprofil");
         }
       }
       
-      // Markera att profilen har hämtats framgångsrikt
-      setProfileFetched(true);
+      // Markera att profilen har hämtats framgångsrikt med useRef
+      profileFetchedRef.current = true;
       
     } catch (error) {
       console.error("Fel vid hämtning av studentprofil:", error);
-      showError(
-        addNotification, 
-        "Ett fel uppstod när din profil skulle hämtas. Vänligen försök igen senare.",
-        "Laddningsfel"
-      );
     }
   };
 
@@ -461,21 +454,12 @@ const StudentProfile = () => {
 
   const handleChangePassword = () => {
     // Implementera lösenordsbyte om det behövs
-    showInfo(
-      addNotification, 
-      "Funktion för att ändra lösenord kommer snart",
-      "Kommer snart"
-    );
+   
   };
 
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
-      showSuccess(
-        addNotification, 
-        "Du har loggats ut från ditt konto",
-        "Utloggad"
-      );
       navigate("/");
     } catch (error) {
       console.error("Fel vid utloggning:", error);

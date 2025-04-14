@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import Header from "../components/layout/Header";
@@ -14,14 +14,15 @@ const CompanyDetails = () => {
   const [company, setCompany] = useState(null);
   const [error, setError] = useState(null);
   const { addNotification } = useNotification();
-  // Lägg till en state-variabel för att hålla reda på om företagsdetaljer har hämtats
-  const [detailsFetched, setDetailsFetched] = useState(false);
+  
+  // Använd useRef istället för useState för att spåra om detaljer har hämtats
+  const detailsFetchedRef = useRef(false);
 
   useEffect(() => {
     const checkAuthAndFetchDetails = async () => {
       try {
         // Om företagsdetaljer redan har hämtats, avsluta direkt
-        if (detailsFetched) return;
+        if (detailsFetchedRef.current) return;
         
         // Check if user is logged in
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
@@ -55,8 +56,8 @@ const CompanyDetails = () => {
         // Fetch company details - skicka med true för att visa notifikationer
         await fetchCompanyDetails(true);
         
-        // Markera att företagsdetaljer har hämtats
-        setDetailsFetched(true);
+        // Markera att företagsdetaljer har hämtats med useRef
+        detailsFetchedRef.current = true;
       } catch (error) {
         console.error("Auth check error:", error);
         showError(
@@ -68,7 +69,7 @@ const CompanyDetails = () => {
     };
     
     checkAuthAndFetchDetails();
-  }, [id, navigate, addNotification, detailsFetched]); // Lägg till detailsFetched som dependency
+  }, [id, navigate, addNotification]); // Ta bort detailsFetched dependency
 
   const fetchCompanyDetails = async (showNotifications = false) => {
     try {
@@ -99,23 +100,24 @@ const CompanyDetails = () => {
       if (companyData) {
         setCompany(companyData);
         
-        // Visa endast framgångsmeddelande om det är begärt
-        if (showNotifications) {
-          showSuccess(
-            addNotification, 
-            `Företagsinformation för ${companyData.company_name} laddad`,
-            "Företagsdetaljer"
-          );
+        // Visa endast framgångsmeddelande om det är begärt och inte redan visat
+        if (showNotifications && !detailsFetchedRef.current) {
+          // Använd setTimeout för att förhindra dubbla notifieringar
+          setTimeout(() => {
+           
+          }, 300);
         }
       } else {
         setError("Företaget hittades inte");
         
-        if (showNotifications) {
-          showError(
-            addNotification, 
-            "Företaget hittades inte i databasen",
-            "Ingen data"
-          );
+        if (showNotifications && !detailsFetchedRef.current) {
+          setTimeout(() => {
+            showError(
+              addNotification, 
+              "Företaget hittades inte i databasen",
+              "Ingen data"
+            );
+          }, 300);
         }
       }
     } catch (error) {
@@ -126,7 +128,7 @@ const CompanyDetails = () => {
     }
   };
 
-  if (loading && !detailsFetched) {
+  if (loading && !detailsFetchedRef.current) {
     return (
       <div>
         <Header />
@@ -152,11 +154,6 @@ const CompanyDetails = () => {
             className="save-button" 
             onClick={() => {
               navigate("/favoriter");
-              showInfo(
-                addNotification,
-                "Återgår till favoritsidan",
-                "Navigering"
-              );
             }}
           >
             Tillbaka till favoriter
@@ -285,11 +282,6 @@ const CompanyDetails = () => {
               className="save-button" 
               onClick={() => {
                 navigate("/favoriter");
-                showInfo(
-                  addNotification,
-                  "Återgår till favoritsidan",
-                  "Navigering"
-                );
               }}
             >
               Tillbaka till favoriter

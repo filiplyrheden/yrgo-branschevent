@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import Header from "../components/layout/Header";
@@ -14,13 +14,15 @@ const Favorites = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { addNotification } = useNotification();
-  const [favoritesFetched, setFavoritesFetched] = useState(false); // Ny state-variabel för att undvika upprepade hämtningar
+  
+  // Använd useRef istället för useState för att undvika upprepade hämtningar
+  const favoritesFetchedRef = useRef(false);
 
   useEffect(() => {
     const checkAuthAndFetchFavorites = async () => {
       try {
         // Om favoriter redan hämtats, avsluta direkt
-        if (favoritesFetched) return;
+        if (favoritesFetchedRef.current) return;
         
         // Check if user is logged in
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
@@ -54,8 +56,8 @@ const Favorites = () => {
         // Fetch favorites - Skicka med true för att visa notifikationer
         await fetchFavorites(sessionData.session.user.id, true);
         
-        // Markera att favoriter har hämtats så vi inte gör det igen
-        setFavoritesFetched(true);
+        // Markera att favoriter har hämtats med useRef
+        favoritesFetchedRef.current = true;
       } catch (error) {
         console.error("Error checking auth:", error);
         setError("Ett fel uppstod vid inloggningskontroll");
@@ -68,7 +70,7 @@ const Favorites = () => {
     };
     
     checkAuthAndFetchFavorites();
-  }, [navigate, addNotification, favoritesFetched]); // Lägg till favoritesFetched som dependency
+  }, [navigate, addNotification]); // Ta bort favoritesFetched som dependency
 
   const fetchFavorites = async (userId, showNotifications = false) => {
     try {
@@ -131,24 +133,22 @@ const Favorites = () => {
         console.log("Enriched favorites:", enrichedFavorites);
         setFavorites(enrichedFavorites);
         
-        // Visa endast framgångsmeddelande om showNotifications är true
-        if (showNotifications) {
-          showSuccess(
-            addNotification, 
-            `${enrichedFavorites.length} favoriter laddade.`,
-            "Favoriter laddade"
-          );
+        // Visa endast framgångsmeddelande om showNotifications är true och inte redan visat
+        if (showNotifications && !favoritesFetchedRef.current) {
+         
         }
       } else {
         setFavorites([]);
         
-        // Visa endast infomeddelande om showNotifications är true
-        if (showNotifications) {
-          showInfo(
-            addNotification, 
-            "Du har inga favoriter än. Gå till Swajp för att hitta företag!",
-            "Inga favoriter"
-          );
+        // Visa endast infomeddelande om showNotifications är true och inte redan visat
+        if (showNotifications && !favoritesFetchedRef.current) {
+          setTimeout(() => {
+            showInfo(
+              addNotification, 
+              "Du har inga favoriter än. Gå till Swajp för att hitta företag!",
+              "Inga favoriter"
+            );
+          }, 300);
         }
       }
     } catch (error) {
@@ -196,7 +196,7 @@ const Favorites = () => {
     }
   };
 
-  if (loading && !favoritesFetched) {
+  if (loading && !favoritesFetchedRef.current) {
     return (
       <div>
         <Header />

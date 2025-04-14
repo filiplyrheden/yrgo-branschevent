@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabaseClient";
 import "./Swipe.css";
@@ -12,17 +12,20 @@ const Swipe = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [direction, setDirection] = useState(null);
-  const [notificationShown, setNotificationShown] = useState(false);
+  
+  // Använd useRef istället för useState
+  const notificationShownRef = useRef(false);
+  
   const controls = useAnimation();
   const { addNotification } = useNotification();
 
   // Fetch companies when component mounts
   useEffect(() => {
-    if (!notificationShown) {
+    if (!notificationShownRef.current) {
       fetchCompanies();
-      setNotificationShown(true);
+      notificationShownRef.current = true;
     }
-  }, [notificationShown]);
+  }, []); // Ta bort notificationShown som dependency
 
   const fetchCompanies = async () => {
     try {
@@ -60,13 +63,7 @@ const Swipe = () => {
               "Inga företag finns tillgängliga för swipe just nu. Kom tillbaka senare!", 
               "Inga företag"
             );
-          } else {
-            showSuccess(
-              addNotification, 
-              `${data.length} företag laddade. Swipa höger för att visa intresse!`, 
-              "Företag laddade"
-            );
-          }
+          } 
         }, 300);
       }
     } catch (error) {
@@ -171,7 +168,7 @@ const Swipe = () => {
       showInfo(
         addNotification, 
         `Du valde att skippa ${company.company_name}`,
-        "Skip"
+        "Du swipeade nej"
       );
     }
 
@@ -256,7 +253,8 @@ const Swipe = () => {
             <button
               className="redigera-button"
               onClick={() => {
-                setNotificationShown(false); // Återställ så att notifieringen kan visas igen
+                // Använd ref istället för state
+                notificationShownRef.current = false;
                 fetchCompanies();
               }}
             >
