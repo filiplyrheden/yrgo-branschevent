@@ -69,6 +69,17 @@
 
 .hero-arrow {
   margin-bottom: 1.6rem;
+  animation: bounce 1.5s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(-5deg);
+  }
 }
 
 .hero-icons {
