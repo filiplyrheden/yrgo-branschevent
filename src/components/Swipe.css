@@ -30,6 +30,8 @@
   height: 550px;
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
   cursor: grab;
+  touch-action: pan-y; /* Allows vertical scrolling but not horizontal */
+  user-select: none; /* Prevents text selection during drag */
 }
 
 .swipe-card:active {
@@ -86,6 +88,8 @@
   flex-direction: column;
   gap: 16px;
   border-radius: 8px 0 0 8px;
+  -webkit-overflow-scrolling: touch; /* Improves scrolling on iOS */
+  touch-action: pan-y; /* Allow vertical scrolling */
 }
 
 .card-info h3 {
@@ -339,11 +343,13 @@
   .swipe-card {
     height: 28rem;
     max-width: 450px;
+    touch-action: pan-y;
   }
 
   .card-container {
     height: 27rem;
     max-width: 450px;
+    touch-action: pan-y;
   }
 }
 

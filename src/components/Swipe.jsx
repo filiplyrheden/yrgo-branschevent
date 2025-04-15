@@ -309,6 +309,9 @@ const Swipe = () => {
                 exit={{ opacity: 0 }}
                 whileTap={{ scale: 1.05 }}
                 whileDrag={{ scale: 1.05 }}
+                dragElastic={0.7}
+                dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+                dragDirectionLock
               >
                 <div className="card">
                   <div className="card-left">
