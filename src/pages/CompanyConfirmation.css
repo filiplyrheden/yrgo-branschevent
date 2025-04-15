@@ -50,3 +50,64 @@
 .time-text {
   margin: 0;
 }
+
+/* Media Queries */
+@media screen and (max-width: 1024px) {
+  .company-confirmation-content {
+    padding: 2rem 5rem;
+  }
+
+  .confirmation-info-heading {
+    font-size: 1.75rem;
+  }
+
+  .confirmation-info-text {
+    font-size: 1.125rem;
+    line-height: 1.9rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .company-confirmation {
+    height: auto;
+    min-height: 25rem;
+    padding: 2rem 0;
+  }
+
+  .company-confirmation-content {
+    flex-direction: column;
+    padding: 1.5rem 3rem;
+  }
+
+  .confirmation-info-heading {
+    font-size: 1.5rem;
+    margin: 1rem 0;
+  }
+
+  .confirmation-info-text {
+    font-size: 1rem;
+    line-height: 1.75rem;
+    margin: 1rem 0;
+  }
+
+  .calendar-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .company-confirmation-content {
+    padding: 1rem 1.5rem;
+  }
+
+  .confirmation-info-heading {
+    font-size: 1.25rem;
+  }
+
+  .confirmation-info-text {
+    font-size: 0.9rem;
+    line-height: 1.5rem;
+  }
+}

@@ -199,6 +199,11 @@ button:disabled {
   .label-choice-container {
     flex-wrap: wrap;
   }
+
+  #conditions-policy {
+    font-size: 0.85rem;
+    line-height: 1.5rem;
+  }
 }
 
 @media screen and (max-width: 480px) {
