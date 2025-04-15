@@ -31,20 +31,49 @@ const CompanyProfile = () => {
     logo: null,
     logoUrl: null,
   });
-  
+
   // Use useRef instead of state to track if profile has been fetched
   const profileFetchedRef = useRef(false);
-  
+
   const [formErrors, setFormErrors] = useState({});
   const { addNotification } = useNotification();
 
   // List of all possible specialties
   const allSpecialties = [
-    "Digital Design", "PHP", "Frontend", "Backend", "TypeScript", "Webflow", 
-    "3D", "Motion", "Film", "Foto", "Figma", "Framer", "WordPress", 
-    "Illustrator", "Photoshop", "After Effects", "Java Script", "React", 
-    "In Design", "UI", "UX", "Spel", "C#", "Next.js", "Angular", "Node.js", 
-    "Laravel", "Supabase", "MongoDB", "Sanity", "Swift", "HTML", "CSS"
+    "Digital Design",
+    "PHP",
+    "Frontend",
+    "Backend",
+    "TypeScript",
+    "Webflow",
+    "3D",
+    "Motion",
+    "Film",
+    "Foto",
+    "Figma",
+    "Framer",
+    "WordPress",
+    "Illustrator",
+    "Photoshop",
+    "After Effects",
+    "JavaScript",
+    "React",
+    "In Design",
+    "UI",
+    "UX",
+    "Spel",
+    "C#",
+    "Next.js",
+    "Angular",
+    "Node.js",
+    "MySQL",
+    "Laravel",
+    "Supabase",
+    "MongoDB",
+    "Sanity",
+    "Swift",
+    "HTML",
+    "CSS",
   ];
 
   // State for specialty selection
@@ -72,7 +101,7 @@ const CompanyProfile = () => {
           type: "error",
           title: "Sessionsfel",
           message: "Kunde inte hämta användarinformation.",
-          duration: 5000
+          duration: 5000,
         });
       }
     };
@@ -83,10 +112,10 @@ const CompanyProfile = () => {
   const fetchCompanyProfile = async (userId) => {
     // Guard against multiple simultaneous fetch attempts
     if (loading && profileFetchedRef.current) return;
-    
+
     try {
       setLoading(true);
-      
+
       // Fetch company data
       const { data: companyData, error: companyError } = await supabase
         .from("companies")
@@ -143,7 +172,7 @@ const CompanyProfile = () => {
         setSelectedSpecialties(
           companyData.company_specialties?.map((cs) => cs.specialty) || []
         );
-        
+
         // Mark profile as fetched to prevent duplicate fetches
         profileFetchedRef.current = true;
       }
@@ -152,8 +181,9 @@ const CompanyProfile = () => {
       addNotification({
         type: "error",
         title: "Laddningsfel",
-        message: "Ett fel uppstod när profilen skulle hämtas. Vänligen försök igen senare.",
-        duration: 5000
+        message:
+          "Ett fel uppstod när profilen skulle hämtas. Vänligen försök igen senare.",
+        duration: 5000,
       });
     } finally {
       setLoading(false);
@@ -176,12 +206,12 @@ const CompanyProfile = () => {
       ...companyData,
       [name]: value,
     });
-    
+
     // Clear error when user starts typing
     if (formErrors[name]) {
       setFormErrors({
         ...formErrors,
-        [name]: null
+        [name]: null,
       });
     }
   };
@@ -199,36 +229,46 @@ const CompanyProfile = () => {
       logoUrl: fileInfo.cdnUrl,
       logo: null, // we don't need the file object anymore
     });
-    
+
     addNotification({
       type: "success",
       title: "Logotyp uppladdad",
       message: "Din logotyp har laddats upp framgångsrikt.",
-      duration: 3000
+      duration: 3000,
     });
   };
 
   const validateForm = () => {
     const errors = {};
-    
+
     if (!companyData.name.trim()) {
       errors.name = "Företagets namn är obligatoriskt";
     }
-    
+
     if (!companyData.email.trim()) {
       errors.email = "E-post är obligatoriskt";
     } else if (!/\S+@\S+\.\S+/.test(companyData.email.trim())) {
       errors.email = "Ogiltig e-postadress";
     }
-    
-    if (companyData.website && !/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/.test(companyData.website.trim())) {
+
+    if (
+      companyData.website &&
+      !/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/.test(
+        companyData.website.trim()
+      )
+    ) {
       errors.website = "Ogiltig webbadress";
     }
-    
-    if (companyData.phone && !/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/.test(companyData.phone.trim())) {
+
+    if (
+      companyData.phone &&
+      !/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/.test(
+        companyData.phone.trim()
+      )
+    ) {
       errors.phone = "Ogiltigt telefonnummer";
     }
-    
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -240,33 +280,35 @@ const CompanyProfile = () => {
         addNotification({
           type: "error",
           title: "Valideringsfel",
-          message: "Det finns fel i formuläret. Kontrollera de markerade fälten.",
-          duration: 5000
+          message:
+            "Det finns fel i formuläret. Kontrollera de markerade fälten.",
+          duration: 5000,
         });
-        
+
         // Focus the first field with an error
         const firstErrorField = Object.keys(formErrors)[0];
         if (firstErrorField) {
           document.getElementById(firstErrorField)?.focus();
         }
-        
+
         return;
       }
-      
+
       setSaveInProgress(true);
       setLoading(true);
 
       // Check authentication
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
 
       if (sessionError || !sessionData.session) {
         addNotification({
           type: "error",
           title: "Sessionsfel",
           message: "Din session har gått ut. Vänligen logga in igen.",
-          duration: 5000
+          duration: 5000,
         });
-        
+
         await supabase.auth.signOut();
         navigate("/");
         return;
@@ -281,7 +323,9 @@ const CompanyProfile = () => {
           company_name: companyData.name.trim() || "",
           website_url: companyData.website ? companyData.website.trim() : null,
           email: companyData.email.trim() || "",
-          contact_name: companyData.contactPerson ? companyData.contactPerson.trim() : null,
+          contact_name: companyData.contactPerson
+            ? companyData.contactPerson.trim()
+            : null,
           phone: companyData.phone ? companyData.phone.trim() : null,
           coming_to_event: companyData.attending === false ? false : true,
           logo_url: companyData.logoUrl || null,
@@ -373,7 +417,7 @@ const CompanyProfile = () => {
         type: "success",
         title: "Profil sparad",
         message: "Din företagsprofil har uppdaterats framgångsrikt.",
-        duration: 4000
+        duration: 4000,
       });
 
       // Announce to screen readers
@@ -384,13 +428,12 @@ const CompanyProfile = () => {
 
       // Navigate to confirmation page
       navigate("/companyconfirmation");
-
     } catch (error) {
       console.error("Error saving profile:", error);
-      
+
       // More detailed error messages
       let errorMessage = "Ett fel uppstod när profilen skulle sparas.";
-      
+
       if (error.message) {
         if (error.message.includes("duplicate key")) {
           errorMessage = "E-postadressen används redan av ett annat konto.";
@@ -398,13 +441,13 @@ const CompanyProfile = () => {
           errorMessage = "Nätverksfel. Kontrollera din internetanslutning.";
         }
       }
-      
+
       // Show error notification
       addNotification({
         type: "error",
         title: "Sparfel",
         message: errorMessage,
-        duration: 5000
+        duration: 5000,
       });
 
       // Announce to screen readers
@@ -434,73 +477,74 @@ const CompanyProfile = () => {
   const handleDeleteAccount = async () => {
     try {
       setDeleteInProgress(true);
-  
+
       // Check authentication
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-  
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
+
       if (sessionError || !sessionData.session) {
         addNotification({
           type: "error",
           title: "Sessionsfel",
           message: "Din session har gått ut. Vänligen logga in igen.",
-          duration: 5000
+          duration: 5000,
         });
         navigate("/");
         return;
       }
-  
+
       const userId = sessionData.session.user.id;
-      
+
       // Delete data in this order to respect referential integrity:
-      
+
       // 1. Delete specialties first
       const { error: specialtiesError } = await supabase
         .from("company_specialties")
         .delete()
         .eq("company_id", userId);
-  
+
       if (specialtiesError) {
         console.error("Error deleting specialties:", specialtiesError);
       }
-  
+
       // 2. Delete additional info
       const { error: additionalInfoError } = await supabase
         .from("company_additional_info")
         .delete()
         .eq("company_id", userId);
-  
+
       if (additionalInfoError) {
         console.error("Error deleting additional info:", additionalInfoError);
       }
-  
+
       // 3. Delete company record
       const { error: companyError } = await supabase
         .from("companies")
         .delete()
         .eq("id", userId);
-  
+
       if (companyError) {
         console.error("Error deleting company:", companyError);
         throw companyError;
       }
-  
+
       // Save a temporary flag in sessionStorage before logging out the user
-      sessionStorage.setItem('accountDeleted', 'true');
-  
+      sessionStorage.setItem("accountDeleted", "true");
+
       // Log out the user and navigate to the start page
       await supabase.auth.signOut();
       navigate("/");
-      
     } catch (error) {
       console.error("Error deleting account:", error);
-      
+
       addNotification({
         type: "error",
         title: "Raderingsfel",
-        message: "Ett fel uppstod när kontot skulle raderas. Vänligen försök igen senare.",
-        duration: 5000
+        message:
+          "Ett fel uppstod när kontot skulle raderas. Vänligen försök igen senare.",
+        duration: 5000,
       });
-      
+
       setShowDeleteConfirmation(false);
     } finally {
       setDeleteInProgress(false);
@@ -512,7 +556,9 @@ const CompanyProfile = () => {
       <div>
         <Header />
         <div className="profile-container">
-          <div className="loading" role="status" aria-live="polite">Laddar...</div>
+          <div className="loading" role="status" aria-live="polite">
+            Laddar...
+          </div>
         </div>
         <Footer />
       </div>
@@ -532,8 +578,15 @@ const CompanyProfile = () => {
               {companyData.logoUrl ? (
                 <img src={companyData.logoUrl} alt="Företagslogotyp" />
               ) : (
-                <div className="placeholder-image" aria-label="Platshållare för logotyp">
-                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <div
+                  className="placeholder-image"
+                  aria-label="Platshållare för logotyp"
+                >
+                  <svg
+                    viewBox="0 0 100 100"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
                     <circle cx="50" cy="35" r="25" fill="#4F4F4F" />
                     <path
                       d="M100 100 H0 V70 C0 50 25 50 50 60 C75 50 100 50 100 70 Z"
@@ -583,7 +636,10 @@ const CompanyProfile = () => {
               {/* Company information forms */}
               <div className="form-group">
                 <label htmlFor="name">
-                  Företagets namn <span className="required" aria-hidden="true">*</span>
+                  Företagets namn{" "}
+                  <span className="required" aria-hidden="true">
+                    *
+                  </span>
                 </label>
                 <input
                   type="text"
@@ -614,10 +670,16 @@ const CompanyProfile = () => {
                   onChange={handleInputChange}
                   placeholder="www.företag.se"
                   aria-invalid={formErrors.website ? "true" : "false"}
-                  aria-describedby={formErrors.website ? "website-error" : undefined}
+                  aria-describedby={
+                    formErrors.website ? "website-error" : undefined
+                  }
                 />
                 {formErrors.website && (
-                  <div id="website-error" className="error-message" role="alert">
+                  <div
+                    id="website-error"
+                    className="error-message"
+                    role="alert"
+                  >
                     {formErrors.website}
                   </div>
                 )}
@@ -625,7 +687,10 @@ const CompanyProfile = () => {
 
               <div className="form-group">
                 <label htmlFor="email">
-                  Mailadress för kontakt <span className="required" aria-hidden="true">*</span>
+                  Mailadress för kontakt{" "}
+                  <span className="required" aria-hidden="true">
+                    *
+                  </span>
                 </label>
                 <input
                   type="email"
@@ -637,7 +702,9 @@ const CompanyProfile = () => {
                   required
                   aria-required="true"
                   aria-invalid={formErrors.email ? "true" : "false"}
-                  aria-describedby={formErrors.email ? "email-error" : undefined}
+                  aria-describedby={
+                    formErrors.email ? "email-error" : undefined
+                  }
                 />
                 {formErrors.email && (
                   <div id="email-error" className="error-message" role="alert">
@@ -668,7 +735,9 @@ const CompanyProfile = () => {
                   onChange={handleInputChange}
                   placeholder="+46 - 000 00 00"
                   aria-invalid={formErrors.phone ? "true" : "false"}
-                  aria-describedby={formErrors.phone ? "phone-error" : undefined}
+                  aria-describedby={
+                    formErrors.phone ? "phone-error" : undefined
+                  }
                 />
                 {formErrors.phone && (
                   <div id="phone-error" className="error-message" role="alert">
@@ -681,8 +750,14 @@ const CompanyProfile = () => {
             <div className="profile-form-right-column">
               {/* Attendance section */}
               <div className="form-group">
-                <label id="attendance-label">Vi kommer närvara på minglet den 23/4</label>
-                <div className="attendance-buttons" role="radiogroup" aria-labelledby="attendance-label">
+                <label id="attendance-label">
+                  Vi kommer närvara på minglet den 23/4
+                </label>
+                <div
+                  className="attendance-buttons"
+                  role="radiogroup"
+                  aria-labelledby="attendance-label"
+                >
                   <button
                     className={`attendance-button ${
                       companyData.attending ? "active" : ""
@@ -711,9 +786,9 @@ const CompanyProfile = () => {
               {/* Specialties section with redesigned layout */}
               <div className="form-group">
                 <label id="specialties-label">Vi jobbar med:</label>
-                <div 
-                  className="specialties-container" 
-                  role="group" 
+                <div
+                  className="specialties-container"
+                  role="group"
                   aria-labelledby="specialties-label"
                 >
                   {allSpecialties.map((specialty) => (
@@ -774,24 +849,32 @@ const CompanyProfile = () => {
               Radera konto
             </button>
           </div>
-          
+
           {/* Delete confirmation dialog */}
           {showDeleteConfirmation && (
             <div className="delete-confirmation-overlay">
-              <div className="delete-confirmation-dialog" role="alertdialog" aria-labelledby="delete-title" aria-describedby="delete-description">
+              <div
+                className="delete-confirmation-dialog"
+                role="alertdialog"
+                aria-labelledby="delete-title"
+                aria-describedby="delete-description"
+              >
                 <h2 id="delete-title">Bekräfta radering</h2>
-                <p id="delete-description">Är du säker på att du vill radera ditt konto? Denna åtgärd kan inte ångras och all din data kommer att tas bort permanent.</p>
-                
+                <p id="delete-description">
+                  Är du säker på att du vill radera ditt konto? Denna åtgärd kan
+                  inte ångras och all din data kommer att tas bort permanent.
+                </p>
+
                 <div className="confirmation-buttons">
-                  <button 
-                    className="cancel-button" 
+                  <button
+                    className="cancel-button"
                     onClick={handleCancelDelete}
                     type="button"
                   >
                     Avbryt
                   </button>
-                  <button 
-                    className="confirm-delete-button" 
+                  <button
+                    className="confirm-delete-button"
                     onClick={handleDeleteAccount}
                     type="button"
                     disabled={deleteInProgress}
@@ -803,12 +886,12 @@ const CompanyProfile = () => {
               </div>
             </div>
           )}
-          
+
           {/* Hidden live region for screen reader announcements */}
-          <div 
-            id="profile-live-region" 
-            className="visually-hidden" 
-            aria-live="assertive" 
+          <div
+            id="profile-live-region"
+            className="visually-hidden"
+            aria-live="assertive"
             role="status"
           ></div>
         </div>

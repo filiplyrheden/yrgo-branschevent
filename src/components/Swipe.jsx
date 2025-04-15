@@ -406,7 +406,7 @@ const Swipe = () => {
                     )}
 
                     <p className="card-attending">
-                      Vi kommer närvara på minglet den 23/4
+                      Kommer närvara på minglet den 23/4:
                     </p>
 
                     <div className="attendance">
