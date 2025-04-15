@@ -89,6 +89,26 @@
   gap: 1rem;
 }
 
+/* Base styles for all icon wrappers */
+[id^="grid-icon"] {
+  width: 8rem;
+  height: auto;
+  flex-shrink: 0;
+}
+
+[id^="grid-icon-"][id$="-wrapper"] {
+  display: flex;
+  width: 9rem;
+  height: 9rem;
+  padding: 0.25rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+/* Specific adjustments for individual icons */
 #grid-icon-1-wrapper {
   display: flex;
   width: 9rem;
@@ -305,4 +325,111 @@
   width: 8rem;
   height: 7.95744rem;
   flex-shrink: 0;
+}
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+  .hero-content {
+    padding: 3rem;
+    margin: 0 1rem;
+  }
+
+  .hero-icons {
+    grid-template-columns: repeat(2, 9rem);
+    grid-template-rows: repeat(1, 9rem);
+  }
+
+  /* Hide all icon wrappers by default on smaller screens */
+  [id^="grid-icon-"][id$="-wrapper"] {
+    display: none !important;
+  }
+
+  /* Only show specified icons on smaller screens */
+  #grid-icon-3-wrapper,
+  #grid-icon-6-wrapper,
+  #grid-icon-9-wrapper {
+    display: flex !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    height: auto;
+    min-height: 40rem;
+  }
+
+  .hero-content {
+    flex-direction: column-reverse;
+    padding: 2rem;
+    margin: 0;
+  }
+
+  .hero-text-container {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+
+  .hero-text {
+    width: 100%;
+    height: auto;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    letter-spacing: -0.15rem;
+  }
+
+  .hero-date {
+    font-size: 4.5rem;
+    letter-spacing: -0.3rem;
+  }
+
+  .hero-icons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  [id^="grid-icon-"][id$="-wrapper"] {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1/1;
+  }
+
+  /* Add this to scale down the actual icons */
+  [id^="grid-icon"] {
+    width: 6rem !important;
+    height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-date {
+    font-size: 3.5rem;
+    letter-spacing: -0.2rem;
+  }
+
+  .hero-arrow {
+    width: 50px;
+    height: 50px;
+  }
+
+  .hero-icons {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  /* Make icons even smaller on very small screens */
+  [id^="grid-icon"] {
+    width: 4.5rem;
+    height: auto;
+  }
 }
