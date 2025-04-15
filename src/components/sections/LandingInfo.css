@@ -1,5 +1,6 @@
 .landing-info {
-  height: 27rem;
+  height: auto;
+  min-height: 27rem;
   background-color: var(--Primary-Navy);
 }
 
@@ -23,7 +24,7 @@
   font-size: 2rem;
   font-style: normal;
   font-weight: 700;
-  line-height: normal;
+  line-direction: normal;
   text-align: left;
 }
 
@@ -46,4 +47,56 @@
   display: flex;
   align-items: center;
   gap: 0.375rem;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 1024px) {
+  .landing-info-content {
+    padding: 2.5rem 3rem;
+  }
+
+  .info-heading,
+  .info-text {
+    font-size: 1.75rem;
+  }
+
+  .landing-info-icons svg {
+    transform: scale(0.9);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .landing-info-content {
+    flex-direction: column;
+    padding: 2rem 2rem;
+  }
+
+  .landing-info-info {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+
+  .landing-info-icons {
+    justify-content: center;
+  }
+
+  .info-heading,
+  .info-text {
+    font-size: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .landing-info-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .info-heading,
+  .info-text {
+    font-size: 1.25rem;
+  }
+
+  .landing-info-icons svg {
+    transform: scale(0.7);
+  }
 }
