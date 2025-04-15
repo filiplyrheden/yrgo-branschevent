@@ -30,8 +30,8 @@
   height: 550px;
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
   cursor: grab;
-  touch-action: pan-y; /* Allows vertical scrolling but not horizontal */
-  user-select: none; /* Prevents text selection during drag */
+  touch-action: pan-y;
+  user-select: none;
 }
 
 .swipe-card:active {
