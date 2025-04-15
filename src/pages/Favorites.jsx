@@ -15,13 +15,13 @@ const Favorites = () => {
   const [error, setError] = useState(null);
   const { addNotification } = useNotification();
   
-  // Använd useRef istället för useState för att undvika upprepade hämtningar
+  // Use useRef to avoid repeated fetches
   const favoritesFetchedRef = useRef(false);
 
   useEffect(() => {
     const checkAuthAndFetchFavorites = async () => {
       try {
-        // Om favoriter redan hämtats, avsluta direkt
+        // If favorites already fetched, exit immediately
         if (favoritesFetchedRef.current) return;
         
         // Check if user is logged in
@@ -53,10 +53,10 @@ const Favorites = () => {
           return;
         }
         
-        // Fetch favorites - Skicka med true för att visa notifikationer
+        // Fetch favorites - passing true to show notifications
         await fetchFavorites(sessionData.session.user.id, true);
         
-        // Markera att favoriter har hämtats med useRef
+        // Mark that favorites have been fetched
         favoritesFetchedRef.current = true;
       } catch (error) {
         console.error("Error checking auth:", error);
@@ -70,12 +70,11 @@ const Favorites = () => {
     };
     
     checkAuthAndFetchFavorites();
-  }, [navigate, addNotification]); // Ta bort favoritesFetched som dependency
+  }, [navigate, addNotification]);
 
   const fetchFavorites = async (userId, showNotifications = false) => {
     try {
       setLoading(true);
-      console.log("Fetching favorites for user ID:", userId);
       
       const { data: favoriteIds, error: favoritesError } = await supabase
         .from('favorites')
@@ -86,8 +85,6 @@ const Favorites = () => {
         console.error("Error fetching favorite IDs:", favoritesError);
         throw favoritesError;
       }
-      
-      console.log("Fetched favorite IDs:", favoriteIds);
       
       if (favoriteIds && favoriteIds.length > 0) {
         const enrichedFavorites = await Promise.all(
@@ -130,20 +127,26 @@ const Favorites = () => {
           })
         );
         
-        console.log("Enriched favorites:", enrichedFavorites);
         setFavorites(enrichedFavorites);
         
-        // Visa endast framgångsmeddelande om showNotifications är true och inte redan visat
         if (showNotifications && !favoritesFetchedRef.current) {
-         
+          // Optional: You can uncomment this if you want to show success notification
+          // showSuccess(
+          //   addNotification,
+          //   `Dina favoriter har laddats (${enrichedFavorites.length} företag)`,
+          //   "Favoriter"
+          // );
         }
       } else {
         setFavorites([]);
         
-        // Visa endast infomeddelande om showNotifications är true och inte redan visat
         if (showNotifications && !favoritesFetchedRef.current) {
           setTimeout(() => {
-            
+            showInfo(
+              addNotification,
+              "Du har inga favoriter än. Gå till Swajp för att hitta företag!",
+              "Inga favoriter"
+            );
           }, 300);
         }
       }
@@ -196,13 +199,16 @@ const Favorites = () => {
     return (
       <div>
         <Header />
-        <div className="favorites-container">
-          <div className="loading" role="status" aria-live="polite">
-            <span className="visually-hidden">Laddar favoriter...</span>
-            <div className="loading-spinner" aria-hidden="true"></div>
-            
+        <main>
+          <div className="favorites-container">
+            <h1 className="favorites-title">Favoriter</h1>
+            <div className="loading" role="status" aria-live="polite">
+              <span className="visually-hidden">Laddar favoriter...</span>
+              <div className="loading-spinner" aria-hidden="true"></div>
+              Laddar...
+            </div>
           </div>
-        </div>
+        </main>
         <Footer />
       </div>
     );
@@ -236,7 +242,6 @@ const Favorites = () => {
                   key={favorite.id} 
                   className="favorite-card"
                   onClick={() => navigate(`/company/${favorite.company_id}`)}
-                  style={{ cursor: 'pointer' }}
                   role="listitem"
                   aria-label={`${favorite.companies ? favorite.companies.company_name : 'Företag'}`}
                   tabIndex="0"
@@ -300,38 +305,6 @@ const Favorites = () => {
         </div>
       </main>
       <Footer />
-      
-      {/* Styles for accessibility */}
-      <style jsx>{`
-        .visually-hidden {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          padding: 0;
-          margin: -1px;
-          overflow: hidden;
-          clip: rect(0, 0, 0, 0);
-          white-space: nowrap;
-          border-width: 0;
-        }
-        
-        .loading-spinner {
-          display: inline-block;
-          width: 2rem;
-          height: 2rem;
-          border: 0.25rem solid rgba(0, 26, 82, 0.2);
-          border-radius: 50%;
-          border-top-color: var(--Primary-Navy);
-          animation: spin 1s linear infinite;
-          margin-right: 1rem;
-        }
-        
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   );
 };
