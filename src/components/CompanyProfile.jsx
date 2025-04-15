@@ -763,7 +763,7 @@ const CompanyProfile = () => {
               onClick={handleLogout}
               type="button"
             >
-              Logga Ut
+              Logga ut
             </button>
             <button
               className="delete-button"
