@@ -3,7 +3,7 @@ header {
   height: 4rem;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1rem;
+  padding: 2.5rem 1rem;
   gap: 52.75rem;
 }
 
@@ -29,4 +29,87 @@ a {
   line-height: normal;
   letter-spacing: 0.05rem;
   text-decoration: none;
+  margin-right: 1.5rem;
+}
+
+.menu-toggle {
+  display: none;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  color: var(--Text-Dark-Grey);
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.menu-toggle,
+h3 {
+  color: var(--Text-Dark-Grey);
+  font-family: var(--Font-Inter);
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 1.75rem;
+}
+
+.mobile-header-left {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .mobile-header-left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+
+  .yrgo-logo {
+    display: none;
+  }
+
+  .mobile-yrgo-logo {
+    display: block;
+    width: 12.75rem;
+    height: 3.125rem;
+    margin-right: 2rem;
+    margin-left: 0;
+  }
+
+  .mobile-nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  nav {
+    position: absolute;
+    top: 4rem;
+    right: 1rem;
+    background: white;
+    flex-direction: column;
+    align-items: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: none;
+  }
+
+  nav.open {
+    display: flex;
+  }
+
+  header {
+    position: relative;
+    gap: 0;
+  }
+
+  .button,
+  .menu-toggle {
+    padding: 0;
+  }
 }

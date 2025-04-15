@@ -6,7 +6,11 @@ import Footer from "../components/layout/Footer";
 import TrashIcon from "../components/ui/TrashIcon";
 import "../components/layout/Favorites.css";
 import { useNotification } from "../components/notifications/NotificationSystem";
-import { showSuccess, showError, showInfo } from "../components/utils/notifications";
+import {
+  showSuccess,
+  showError,
+  showInfo,
+} from "../components/utils/notifications";
 
 const Favorites = () => {
   const navigate = useNavigate();
@@ -14,7 +18,7 @@ const Favorites = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { addNotification } = useNotification();
-  
+
   // Use useRef to avoid repeated fetches
   const favoritesFetchedRef = useRef(false);
 
@@ -23,33 +27,34 @@ const Favorites = () => {
       try {
         // If favorites already fetched, exit immediately
         if (favoritesFetchedRef.current) return;
-        
+
         // Check if user is logged in
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-        
+        const { data: sessionData, error: sessionError } =
+          await supabase.auth.getSession();
+
         if (sessionError) {
           throw sessionError;
         }
-        
+
         if (!sessionData.session) {
           showError(
-            addNotification, 
+            addNotification,
             "Du måste vara inloggad för att se dina favoriter",
             "Åtkomst nekad"
           );
-          navigate('/');
+          navigate("/");
           return;
         }
-        
+
         // Check if user is a student
         const userType = sessionData.session.user.user_metadata?.user_type;
         if (userType !== "Student") {
           showError(
-            addNotification, 
+            addNotification,
             "Endast studenter kan se favoriter",
             "Åtkomst nekad"
           );
-          navigate('/profil');
+          navigate("/profil");
           return;
         }
         
@@ -62,13 +67,13 @@ const Favorites = () => {
         console.error("Error checking auth:", error);
         setError("Ett fel uppstod vid inloggningskontroll");
         showError(
-          addNotification, 
+          addNotification,
           "Ett fel uppstod vid inloggningskontroll",
           "Autentiseringsfel"
         );
       }
     };
-    
+
     checkAuthAndFetchFavorites();
   }, [navigate, addNotification]);
 
@@ -77,10 +82,10 @@ const Favorites = () => {
       setLoading(true);
       
       const { data: favoriteIds, error: favoritesError } = await supabase
-        .from('favorites')
-        .select('id, company_id')
-        .eq('student_id', userId);
-      
+        .from("favorites")
+        .select("id, company_id")
+        .eq("student_id", userId);
+
       if (favoritesError) {
         console.error("Error fetching favorite IDs:", favoritesError);
         throw favoritesError;
@@ -91,37 +96,47 @@ const Favorites = () => {
           favoriteIds.map(async (favorite) => {
             try {
               const { data: company, error: companyError } = await supabase
-                .from('companies')
-                .select('id, company_name, logo_url, email, website_url')
-                .eq('id', favorite.company_id)
+                .from("companies")
+                .select("id, company_name, logo_url, email, website_url")
+                .eq("id", favorite.company_id)
                 .single();
-                
+
               if (companyError) {
-                console.error(`Error fetching company ${favorite.company_id}:`, companyError);
+                console.error(
+                  `Error fetching company ${favorite.company_id}:`,
+                  companyError
+                );
                 return {
                   ...favorite,
-                  companies: { company_name: 'Okänt företag' }
+                  companies: { company_name: "Okänt företag" },
                 };
               }
-              
-              const { data: specialties, error: specialtiesError } = await supabase
-                .from('company_specialties')
-                .select('specialty')
-                .eq('company_id', favorite.company_id);
-                
+
+              const { data: specialties, error: specialtiesError } =
+                await supabase
+                  .from("company_specialties")
+                  .select("specialty")
+                  .eq("company_id", favorite.company_id);
+
               if (specialtiesError) {
-                console.error(`Error fetching specialties for company ${favorite.company_id}:`, specialtiesError);
+                console.error(
+                  `Error fetching specialties for company ${favorite.company_id}:`,
+                  specialtiesError
+                );
               }
-              
+
               return {
                 ...favorite,
                 companies: {
                   ...company,
-                  company_specialties: specialties || []
-                }
+                  company_specialties: specialties || [],
+                },
               };
             } catch (err) {
-              console.error(`Error processing company ${favorite.company_id}:`, err);
+              console.error(
+                `Error processing company ${favorite.company_id}:`,
+                err
+              );
               return favorite;
             }
           })
@@ -154,7 +169,7 @@ const Favorites = () => {
       console.error("Error in fetchFavorites:", error);
       setError("Ett fel uppstod när dina favoriter skulle hämtas");
       showError(
-        addNotification, 
+        addNotification,
         "Ett fel uppstod när dina favoriter skulle hämtas",
         "Hämtningsfel"
       );
@@ -165,30 +180,33 @@ const Favorites = () => {
 
   const handleRemoveFavorite = async (favoriteId, companyName) => {
     try {
-      if (!window.confirm("Är du säker på att du vill ta bort företaget från dina favoriter?")) {
+      if (
+        !window.confirm(
+          "Är du säker på att du vill ta bort företaget från dina favoriter?"
+        )
+      ) {
         return;
       }
-      
+
       const { error } = await supabase
-        .from('favorites')
+        .from("favorites")
         .delete()
-        .eq('id', favoriteId);
-        
+        .eq("id", favoriteId);
+
       if (error) throw error;
-      
-      setFavorites(favorites.filter(fav => fav.id !== favoriteId));
-      
+
+      setFavorites(favorites.filter((fav) => fav.id !== favoriteId));
+
       showSuccess(
-        addNotification, 
-        `${companyName || 'Företaget'} har tagits bort från dina favoriter.`,
+        addNotification,
+        `${companyName || "Företaget"} har tagits bort från dina favoriter.`,
         "Favorit borttagen"
       );
-      
     } catch (error) {
       console.error("Error removing favorite:", error);
       setError("Ett fel uppstod när favoriten skulle tas bort");
       showError(
-        addNotification, 
+        addNotification,
         "Ett fel uppstod när favoriten skulle tas bort",
         "Borttagningsfel"
       );
@@ -220,33 +238,33 @@ const Favorites = () => {
       <main>
         <div className="favorites-container">
           <h1 className="favorites-title">Favoriter</h1>
-          
+
           {error && (
-            <div 
-              className="error-message" 
-              role="alert"
-              aria-live="assertive"
-            >
+            <div className="error-message" role="alert" aria-live="assertive">
               {error}
             </div>
           )}
-          
-          <div 
-            className="favorites-grid" 
+
+          <div
+            className="favorites-grid"
             role="list"
             aria-label="Lista av favoritföretag"
           >
             {favorites.length > 0 ? (
-              favorites.map(favorite => (
-                <div 
-                  key={favorite.id} 
+              favorites.map((favorite) => (
+                <div
+                  key={favorite.id}
                   className="favorite-card"
                   onClick={() => navigate(`/company/${favorite.company_id}`)}
                   role="listitem"
-                  aria-label={`${favorite.companies ? favorite.companies.company_name : 'Företag'}`}
+                  aria-label={`${
+                    favorite.companies
+                      ? favorite.companies.company_name
+                      : "Företag"
+                  }`}
                   tabIndex="0"
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
+                    if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
                       navigate(`/company/${favorite.company_id}`);
                     }
@@ -254,51 +272,71 @@ const Favorites = () => {
                 >
                   <div className="favorite-card-image">
                     {favorite.companies && favorite.companies.logo_url ? (
-                      <img 
+                      <img
                         src={favorite.companies.logo_url}
-                        alt={`${favorite.companies.company_name} logotyp`} 
+                        alt={`${favorite.companies.company_name} logotyp`}
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = ''; // Clear src on error
+                          e.target.src = ""; // Clear src on error
                         }}
                       />
                     ) : (
                       <div className="placeholder-image" aria-hidden="true">
-                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <svg
+                          viewBox="0 0 100 100"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
                           <rect width="100" height="100" fill="#4F4F4F" />
-                          <text x="50%" y="50%" fill="white" fontSize="14" textAnchor="middle" dominantBaseline="middle">
+                          <text
+                            x="50%"
+                            y="50%"
+                            fill="white"
+                            fontSize="14"
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                          >
                             Bild
                           </text>
                         </svg>
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="favorite-card-footer">
-                    <h3>{favorite.companies ? favorite.companies.company_name : 'Företag'}</h3>
+                    <h3>
+                      {favorite.companies
+                        ? favorite.companies.company_name
+                        : "Företag"}
+                    </h3>
                   </div>
-                  
-                  <button 
-                    className="trash-button" 
+
+                  <button
+                    className="trash-button"
                     onClick={(e) => {
                       e.stopPropagation(); // Prevent the entire card from being clicked
                       handleRemoveFavorite(
-                        favorite.id, 
-                        favorite.companies ? favorite.companies.company_name : 'Företaget'
+                        favorite.id,
+                        favorite.companies
+                          ? favorite.companies.company_name
+                          : "Företaget"
                       );
                     }}
-                    aria-label={`Ta bort ${favorite.companies ? favorite.companies.company_name : 'företaget'} från favoriter`}
+                    aria-label={`Ta bort ${
+                      favorite.companies
+                        ? favorite.companies.company_name
+                        : "företaget"
+                    } från favoriter`}
                   >
                     <TrashIcon />
                   </button>
                 </div>
               ))
             ) : (
-              <div 
-                className="no-favorites"
-                role="status"
-              >
-                <p>Du har inga favoriter än. Gå till <a href="/swajp">Swajp</a> för att hitta företag!</p>
+              <div className="no-favorites" role="status">
+                <p>
+                  Du har inga favoriter än. Gå till <a href="/swajp">Swajp</a>{" "}
+                  för att hitta företag!
+                </p>
               </div>
             )}
           </div>
