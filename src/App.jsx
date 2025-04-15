@@ -5,14 +5,16 @@ import { supabase } from "./supabaseClient";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer.jsx";
 import "./styles/Global.css";
-import { NotificationProvider, useNotification } from "./components/notifications/NotificationSystem";
-
+import {
+  NotificationProvider,
+  useNotification,
+} from "./components/notifications/NotificationSystem";
 import CompanyDetails from "./pages/CompanyDetails.jsx";
 import Home from "./pages/Home";
 import Companies from "./pages/Companies";
 import CompanyProfile from "./components/CompanyProfile";
 import StudentProfile from "./components/StudentProfile";
-import Swipe from "./components/swipe.jsx";
+import Swipe from "./components/Swipe.jsx";
 import Login from "./pages/Login";
 import Favorites from "./pages/Favorites";
 import CompanyConfirmation from "./pages/CompanyConfirmation";
@@ -23,19 +25,19 @@ const AppWithNotifications = () => {
 
   useEffect(() => {
     // Kontrollera om användaren just har raderat sitt konto
-    const accountDeleted = sessionStorage.getItem('accountDeleted');
-    
-    if (accountDeleted === 'true') {
+    const accountDeleted = sessionStorage.getItem("accountDeleted");
+
+    if (accountDeleted === "true") {
       // Visa bekräftelsemeddelande
       addNotification({
         type: "success",
         title: "Konto raderat",
         message: "Ditt konto har raderats framgångsrikt.",
-        duration: 5000
+        duration: 5000,
       });
-      
+
       // Ta bort flaggan från sessionStorage så att meddelandet inte visas igen
-      sessionStorage.removeItem('accountDeleted');
+      sessionStorage.removeItem("accountDeleted");
     }
   }, [addNotification]);
 
