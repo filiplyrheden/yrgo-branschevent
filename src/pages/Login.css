@@ -1,12 +1,119 @@
-.login-container {
-  margin: 5rem;
+/* Login page styles - renamed classes to avoid conflicts with LandingForm */
+.login-page {
+  background-color: white;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
 }
 
-.input-container {
+.login-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-container {
+  margin: 4rem auto;
+  padding: 2.5rem;
+  max-width: 700px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.login-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.login-input-container {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   gap: 2rem;
+}
+
+.login-input-wrapper {
+  flex: 1;
+  max-width: 70%;
+}
+
+
+
+
+.login-error-message {
+  color: #E51236;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background-color: rgba(229, 18, 54, 0.1);
+  border-radius: 4px;
+  border: 1px solid #E51236;
+  font-size: 0.875rem;
+}
+
+.login-general-error {
+  margin-bottom: 1.5rem;
+}
+
+.login-button-container {
+  align-self: flex-start;
+}
+
+#login-heading {
+  color: var(--Primary-Navy);
+  font-family: var(--Font-Inter);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  .login-container {
+    margin: 2rem;
+    padding: 1.5rem;
+  }
+  
+  .login-form-container {
+    gap: 1.5rem;
+  }
+  
+  .login-input-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .login-input-wrapper {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .login-icons {
+    display: none; /* Hide icons on mobile */
+  }
+  
+  #login-heading {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Additional utility class for screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
