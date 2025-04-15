@@ -262,7 +262,7 @@
   height: 28px; /* Increased icon size */
 }
 
-/* Add these media queries for responsive swipe buttons */
+/* Media queries  */
 @media (max-width: 768px) {
   .swipe-buttons {
     gap: 2rem;
@@ -369,6 +369,7 @@
 
   .card-info {
     width: 100%;
+    border-radius: 8px 8px 0 0;
   }
 
   .swipe-card {
@@ -406,8 +407,7 @@
   }
 }
 
-/* Add these styles to your Swipe.css file */
-
+/* Pop up */
 .welcome-popup-overlay {
   position: fixed;
   top: 0;
