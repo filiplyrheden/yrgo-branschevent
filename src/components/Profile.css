@@ -1,12 +1,20 @@
-/* Profile.css */
+/* Profile.css - Updated with two-column layout */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap");
+
+:root {
+  --Primary-White: #fff;
+  --Primary-Red: #e51236;
+  --Primary-Navy: #001a52;
+  --Text-Dark-Grey: #4f4f4f;
+  --Grey: #f2f2f2;
+}
 
 .profile-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px;
   font-family: 'Inter', sans-serif;
-  color: #4F4F4F;
+  color: var(--Text-Dark-Grey);
 }
 
 .profile-title {
@@ -16,6 +24,7 @@
   color: #000;
 }
 
+/* Profile image upload */
 .profile-image-container {
   position: relative;
   width: 100%;
@@ -63,6 +72,21 @@
   justify-content: center;
 }
 
+/* Two-column form layout */
+.profile-form-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+.profile-form-left-column,
+.profile-form-right-column {
+  flex: 1;
+  min-width: 300px;
+}
+
+/* Form Fields */
 .form-group {
   margin-bottom: 24px;
 }
@@ -72,11 +96,11 @@
   margin-bottom: 8px;
   font-weight: 400;
   font-size: 16px;
-  color: #4F4F4F;
+  color: var(--Text-Dark-Grey);
 }
 
 .required {
-  color: #E51236;
+  color: var(--Primary-Red);
 }
 
 input,
@@ -84,11 +108,17 @@ textarea {
   width: 100%;
   padding: 12px 16px;
   border: none;
-  background-color: #F2F2F2;
+  background-color: var(--Grey);
   border-radius: 4px;
   font-family: 'Inter', sans-serif;
   font-size: 16px;
   color: #333;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 26, 82, 0.2);
 }
 
 textarea {
@@ -96,28 +126,30 @@ textarea {
   min-height: 120px;
 }
 
+/* Attendance buttons (Ja/Nej) */
 .attendance-buttons {
   display: flex;
   gap: 8px;
 }
 
 .attendance-button {
-  padding: 6px 16px;
+  padding: 8px 16px;
   background: white;
   border: 1px solid #E0E0E0;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
   font-family: 'Inter', sans-serif;
-  color: #4F4F4F;
+  color: var(--Text-Dark-Grey);
 }
 
 .attendance-button.active {
-  background: #001A52;
+  background: var(--Primary-Navy);
   color: white;
-  border-color: #001A52;
+  border-color: var(--Primary-Navy);
 }
 
+/* Specialties/Interests */
 .specialties-container {
   display: flex;
   flex-wrap: wrap;
@@ -126,59 +158,68 @@ textarea {
 }
 
 .specialty-button {
-  padding: 6px 16px;
+  padding: 8px 16px;
   background: white;
   border: 1px solid #E0E0E0;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
   font-family: 'Inter', sans-serif;
-  color: #4F4F4F;
+  color: var(--Text-Dark-Grey);
+  transition: all 0.2s ease;
 }
 
 .specialty-button.active {
-  background: #001A52;
+  background: var(--Primary-Navy);
   color: white;
-  border-color: #001A52;
+  border-color: var(--Primary-Navy);
 }
 
-/* Uppdaterade knappcontainern för att ha knapparna på rad */
+/* Profile Buttons */
 .profile-buttons {
   display: flex;
   justify-content: center;
   gap: 24px;
   margin-top: 40px;
-  flex-wrap: wrap;
 }
 
 .save-button,
 .logout-button,
-.delete-button {
+.delete-button,
+.password-change-button {
   padding: 12px 24px;
-  border-radius: 30px;
+  border-radius: 62px;
   border: none;
   font-weight: 500;
   font-size: 16px;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
-  width: auto;
+  transition: all 0.2s ease;
   min-width: 150px;
 }
 
 .save-button {
-  background-color: #001A52;
+  background-color: var(--Primary-Navy);
   color: white;
 }
 
 .logout-button {
-  background-color: #001A52;
+  background-color: var(--Primary-Navy);
   color: white;
 }
 
-/* Ny stil för radera konto-knappen */
 .delete-button {
-  background-color: #E51236;
+  background-color: var(--Primary-Red);
   color: white;
+}
+
+.password-change-button {
+  background: var(--Primary-Navy);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  min-width: auto;
 }
 
 .save-button:hover,
@@ -190,7 +231,8 @@ textarea {
   background-color: #c60f2e;
 }
 
-.save-button:disabled {
+.save-button:disabled,
+.logout-button:disabled {
   background-color: #cccccc;
   opacity: 0.7;
   cursor: not-allowed;
@@ -202,29 +244,21 @@ textarea {
   cursor: not-allowed;
 }
 
-.loading {
-  text-align: center;
-  padding: 40px;
-  font-size: 18px;
+/* Error messages */
+.error-message {
+  color: var(--Primary-Red);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: block;
 }
 
-/* Make sure all text in the profile container has the correct color */
-.profile-container p,
-.profile-container h1,
-.profile-container h2,
-.profile-container h3,
-.profile-container h4,
-.profile-container h5,
-.profile-container h6 {
-  color: #4F4F4F;
+input[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+  border: 1px solid var(--Primary-Red);
+  background-color: rgba(229, 18, 54, 0.05);
 }
 
-/* Exception for profile title which should be black */
-.profile-title {
-  color: #000;
-}
-
-/* Stilar för raderingsdialogen */
+/* Delete confirmation dialog */
 .delete-confirmation-overlay {
   position: fixed;
   top: 0;
@@ -251,13 +285,13 @@ textarea {
   font-size: 24px;
   margin-top: 0;
   margin-bottom: 16px;
-  color: #4F4F4F;
+  color: var(--Text-Dark-Grey);
 }
 
 .delete-confirmation-dialog p {
   margin-bottom: 24px;
   line-height: 1.5;
-  color: #4F4F4F;
+  color: var(--Text-Dark-Grey);
 }
 
 .confirmation-buttons {
@@ -271,7 +305,7 @@ textarea {
   border-radius: 30px;
   border: 1px solid #E0E0E0;
   background-color: white;
-  color: #4F4F4F;
+  color: var(--Text-Dark-Grey);
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
@@ -282,7 +316,7 @@ textarea {
   padding: 10px 16px;
   border-radius: 30px;
   border: none;
-  background-color: #E51236;
+  background-color: var(--Primary-Red);
   color: white;
   font-weight: 500;
   font-size: 14px;
@@ -300,7 +334,14 @@ textarea {
   cursor: not-allowed;
 }
 
-/* Hjälpklass för skärmläsare */
+/* Loading state */
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+}
+
+/* Accessibility */
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -313,24 +354,24 @@ textarea {
   border-width: 0;
 }
 
-/* Felmeddelanden */
-.error-message {
-  color: #E51236;
-  font-size: 0.875rem;
-  margin-top: 0.5rem;
-  display: block;
+/* Password change section */
+.password-field-container {
+  margin-top: 10px;
 }
 
-input[aria-invalid="true"],
-textarea[aria-invalid="true"] {
-  border-color: #E51236;
-  background-color: rgba(229, 18, 54, 0.05);
-}
-
-/* Responsiva stilar */
+/* Responsive styles */
 @media (max-width: 768px) {
   .profile-container {
     padding: 20px;
+  }
+  
+  .profile-title {
+    font-size: 36px;
+  }
+  
+  .profile-form-container {
+    flex-direction: column;
+    gap: 16px;
   }
   
   .profile-buttons {
@@ -338,6 +379,7 @@ textarea[aria-invalid="true"] {
     align-items: center;
   }
   
+  .profile-buttons button,
   .save-button,
   .logout-button,
   .delete-button {
@@ -359,49 +401,4 @@ textarea[aria-invalid="true"] {
   .confirm-delete-button {
     width: 100%;
   }
-}
-
-/* Lägg till detta i din befintliga Profile.css-fil */
-
-.password-change-container {
-  margin-top: 10px;
-  padding: 15px;
-  background-color: #f8f8f8;
-  border-radius: 5px;
-  border-left: 3px solid var(--Primary-Navy);
-}
-
-.password-change-container label {
-  font-weight: 500;
-  display: block;
-  margin-bottom: 8px;
-}
-
-.password-change-container input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  background-color: white;
-}
-
-.password-change-container input:focus {
-  outline: none;
-  border-color: var(--Primary-Navy);
-  box-shadow: 0 0 0 2px rgba(0, 26, 82, 0.2);
-}
-
-.password-change-container input[aria-invalid="true"] {
-  border-color: var(--Primary-Red);
-}
-
-.password-save-button {
-  margin-top: 10px !important;
-}
-
-.error-message {
-  color: var(--Primary-Red);
-  font-size: 0.9rem;
-  margin-top: 5px;
-  display: block;
 }

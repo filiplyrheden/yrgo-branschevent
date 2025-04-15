@@ -20,7 +20,7 @@ const StudentProfile = () => {
   const [user, setUser] = useState(null);
   const [studentDbId, setStudentDbId] = useState(null);
   
-  // Nya state-variabler för lösenordshantering
+  // State för lösenordshantering
   const [showPasswordChange, setShowPasswordChange] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [passwordErrors, setPasswordErrors] = useState({});
@@ -33,7 +33,7 @@ const StudentProfile = () => {
   const [formErrors, setFormErrors] = useState({});
   const { addNotification } = useNotification();
   
-  // Använd useRef istället för useState för att spåra om profilen har hämtats
+  // Ref för att spåra om profilen har hämtats
   const profileFetchedRef = useRef(false);
 
   // Lista över alla möjliga intressen (samma som specialties för företag)
@@ -78,7 +78,6 @@ const StudentProfile = () => {
 
   useEffect(() => {
     // Kontrollera om användaren är inloggad och hämta profildata
-
     const checkUser = async () => {
       try {
         // Undvik att köra om profilen redan har hämtats
@@ -206,10 +205,6 @@ const StudentProfile = () => {
           // Uppdatera selectedInterests
           setSelectedInterests(interests.map((item) => item.interest));
         }
-
-        // Visa bara notifiering om detta är första laddningen
-        if (!profileFetchedRef.current) {
-        }
       } else {
         // Om studenten inte finns, skapa en ny post i students-tabellen
         // Generera ett defaultnamn för att undvika not null-fel
@@ -243,10 +238,6 @@ const StudentProfile = () => {
             lastName: "",
             password: "************",
           });
-          
-          // Använd setTimeout för att förhindra dubbla notifieringar
-          setTimeout(() => {
-          }, 300);
         } else {
           throw new Error("Kunde inte skapa studentprofil");
         }
@@ -677,142 +668,142 @@ const StudentProfile = () => {
         <div className="profile-container">
           <h1 className="profile-title">Profil</h1>
 
-          <div className="form-group">
-            <label htmlFor="firstName">
-              Förnamn{" "}
-              <span className="required" aria-hidden="true">
-                *
-              </span>
-            </label>
-            <input
-              type="text"
-              id="firstName"
-              value={formData.firstName}
-              onChange={handleInputChange}
-              placeholder="Förnamn"
-              required
-              aria-required="true"
-              aria-invalid={formErrors.firstName ? "true" : "false"}
-              aria-describedby={
-                formErrors.firstName ? "firstName-error" : undefined
-              }
-            />
-            {formErrors.firstName && (
-              <div id="firstName-error" className="error-message" role="alert">
-                {formErrors.firstName}
-              </div>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="lastName">
-              Efternamn{" "}
-              <span className="required" aria-hidden="true">
-                *
-              </span>
-            </label>
-            <input
-              type="text"
-              id="lastName"
-              value={formData.lastName}
-              onChange={handleInputChange}
-              placeholder="Efternamn"
-              required
-              aria-required="true"
-              aria-invalid={formErrors.lastName ? "true" : "false"}
-              aria-describedby={
-                formErrors.lastName ? "lastName-error" : undefined
-              }
-            />
-            {formErrors.lastName && (
-              <div id="lastName-error" className="error-message" role="alert">
-                {formErrors.lastName}
-              </div>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Lösenord</label>
-            <input
-              type="password"
-              id="password"
-              value={formData.password}
-              readOnly
-              placeholder="************"
-            />
-            
-            {/* Nytt lösenordsfält som visas när användaren klickar på "Ändra Lösenord" */}
-            {showPasswordChange && (
+          {/* Ny två-kolumns layout för formuläret */}
+          <div className="profile-form-container">
+            <div className="profile-form-left-column">
+              {/* Personlig information */}
               <div className="form-group">
-                <label htmlFor="newPassword">
-                  Nytt lösenord{" "}
+                <label htmlFor="firstName">
+                  Förnamn{" "}
                   <span className="required" aria-hidden="true">
                     *
                   </span>
                 </label>
                 <input
-                  type="password"
-                  id="newPassword"
-                  value={newPassword}
-                  onChange={handleNewPasswordChange}
-                  placeholder="Ange nytt lösenord"
+                  type="text"
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  placeholder="Förnamn"
                   required
                   aria-required="true"
-                  aria-invalid={passwordErrors.newPassword ? "true" : "false"}
+                  aria-invalid={formErrors.firstName ? "true" : "false"}
                   aria-describedby={
-                    passwordErrors.newPassword ? "newPassword-error" : undefined
+                    formErrors.firstName ? "firstName-error" : undefined
                   }
-                  style={{background: "var(--Grey)"}}
                 />
-                {passwordErrors.newPassword && (
-                  <div id="newPassword-error" className="error-message" role="alert">
-                    {passwordErrors.newPassword}
+                {formErrors.firstName && (
+                  <div id="firstName-error" className="error-message" role="alert">
+                    {formErrors.firstName}
                   </div>
                 )}
               </div>
-            )}
-            
-            <button
-              type="button"
-              className="password-change-button"
-              onClick={handleChangePassword}
-              style={{
-                background: "#001A52",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                padding: "8px 16px",
-                margin: "8px 0",
-                cursor: "pointer",
-              }}
-            >
-              {showPasswordChange ? "Avbryt" : "Ändra Lösenord"}
-            </button>
-          </div>
 
-          <div className="form-group">
-            <label id="interests-label">Jag är intresserad av:</label>
-            <div
-              className="specialties-container"
-              role="group"
-              aria-labelledby="interests-label"
-            >
-              {allInterests.map((interest) => (
+              <div className="form-group">
+                <label htmlFor="lastName">
+                  Efternamn{" "}
+                  <span className="required" aria-hidden="true">
+                    *
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  placeholder="Efternamn"
+                  required
+                  aria-required="true"
+                  aria-invalid={formErrors.lastName ? "true" : "false"}
+                  aria-describedby={
+                    formErrors.lastName ? "lastName-error" : undefined
+                  }
+                />
+                {formErrors.lastName && (
+                  <div id="lastName-error" className="error-message" role="alert">
+                    {formErrors.lastName}
+                  </div>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="password">Lösenord</label>
+                <input
+                  type="password"
+                  id="password"
+                  value={formData.password}
+                  readOnly
+                  placeholder="************"
+                />
+                
                 <button
-                  key={interest}
                   type="button"
-                  className={`specialty-button ${
-                    selectedInterests.includes(interest) ? "active" : ""
-                  }`}
-                  onClick={() => handleToggleInterest(interest)}
-                  aria-pressed={selectedInterests.includes(interest)}
+                  className="password-change-button"
+                  onClick={handleChangePassword}
                 >
-                  {interest}
+                  {showPasswordChange ? "Avbryt" : "Ändra Lösenord"}
                 </button>
-              ))}
+                
+                {/* Nytt lösenordsfält som visas när användaren klickar på "Ändra Lösenord" */}
+                {showPasswordChange && (
+                  <div className="password-field-container">
+                    <label htmlFor="newPassword">
+                      Nytt lösenord{" "}
+                      <span className="required" aria-hidden="true">
+                        *
+                      </span>
+                    </label>
+                    <input
+                      type="password"
+                      id="newPassword"
+                      value={newPassword}
+                      onChange={handleNewPasswordChange}
+                      placeholder="Ange nytt lösenord"
+                      required
+                      aria-required="true"
+                      aria-invalid={passwordErrors.newPassword ? "true" : "false"}
+                      aria-describedby={
+                        passwordErrors.newPassword ? "newPassword-error" : undefined
+                      }
+                    />
+                    {passwordErrors.newPassword && (
+                      <div id="newPassword-error" className="error-message" role="alert">
+                        {passwordErrors.newPassword}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="profile-form-right-column">
+              {/* Intressen-sektion */}
+              <div className="form-group">
+                <label id="interests-label">Jag är intresserad av:</label>
+                <div
+                  className="specialties-container"
+                  role="group"
+                  aria-labelledby="interests-label"
+                >
+                  {allInterests.map((interest) => (
+                    <button
+                      key={interest}
+                      type="button"
+                      className={`specialty-button ${
+                        selectedInterests.includes(interest) ? "active" : ""
+                      }`}
+                      onClick={() => handleToggleInterest(interest)}
+                      aria-pressed={selectedInterests.includes(interest)}
+                    >
+                      {interest}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
+          {/* Buttons section */}
           <div className="profile-buttons">
             <button
               className="save-button"
