@@ -3,9 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import Header from "../components/layout/Header";
 import Footer from "./layout/Footer";
-import "./Profile.css";
+import Button from "./ui/Button";
+import Input from "./ui/Input";
+import Label from "./ui/Label";
+import TrashIcon from "./ui/TrashIcon";
 import { Widget } from "@uploadcare/react-widget";
 import { useNotification } from "./notifications/NotificationSystem";
+import "./Profile.css";
 
 const CompanyProfile = () => {
   const navigate = useNavigate();
@@ -21,60 +25,33 @@ const CompanyProfile = () => {
     contactPerson: "",
     phone: "",
     additionalInfo: "",
+    otherInfo: "",
     attending: true,
     specialties: [],
     logo: null,
     logoUrl: null,
   });
   
-  // Använd useRef istället för state
+  // Use useRef instead of state to track if profile has been fetched
   const profileFetchedRef = useRef(false);
   
   const [formErrors, setFormErrors] = useState({});
   const { addNotification } = useNotification();
 
-  // Lista över alla möjliga specialties
+  // List of all possible specialties
   const allSpecialties = [
-   "Digital Design",
-    "PHP",
-    "Frontend",
-    "Backend",
-    "TypeScript",
-    "Webflow",
-    "3D",
-    "Motion",
-    "Film",
-    "Foto",
-    "Figma",
-    "Framer",
-    "WordPress",
-    "Illustrator",
-    "Photoshop",
-    "After Effects",
-    "Java Script",
-    "React",
-    "In Design",
-    "UI",
-    "UX",
-    "Spel",
-    "C#",
-    "Next.js",
-    "Angular",
-    "Node.js",
-    "Laravel",
-    "Supabase",
-    "MongoDB",
-    "Sanity",
-    "Swift",
-    "HTML",
-    "CSS"
+    "Digital Design", "PHP", "Frontend", "Backend", "TypeScript", "Webflow", 
+    "3D", "Motion", "Film", "Foto", "Figma", "Framer", "WordPress", 
+    "Illustrator", "Photoshop", "After Effects", "Java Script", "React", 
+    "In Design", "UI", "UX", "Spel", "C#", "Next.js", "Angular", "Node.js", 
+    "Laravel", "Supabase", "MongoDB", "Sanity", "Swift", "HTML", "CSS"
   ];
 
-  // State för specialty selection
+  // State for specialty selection
   const [selectedSpecialties, setSelectedSpecialties] = useState([]);
 
   useEffect(() => {
-    // Kontrollera om användaren är inloggad
+    // Check if user is logged in
     const checkUser = async () => {
       try {
         const { data } = await supabase.auth.getSession();
@@ -86,7 +63,7 @@ const CompanyProfile = () => {
             await fetchCompanyProfile(data.session.user.id);
           }
         } else {
-          // Ta bort notifikationen och bara omdirigera
+          // Just redirect without notification
           navigate("/");
         }
       } catch (error) {
@@ -101,7 +78,7 @@ const CompanyProfile = () => {
     };
 
     checkUser();
-  }, [navigate, addNotification]); // Ta bort profileFetched beroende
+  }, [navigate, addNotification]);
 
   const fetchCompanyProfile = async (userId) => {
     // Guard against multiple simultaneous fetch attempts
@@ -109,9 +86,8 @@ const CompanyProfile = () => {
     
     try {
       setLoading(true);
-      console.log("Fetching company profile for user ID:", userId);
-
-      // Hämta företagsdata
+      
+      // Fetch company data
       const { data: companyData, error: companyError } = await supabase
         .from("companies")
         .select(
@@ -128,10 +104,8 @@ const CompanyProfile = () => {
         throw companyError;
       }
 
-      console.log("Company data retrieved:", companyData);
-
       if (companyData) {
-        // Hämta additional info
+        // Fetch additional info
         const { data: additionalInfo, error: additionalError } = await supabase
           .from("company_additional_info")
           .select("additional_work_info")
@@ -147,7 +121,7 @@ const CompanyProfile = () => {
           logoUrl = companyData.logo_url;
         }
 
-        // Sätt state med hämtad data
+        // Set state with fetched data
         setCompanyData({
           name:
             companyData.company_name === "NOT NULL"
@@ -158,6 +132,7 @@ const CompanyProfile = () => {
           contactPerson: companyData.contact_name || "",
           phone: companyData.phone || "",
           additionalInfo: additionalInfo?.additional_work_info || "",
+          otherInfo: "",
           attending: companyData.coming_to_event === false ? false : true,
           specialties:
             companyData.company_specialties?.map((cs) => cs.specialty) || [],
@@ -168,13 +143,6 @@ const CompanyProfile = () => {
         setSelectedSpecialties(
           companyData.company_specialties?.map((cs) => cs.specialty) || []
         );
-        
-        // Show success notification for data loading only on first successful load
-        if (!profileFetchedRef.current) {
-          // Använd setTimeout för att förhindra dubbla notifieringar
-          setTimeout(() => {
-          }, 300);
-        }
         
         // Mark profile as fetched to prevent duplicate fetches
         profileFetchedRef.current = true;
@@ -229,7 +197,7 @@ const CompanyProfile = () => {
     setCompanyData({
       ...companyData,
       logoUrl: fileInfo.cdnUrl,
-      logo: null, // vi behöver inte längre filobjektet
+      logo: null, // we don't need the file object anymore
     });
     
     addNotification({
@@ -288,7 +256,7 @@ const CompanyProfile = () => {
       setSaveInProgress(true);
       setLoading(true);
 
-      // 1. Check authentication
+      // Check authentication
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
       if (sessionError || !sessionData.session) {
@@ -305,17 +273,9 @@ const CompanyProfile = () => {
       }
 
       const userId = sessionData.session.user.id;
-      console.log("User ID:", userId);
-
-      console.log("Starting save with data:", {
-        ...companyData,
-        logo: companyData.logo ? "File object present" : "No file",
-      });
-
-      console.log("Updating company table...");
 
       // Update company table
-      const { data: companyUpdateData, error: companyError } = await supabase
+      const { error: companyError } = await supabase
         .from("companies")
         .update({
           company_name: companyData.name || "",
@@ -334,10 +294,7 @@ const CompanyProfile = () => {
         throw companyError;
       }
 
-      console.log("Company updated successfully:", companyUpdateData);
-
-      // Update company_additional_info - try a separate operation
-      console.log("Updating additional info...");
+      // Update company_additional_info
       try {
         const { data: additionalInfoCheck, error: checkError } = await supabase
           .from("company_additional_info")
@@ -379,8 +336,7 @@ const CompanyProfile = () => {
         // Continue even if this part fails
       }
 
-      // Handle specialties - in a try/catch block to isolate errors
-      console.log("Updating specialties...");
+      // Handle specialties
       try {
         // First delete existing specialties
         const { error: deleteError } = await supabase
@@ -429,16 +385,9 @@ const CompanyProfile = () => {
       // Navigate to confirmation page
       navigate("/companyconfirmation");
 
-      // No need to refetch everything, just update local state
-      profileFetchedRef.current = true;
     } catch (error) {
       console.error("Error saving profile:", error);
-
-      // More detailed error information
-      if (error.message) console.error("Error message:", error.message);
-      if (error.details) console.error("Error details:", error.details);
-      if (error.hint) console.error("Error hint:", error.hint);
-
+      
       // More detailed error messages
       let errorMessage = "Ett fel uppstod när profilen skulle sparas.";
       
@@ -486,7 +435,7 @@ const CompanyProfile = () => {
     try {
       setDeleteInProgress(true);
   
-      // 1. Kontrollera autentisering
+      // Check authentication
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
   
       if (sessionError || !sessionData.session) {
@@ -502,9 +451,9 @@ const CompanyProfile = () => {
   
       const userId = sessionData.session.user.id;
       
-      // 2. Ta bort data i denna ordning för att respektera referensintegritet:
+      // Delete data in this order to respect referential integrity:
       
-      // a) Ta bort specialties först
+      // 1. Delete specialties first
       const { error: specialtiesError } = await supabase
         .from("company_specialties")
         .delete()
@@ -514,7 +463,7 @@ const CompanyProfile = () => {
         console.error("Error deleting specialties:", specialtiesError);
       }
   
-      // b) Ta bort additional info
+      // 2. Delete additional info
       const { error: additionalInfoError } = await supabase
         .from("company_additional_info")
         .delete()
@@ -524,7 +473,7 @@ const CompanyProfile = () => {
         console.error("Error deleting additional info:", additionalInfoError);
       }
   
-      // c) Ta bort företagsposten
+      // 3. Delete company record
       const { error: companyError } = await supabase
         .from("companies")
         .delete()
@@ -535,10 +484,10 @@ const CompanyProfile = () => {
         throw companyError;
       }
   
-      // Spara en temporär flagga i sessionStorage innan vi loggar ut användaren
+      // Save a temporary flag in sessionStorage before logging out the user
       sessionStorage.setItem('accountDeleted', 'true');
   
-      // Logga ut användaren och navigera till startsidan
+      // Log out the user and navigate to the start page
       await supabase.auth.signOut();
       navigate("/");
       
@@ -577,6 +526,7 @@ const CompanyProfile = () => {
         <div className="profile-container">
           <h1 className="profile-title">Profil</h1>
 
+          {/* Profile image container */}
           <div className="profile-image-container">
             <div className="profile-image">
               {companyData.logoUrl ? (
@@ -627,165 +577,177 @@ const CompanyProfile = () => {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="companyName">
-              Företagets namn <span className="required" aria-hidden="true">*</span>
-            </label>
-            <input
-              type="text"
-              id="companyName"
-              name="name"
-              value={companyData.name}
-              onChange={handleInputChange}
-              placeholder="Företag"
-              required
-              aria-required="true"
-              aria-invalid={formErrors.name ? "true" : "false"}
-              aria-describedby={formErrors.name ? "companyName-error" : undefined}
-            />
-            {formErrors.name && (
-              <div id="companyName-error" className="error-message" role="alert">
-                {formErrors.name}
+          {/* New two-column layout for the form */}
+          <div className="profile-form-container">
+            <div className="profile-form-left-column">
+              {/* Company information forms */}
+              <div className="form-group">
+                <label htmlFor="name">
+                  Företagets namn <span className="required" aria-hidden="true">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={companyData.name}
+                  onChange={handleInputChange}
+                  placeholder="Företag"
+                  required
+                  aria-required="true"
+                  aria-invalid={formErrors.name ? "true" : "false"}
+                  aria-describedby={formErrors.name ? "name-error" : undefined}
+                />
+                {formErrors.name && (
+                  <div id="name-error" className="error-message" role="alert">
+                    {formErrors.name}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          <div className="form-group">
-            <label htmlFor="website">Företagets hemsida</label>
-            <input
-              type="text"
-              id="website"
-              name="website"
-              value={companyData.website}
-              onChange={handleInputChange}
-              placeholder="www.företag.se"
-              aria-invalid={formErrors.website ? "true" : "false"}
-              aria-describedby={formErrors.website ? "website-error" : undefined}
-            />
-            {formErrors.website && (
-              <div id="website-error" className="error-message" role="alert">
-                {formErrors.website}
+              <div className="form-group">
+                <label htmlFor="website">Företagets hemsida</label>
+                <input
+                  type="text"
+                  id="website"
+                  name="website"
+                  value={companyData.website}
+                  onChange={handleInputChange}
+                  placeholder="www.företag.se"
+                  aria-invalid={formErrors.website ? "true" : "false"}
+                  aria-describedby={formErrors.website ? "website-error" : undefined}
+                />
+                {formErrors.website && (
+                  <div id="website-error" className="error-message" role="alert">
+                    {formErrors.website}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          <div className="form-group">
-            <label htmlFor="email">
-              Mailadress för kontakt <span className="required" aria-hidden="true">*</span>
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={companyData.email}
-              onChange={handleInputChange}
-              placeholder="namn@mail.com"
-              required
-              aria-required="true"
-              aria-invalid={formErrors.email ? "true" : "false"}
-              aria-describedby={formErrors.email ? "email-error" : undefined}
-            />
-            {formErrors.email && (
-              <div id="email-error" className="error-message" role="alert">
-                {formErrors.email}
+              <div className="form-group">
+                <label htmlFor="email">
+                  Mailadress för kontakt <span className="required" aria-hidden="true">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={companyData.email}
+                  onChange={handleInputChange}
+                  placeholder="namn@mail.com"
+                  required
+                  aria-required="true"
+                  aria-invalid={formErrors.email ? "true" : "false"}
+                  aria-describedby={formErrors.email ? "email-error" : undefined}
+                />
+                {formErrors.email && (
+                  <div id="email-error" className="error-message" role="alert">
+                    {formErrors.email}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          <div className="form-group">
-            <label htmlFor="contactPerson">Kontaktperson</label>
-            <input
-              type="text"
-              id="contactPerson"
-              name="contactPerson"
-              value={companyData.contactPerson}
-              onChange={handleInputChange}
-              placeholder="Förnamn Efternamn"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="phone">Telefonnummer</label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              value={companyData.phone}
-              onChange={handleInputChange}
-              placeholder="+46 - 000 00 00"
-              aria-invalid={formErrors.phone ? "true" : "false"}
-              aria-describedby={formErrors.phone ? "phone-error" : undefined}
-            />
-            {formErrors.phone && (
-              <div id="phone-error" className="error-message" role="alert">
-                {formErrors.phone}
+              <div className="form-group">
+                <label htmlFor="contactPerson">Kontaktperson</label>
+                <input
+                  type="text"
+                  id="contactPerson"
+                  name="contactPerson"
+                  value={companyData.contactPerson}
+                  onChange={handleInputChange}
+                  placeholder="Förnamn Efternamn"
+                />
               </div>
-            )}
-          </div>
 
-          <div className="form-group">
-            <label id="attendance-label">Vi kommer närvara på minglet den 23/4</label>
-            <div className="attendance-buttons" role="radiogroup" aria-labelledby="attendance-label">
-              <button
-                className={`attendance-button ${
-                  companyData.attending ? "active" : ""
-                }`}
-                onClick={() => handleAttendanceChange(true)}
-                type="button"
-                role="radio"
-                aria-checked={companyData.attending}
-              >
-                Ja
-              </button>
-              <button
-                className={`attendance-button ${
-                  !companyData.attending ? "active" : ""
-                }`}
-                onClick={() => handleAttendanceChange(false)}
-                type="button"
-                role="radio"
-                aria-checked={!companyData.attending}
-              >
-                Nej
-              </button>
+              <div className="form-group">
+                <label htmlFor="phone">Telefonnummer</label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={companyData.phone}
+                  onChange={handleInputChange}
+                  placeholder="+46 - 000 00 00"
+                  aria-invalid={formErrors.phone ? "true" : "false"}
+                  aria-describedby={formErrors.phone ? "phone-error" : undefined}
+                />
+                {formErrors.phone && (
+                  <div id="phone-error" className="error-message" role="alert">
+                    {formErrors.phone}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
 
-          <div className="form-group">
-            <label id="specialties-label">Vi jobbar med:</label>
-            <div 
-              className="specialties-container" 
-              role="group" 
-              aria-labelledby="specialties-label"
-            >
-              {allSpecialties.map((specialty) => (
-                <button
-                  key={specialty}
-                  className={`specialty-button ${
-                    selectedSpecialties.includes(specialty) ? "active" : ""
-                  }`}
-                  onClick={() => handleToggleSpecialty(specialty)}
-                  type="button"
-                  aria-pressed={selectedSpecialties.includes(specialty)}
+            <div className="profile-form-right-column">
+              {/* Attendance section */}
+              <div className="form-group">
+                <label id="attendance-label">Vi kommer närvara på minglet den 23/4</label>
+                <div className="attendance-buttons" role="radiogroup" aria-labelledby="attendance-label">
+                  <button
+                    className={`attendance-button ${
+                      companyData.attending ? "active" : ""
+                    }`}
+                    onClick={() => handleAttendanceChange(true)}
+                    type="button"
+                    role="radio"
+                    aria-checked={companyData.attending}
+                  >
+                    Ja
+                  </button>
+                  <button
+                    className={`attendance-button ${
+                      !companyData.attending ? "active" : ""
+                    }`}
+                    onClick={() => handleAttendanceChange(false)}
+                    type="button"
+                    role="radio"
+                    aria-checked={!companyData.attending}
+                  >
+                    Nej
+                  </button>
+                </div>
+              </div>
+
+              {/* Specialties section with redesigned layout */}
+              <div className="form-group">
+                <label id="specialties-label">Vi jobbar med:</label>
+                <div 
+                  className="specialties-container" 
+                  role="group" 
+                  aria-labelledby="specialties-label"
                 >
-                  {specialty}
-                </button>
-              ))}
+                  {allSpecialties.map((specialty) => (
+                    <button
+                      key={specialty}
+                      className={`specialty-button ${
+                        selectedSpecialties.includes(specialty) ? "active" : ""
+                      }`}
+                      onClick={() => handleToggleSpecialty(specialty)}
+                      type="button"
+                      aria-pressed={selectedSpecialties.includes(specialty)}
+                    >
+                      {specialty}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Additional information text area */}
+              <div className="form-group">
+                <label htmlFor="additionalInfo">Roligt att veta om oss:</label>
+                <textarea
+                  id="additionalInfo"
+                  name="additionalInfo"
+                  value={companyData.additionalInfo}
+                  onChange={handleInputChange}
+                  placeholder="Fri text..."
+                  rows="4"
+                ></textarea>
+              </div>
             </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="additionalInfo">Roligt att veta om oss:</label>
-            <textarea
-              id="additionalInfo"
-              name="additionalInfo"
-              value={companyData.additionalInfo}
-              onChange={handleInputChange}
-              placeholder="Fri text..."
-              rows="4"
-            ></textarea>
-          </div>
-
+          {/* Buttons section */}
           <div className="profile-buttons">
             <button
               className="save-button"
@@ -813,7 +775,7 @@ const CompanyProfile = () => {
             </button>
           </div>
           
-          {/* Bekräftelsedialog för radering av konto */}
+          {/* Delete confirmation dialog */}
           {showDeleteConfirmation && (
             <div className="delete-confirmation-overlay">
               <div className="delete-confirmation-dialog" role="alertdialog" aria-labelledby="delete-title" aria-describedby="delete-description">
