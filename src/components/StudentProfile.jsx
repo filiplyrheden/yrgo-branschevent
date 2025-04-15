@@ -19,6 +19,12 @@ const StudentProfile = () => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [user, setUser] = useState(null);
   const [studentDbId, setStudentDbId] = useState(null);
+  
+  // Nya state-variabler för lösenordshantering
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordErrors, setPasswordErrors] = useState({});
+  
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -270,6 +276,18 @@ const StudentProfile = () => {
     }
   };
 
+  const handleNewPasswordChange = (e) => {
+    setNewPassword(e.target.value);
+    
+    // Rensa fel när användaren börjar skriva
+    if (passwordErrors.newPassword) {
+      setPasswordErrors({
+        ...passwordErrors,
+        newPassword: null
+      });
+    }
+  };
+
   const handleToggleInterest = (interest) => {
     if (selectedInterests.includes(interest)) {
       setSelectedInterests(selectedInterests.filter((i) => i !== interest));
@@ -290,6 +308,19 @@ const StudentProfile = () => {
     }
 
     setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const validatePassword = () => {
+    const errors = {};
+
+    if (!newPassword) {
+      errors.newPassword = "Lösenord kan inte vara tomt";
+    } else if (newPassword.length < 6) {
+      errors.newPassword = "Lösenordet måste vara minst 6 tecken långt";
+    }
+
+    setPasswordErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
@@ -336,6 +367,61 @@ const StudentProfile = () => {
             "Kunde inte hitta din profil. Försök logga ut och in igen.",
             "Profilfel"
           );
+          return;
+        }
+      }
+      
+      // Hantera lösenordsändring om nytt lösenord har angetts
+      if (showPasswordChange && newPassword) {
+        // Validera lösenordet först
+        if (!validatePassword()) {
+          setSaveInProgress(false);
+          setLoading(false);
+          return;
+        }
+        
+        try {
+          // Använd Supabase Auth för att uppdatera lösenordet
+          const { error } = await supabase.auth.updateUser({
+            password: newPassword
+          });
+          
+          if (error) {
+            throw error;
+          }
+          
+          // Visa framgångsmeddelande för lösenordsändring
+          showSuccess(
+            addNotification, 
+            "Ditt lösenord har uppdaterats", 
+            "Lösenord ändrat"
+          );
+          
+          // Stäng lösenordsfältet och återställ
+          setShowPasswordChange(false);
+          setNewPassword("");
+          
+        } catch (error) {
+          console.error("Fel vid uppdatering av lösenord:", error);
+          
+          // Mer detaljerad felhantering för lösenordsuppdatering
+          let errorMessage = "Ett fel uppstod när lösenordet skulle uppdateras";
+          
+          if (error.message) {
+            if (error.message.includes("weak-password")) {
+              errorMessage = "Lösenordet är för svagt. Välj ett starkare lösenord.";
+            } else if (error.message.includes("requires-recent-login")) {
+              errorMessage = "Du behöver logga in igen innan du kan ändra lösenord.";
+              // Logga ut användaren och skicka till inloggningssidan
+              await supabase.auth.signOut();
+              navigate("/login");
+              return;
+            }
+          }
+          
+          showError(addNotification, errorMessage, "Lösenordsfel");
+          setSaveInProgress(false);
+          setLoading(false);
           return;
         }
       }
@@ -469,8 +555,14 @@ const StudentProfile = () => {
   };
 
   const handleChangePassword = () => {
-    // Implementera lösenordsbyte om det behövs
-   
+    // Togglea visning av lösenordsfältet
+    setShowPasswordChange(!showPasswordChange);
+    
+    // Återställ lösenord och fel om fältet stängs
+    if (showPasswordChange) {
+      setNewPassword("");
+      setPasswordErrors({});
+    }
   };
 
   const handleLogout = async () => {
@@ -648,6 +740,38 @@ const StudentProfile = () => {
               readOnly
               placeholder="************"
             />
+            
+            {/* Nytt lösenordsfält som visas när användaren klickar på "Ändra Lösenord" */}
+            {showPasswordChange && (
+              <div className="form-group">
+                <label htmlFor="newPassword">
+                  Nytt lösenord{" "}
+                  <span className="required" aria-hidden="true">
+                    *
+                  </span>
+                </label>
+                <input
+                  type="password"
+                  id="newPassword"
+                  value={newPassword}
+                  onChange={handleNewPasswordChange}
+                  placeholder="Ange nytt lösenord"
+                  required
+                  aria-required="true"
+                  aria-invalid={passwordErrors.newPassword ? "true" : "false"}
+                  aria-describedby={
+                    passwordErrors.newPassword ? "newPassword-error" : undefined
+                  }
+                  style={{background: "var(--Grey)"}}
+                />
+                {passwordErrors.newPassword && (
+                  <div id="newPassword-error" className="error-message" role="alert">
+                    {passwordErrors.newPassword}
+                  </div>
+                )}
+              </div>
+            )}
+            
             <button
               type="button"
               className="password-change-button"
@@ -662,7 +786,7 @@ const StudentProfile = () => {
                 cursor: "pointer",
               }}
             >
-              Ändra Lösenord
+              {showPasswordChange ? "Avbryt" : "Ändra Lösenord"}
             </button>
           </div>
 

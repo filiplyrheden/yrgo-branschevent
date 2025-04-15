@@ -18,15 +18,15 @@ const Companies = () => {
   const [specialtyFilters, setSpecialtyFilters] = useState([]);
   const { addNotification } = useNotification();
   
-  // Använd useRef istället för useState för att spåra om företag har hämtats
+  // Use useRef to track if companies have been fetched
   const companiesFetchedRef = useRef(false);
-  // Ref för att spåra föregående filter
+  // Ref to track previous filter
   const previousFilterRef = useRef('all');
 
   useEffect(() => {
     const checkAuthAndFetchCompanies = async () => {
       try {
-        // Undvik att köra om företagen redan har hämtats
+        // Avoid running if companies have already been fetched
         if (companiesFetchedRef.current) return;
         
         // Check if user is logged in
@@ -58,10 +58,10 @@ const Companies = () => {
           return;
         }
         
-        // Fetch all companies - skicka med true för att visa notifikationer
+        // Fetch all companies - pass true to show notifications
         await fetchCompanies(true);
         
-        // Markera att företagen har hämtats
+        // Mark that companies have been fetched
         companiesFetchedRef.current = true;
       } catch (error) {
         console.error("Error checking auth:", error);
@@ -75,7 +75,7 @@ const Companies = () => {
     };
     
     checkAuthAndFetchCompanies();
-  }, [navigate, addNotification]); // Ta bort companiesFetched som dependency
+  }, [navigate, addNotification]);
 
   useEffect(() => {
     // Apply filters when companies or filters change
@@ -133,10 +133,14 @@ const Companies = () => {
         });
         setSpecialtyFilters(Array.from(allSpecialties).sort());
         
-        // Show success notification only if requested AND not shown before
-        if (showNotifications && !companiesFetchedRef.current) {
-         
-        }
+        // Optional: You can uncomment this if you want to show success notification
+        // if (showNotifications && !companiesFetchedRef.current) {
+        //   showSuccess(
+        //     addNotification,
+        //     `Företagslistan har laddats (${enrichedCompanies.length} företag)`,
+        //     "Företag"
+        //   );
+        // }
       } else {
         setCompanies([]);
         setFilteredCompanies([]);
@@ -182,9 +186,19 @@ const Companies = () => {
       filterResults.textContent = resultMessage;
     }
     
-    // Endast visa notifiering om filtret har ändrats
+    // Only show notification if filter has changed
     if (companiesFetchedRef.current && previousFilterRef.current !== activeFilter) {
-     
+      // Optional: You can uncomment this if you want to show notification on filter change
+      // const filterNames = {
+      //   'all': 'alla företag',
+      //   'attending': 'företag som deltar på minglet',
+      //   'not-attending': 'företag som inte deltar'
+      // };
+      // showInfo(
+      //   addNotification,
+      //   `Filter: ${filterNames[activeFilter]} (${filtered.length} av ${companies.length})`,
+      //   "Filter applicerat"
+      // );
       previousFilterRef.current = activeFilter;
     }
   };
@@ -201,6 +215,7 @@ const Companies = () => {
         <Header />
         <main>
           <div className="favorites-container">
+            <h1 className="favorites-title">Alla företag</h1>
             <div className="loading" role="status" aria-live="polite">
               <span className="visually-hidden">Laddar företag...</span>
               <div className="loading-spinner" aria-hidden="true"></div>
@@ -277,7 +292,6 @@ const Companies = () => {
                   key={company.id} 
                   className="favorite-card"
                   onClick={() => navigate(`/company/${company.id}`)}
-                  style={{ cursor: 'pointer' }}
                   role="listitem"
                   aria-label={`${company.company_name || 'Företag'}${company.coming_to_event ? ', deltar på minglet' : ''}`}
                   tabIndex="0"
@@ -332,43 +346,6 @@ const Companies = () => {
         </div>
       </main>
       <Footer />
-      
-      {/* Hidden styles for accessibility */}
-      <style jsx>{`
-        .visually-hidden {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          padding: 0;
-          margin: -1px;
-          overflow: hidden;
-          clip: rect(0, 0, 0, 0);
-          white-space: nowrap;
-          border-width: 0;
-        }
-        
-        .filter-heading {
-          font-size: 1.2rem;
-          margin-bottom: 1rem;
-        }
-        
-        .loading-spinner {
-          display: inline-block;
-          width: 2rem;
-          height: 2rem;
-          border: 0.25rem solid rgba(0, 26, 82, 0.2);
-          border-radius: 50%;
-          border-top-color: var(--Primary-Navy);
-          animation: spin 1s linear infinite;
-          margin-right: 1rem;
-        }
-        
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   );
 };

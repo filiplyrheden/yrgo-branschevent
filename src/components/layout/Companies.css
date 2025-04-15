@@ -1,45 +1,72 @@
+/* Companies.css */
 .company-attending {
-    display: flex;
-    align-items: center;
-    margin-top: 0.5rem;
-  }
-  
-  .company-attending span {
-    font-size: 0.8rem;
-    padding: 0.25rem 0.5rem;
-    background-color: rgba(255, 255, 255, 0.15);
-    border-radius: 4px;
-    font-weight: 400;
-  }
-  
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.company-attending span {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  font-weight: 400;
+  color: var(--Primary-White);
+}
+
+.filters-section {
+  margin-bottom: 2rem;
+}
+
+.filter-heading {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-family: var(--Font-IBM-Plex-Mono);
+  color: var(--Primary-Navy);
+}
+
+.filters-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-button {
+  background-color: white;
+  color: var(--Primary-Navy);
+  border: 1px solid var(--Primary-Navy);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--Font-Inter);
+}
+
+.filter-button.active {
+  background-color: var(--Primary-Navy);
+  color: white;
+}
+
+.filter-button:hover {
+  background-color: rgba(0, 26, 82, 0.1);
+}
+
+.filter-button.active:hover {
+  background-color: var(--Primary-Navy);
+  opacity: 0.9;
+}
+
+/* Media Queries for responsive filters */
+@media (max-width: 480px) {
   .filters-container {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.5rem;
   }
   
   .filter-button {
-    background-color: white;
-    color: #001A52;
-    border: 1px solid #001A52;
-    border-radius: 20px;
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    width: 100%;
+    text-align: center;
   }
-  
-  .filter-button.active {
-    background-color: #001A52;
-    color: white;
-  }
-  
-  .filter-button:hover {
-    background-color: rgba(0, 26, 82, 0.1);
-  }
-  
-  .filter-button.active:hover {
-    background-color: #001A52;
-    opacity: 0.9;
-  }
+}

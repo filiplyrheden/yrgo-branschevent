@@ -360,3 +360,48 @@ textarea[aria-invalid="true"] {
     width: 100%;
   }
 }
+
+/* Lägg till detta i din befintliga Profile.css-fil */
+
+.password-change-container {
+  margin-top: 10px;
+  padding: 15px;
+  background-color: #f8f8f8;
+  border-radius: 5px;
+  border-left: 3px solid var(--Primary-Navy);
+}
+
+.password-change-container label {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.password-change-container input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.password-change-container input:focus {
+  outline: none;
+  border-color: var(--Primary-Navy);
+  box-shadow: 0 0 0 2px rgba(0, 26, 82, 0.2);
+}
+
+.password-change-container input[aria-invalid="true"] {
+  border-color: var(--Primary-Red);
+}
+
+.password-save-button {
+  margin-top: 10px !important;
+}
+
+.error-message {
+  color: var(--Primary-Red);
+  font-size: 0.9rem;
+  margin-top: 5px;
+  display: block;
+}
