@@ -4,7 +4,8 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 2.5rem 1rem;
-  /* gap: 52.75rem; */
+  position: relative;
+  z-index: 1002;
 }
 
 .yrgo-logo {
