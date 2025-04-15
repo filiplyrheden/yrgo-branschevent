@@ -91,65 +91,77 @@ export default function Login() {
   };
 
   return (
-    <div>
+    <div className="login-page">
       <Header />
-      <main>
+      <main className="login-main">
         <div className="login-container" role="region" aria-labelledby="login-heading">
-          <h1 id="login-heading" className="visually-hidden">Logga in</h1>
+          <h1 id="login-heading">Logga in</h1>
           
-          <div className="input-container">
-            <Input
-              id="email"
-              label="Mejl"
-              placeholder="Mejl..."
-              type="email"
-              required
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                // Rensa fel när användaren börjar skriva
-                if (formErrors.email) {
-                  setFormErrors(prev => ({ ...prev, email: null }));
-                }
-              }}
-              onKeyDown={handleKeyDown}
-              aria-describedby={formErrors.email ? "email-error" : undefined}
-              aria-invalid={formErrors.email ? "true" : "false"}
-            />
-            {formErrors.email && (
-              <div id="email-error" className="error-message" role="alert">
-                {formErrors.email}
+          <div className="login-form-container">
+            <div className="login-input-container">
+              <div className="login-input-wrapper">
+                <Input
+                  id="email"
+                  label="Mejl"
+                  placeholder="Mejl..."
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    // Rensa fel när användaren börjar skriva
+                    if (formErrors.email) {
+                      setFormErrors(prev => ({ ...prev, email: null }));
+                    }
+                  }}
+                  onKeyDown={handleKeyDown}
+                  aria-describedby={formErrors.email ? "email-error" : undefined}
+                  aria-invalid={formErrors.email ? "true" : "false"}
+                />
+                {formErrors.email && (
+                  <div id="email-error" className="login-error-message" role="alert">
+                    {formErrors.email}
+                  </div>
+                )}
               </div>
-            )}
-
-            <Input
-              id="password"
-              label="Lösenord"
-              placeholder="Lösenord..."
-              type="password"
-              required
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                // Rensa fel när användaren börjar skriva
-                if (formErrors.password) {
-                  setFormErrors(prev => ({ ...prev, password: null }));
-                }
-              }}
-              onKeyDown={handleKeyDown}
-              aria-describedby={formErrors.password ? "password-error" : undefined}
-              aria-invalid={formErrors.password ? "true" : "false"}
-            />
-            {formErrors.password && (
-              <div id="password-error" className="error-message" role="alert">
-                {formErrors.password}
+              
+              
+            </div>
+            
+            <div className="login-input-container">
+              <div className="login-input-wrapper">
+                <Input
+                  id="password"
+                  label="Lösenord"
+                  placeholder="Lösenord..."
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    // Rensa fel när användaren börjar skriva
+                    if (formErrors.password) {
+                      setFormErrors(prev => ({ ...prev, password: null }));
+                    }
+                  }}
+                  onKeyDown={handleKeyDown}
+                  aria-describedby={formErrors.password ? "password-error" : undefined}
+                  aria-invalid={formErrors.password ? "true" : "false"}
+                />
+                {formErrors.password && (
+                  <div id="password-error" className="login-error-message" role="alert">
+                    {formErrors.password}
+                  </div>
+                )}
               </div>
-            )}
+              
+              
+            </div>
           </div>
 
           {formErrors.general && (
             <div 
-              className="error-message" 
+              className="login-error-message login-general-error" 
               role="alert"
               aria-live="assertive"
             >
@@ -157,39 +169,17 @@ export default function Login() {
             </div>
           )}
 
-          <Button 
-            text={isLoading ? "Loggar in..." : "Logga in"} 
-            onClick={handleLogin} 
-            disabled={isLoading}
-            aria-busy={isLoading ? "true" : "false"}
-          />
+          <div className="login-button-container">
+            <Button 
+              text={isLoading ? "Loggar in..." : "Logga in"} 
+              onClick={handleLogin} 
+              disabled={isLoading}
+              aria-busy={isLoading ? "true" : "false"}
+            />
+          </div>
         </div>
       </main>
       <Footer />
-      
-      {/* Hidden styles for screen readers */}
-      <style jsx>{`
-        .visually-hidden {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          padding: 0;
-          margin: -1px;
-          overflow: hidden;
-          clip: rect(0, 0, 0, 0);
-          white-space: nowrap;
-          border-width: 0;
-        }
-        
-        .error-message {
-          color: #E51236;
-          margin: 10px 0;
-          padding: 10px;
-          background-color: rgba(229, 18, 54, 0.1);
-          border-radius: 4px;
-          border: 1px solid #E51236;
-        }
-      `}</style>
     </div>
   );
 }
