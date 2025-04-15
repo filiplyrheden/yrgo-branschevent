@@ -14,7 +14,7 @@ import Home from "./pages/Home";
 import Companies from "./pages/Companies";
 import CompanyProfile from "./components/CompanyProfile";
 import StudentProfile from "./components/StudentProfile";
-import Swipe from "./components/swipe.jsx";
+import Swipe from "./components/Swipe.jsx";
 import Login from "./pages/Login";
 import Favorites from "./pages/Favorites";
 import CompanyConfirmation from "./pages/CompanyConfirmation";
