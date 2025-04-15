@@ -42,9 +42,47 @@ a {
   z-index: 1001;
 }
 
+.menu-toggle,
+h3 {
+  color: var(--Text-Dark-Grey);
+  font-family: var(--Font-Inter);
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 1.75rem;
+}
+
+.mobile-header-left {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .menu-toggle {
     display: block;
+  }
+
+  .mobile-header-left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+
+  .yrgo-logo {
+    display: none;
+  }
+
+  .mobile-yrgo-logo {
+    display: block;
+    width: 12.75rem;
+    height: 3.125rem;
+    margin-right: 2rem;
+    margin-left: 0;
+  }
+
+  .mobile-nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 
   nav {
@@ -53,7 +91,7 @@ a {
     right: 1rem;
     background: white;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: space-between;
     gap: 1rem;
     padding: 1rem;
     border: 1px solid #ccc;
@@ -67,11 +105,11 @@ a {
 
   header {
     position: relative;
-    flex-wrap: wrap;
     gap: 0;
   }
 
-  .yrgo-logo {
-    margin-right: auto;
+  .button,
+  .menu-toggle {
+    padding: 0;
   }
 }
