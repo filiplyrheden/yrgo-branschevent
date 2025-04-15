@@ -155,7 +155,9 @@ const Footer = () => {
               <img src={gbgLogo} alt="Göteborg stad logo" />
             </a>
           </div>
-          <p>© 2025 Yrgo, högre yrkesutbildning Göteborg</p>
+          <p className="footer-copy">
+            © 2025 Yrgo, högre yrkesutbildning Göteborg
+          </p>
         </div>
       </div>
 

@@ -1,29 +1,26 @@
 footer {
   display: flex;
-  width: 90rem;
   flex-direction: column;
   align-items: flex-start;
+  padding: 2.5rem 0 2.5rem 0;
 }
 
 .footer-content {
   display: flex;
   margin: 0 5rem 0 5rem;
-  padding: 2.5rem 0rem;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .upper-section {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  width: 100%;
+  align-items: center;
+  gap: 18.75rem;
 }
 
 .icon-logos {
   display: flex;
   width: 44.375rem;
-  padding: 0;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
@@ -38,6 +35,7 @@ footer {
   justify-content: center;
   align-items: flex-start;
   text-align: left;
+  gap: 0.5rem;
 }
 
 .footer-link-text {
@@ -55,27 +53,111 @@ footer {
   width: 76.25rem;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2.5rem;
+  gap: 1rem;
 }
 
 .red-line {
   width: 100%;
   height: 0.125rem;
   background-color: var(--Primary-Red);
+  margin: 1rem 0 1rem 0;
 }
 
 .footer-copy {
   font-family: var(--Font-Inter);
   font-size: 1rem;
   font-style: normal;
-  font-weight: 500;
+  font-weight: 200;
   line-height: normal;
   letter-spacing: 0.05rem;
-  text-transform: capitalize;
-  color: var(--Text-Dark-Grey);
+  color: var(--Dark-Gray);
 }
 
 img {
   aspect-ratio: 218.43/72.65;
   width: 15rem;
+}
+
+/* Media Queries */
+@media screen and (max-width: 1200px) {
+  .upper-section {
+    gap: 10rem;
+  }
+
+  .icon-logos {
+    width: 35rem;
+  }
+
+  .bottom-section {
+    width: 90%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  footer {
+    padding: 2rem 0;
+  }
+
+  .footer-content {
+    margin: 0 2rem;
+    width: calc(100% - 4rem);
+    align-items: flex-start;
+  }
+
+  .upper-section {
+    flex-direction: column;
+    gap: 3rem;
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .icon-logos {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .links {
+    width: 100%;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .bottom-section {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .footer-copy {
+    text-align: left;
+    color: #828282;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  footer {
+    padding: 1.5rem 0;
+  }
+
+  .footer-content {
+    margin: 0 1rem;
+    width: calc(100% - 2rem);
+    align-items: flex-start;
+  }
+
+  .footer-link-text {
+    font-size: 1.2rem;
+  }
+
+  img {
+    width: 12rem;
+  }
+
+  .footer-copy {
+    font-family: var(--Font-Inter);
+    color: #828282;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.5rem;
+  }
 }
