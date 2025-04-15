@@ -4,8 +4,6 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 2.5rem 1rem;
-  position: relative;
-  z-index: 1002;
 }
 
 .yrgo-logo {
@@ -102,6 +100,7 @@ h3 {
 
   nav.open {
     display: flex;
+    z-index: 2;
   }
 
   header {
