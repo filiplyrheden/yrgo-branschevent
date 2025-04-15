@@ -262,6 +262,56 @@
   height: 28px; /* Increased icon size */
 }
 
+/* Add these media queries for responsive swipe buttons */
+@media (max-width: 768px) {
+  .swipe-buttons {
+    gap: 2rem;
+  }
+
+  .swipe-button {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+
+  .swipe-button svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .swipe-buttons {
+    gap: 1.5rem;
+  }
+
+  .swipe-button {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .swipe-button svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 360px) {
+  .swipe-buttons {
+    gap: 1rem;
+  }
+
+  .swipe-button {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .swipe-button svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
 .swipe-loading {
   display: flex;
   flex-direction: column;
