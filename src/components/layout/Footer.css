@@ -1,29 +1,26 @@
 footer {
   display: flex;
-  width: 90rem;
   flex-direction: column;
   align-items: flex-start;
+  padding: 2.5rem 0 2.5rem 0;
 }
 
 .footer-content {
   display: flex;
   margin: 0 5rem 0 5rem;
-  padding: 2.5rem 0rem;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .upper-section {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  width: 100%;
+  align-items: center;
+  gap: 18.75rem;
 }
 
 .icon-logos {
   display: flex;
   width: 44.375rem;
-  padding: 0;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
@@ -38,6 +35,7 @@ footer {
   justify-content: center;
   align-items: flex-start;
   text-align: left;
+  gap: 0.5rem;
 }
 
 .footer-link-text {
@@ -55,13 +53,14 @@ footer {
   width: 76.25rem;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2.5rem;
+  gap: 1rem;
 }
 
 .red-line {
   width: 100%;
   height: 0.125rem;
   background-color: var(--Primary-Red);
+  margin: 1rem 0 1rem 0;
 }
 
 .footer-copy {
