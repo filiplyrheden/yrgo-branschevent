@@ -1,7 +1,7 @@
 .swipe-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: calc(100vh - 4rem);
   background-color: var(--Primary-Navy);
 }
 
@@ -337,12 +337,12 @@
   }
 
   .swipe-card {
-    height: 650px;
+    height: 28rem;
     max-width: 450px;
   }
 
   .card-container {
-    height: 650px;
+    height: 27rem;
     max-width: 450px;
   }
 }
@@ -354,12 +354,12 @@
 
   .swipe-card {
     max-width: 320px;
-    height: 700px;
+    height: 27rem;
   }
 
   .card-container {
     max-width: 320px;
-    height: 700px;
+    height: 26rem;
   }
 
   .card-info {
