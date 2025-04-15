@@ -18,10 +18,13 @@
 }
 
 .profile-title {
-  font-size: 48px;
-  font-weight: 400;
-  margin-bottom: 32px;
-  color: #000;
+  color: var(--Primary-Navy);
+    font-family: var(--Font-IBM-Plex-Mono);
+    font-size: 2rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin: 1.5rem 0 1.5rem 0;
 }
 
 /* Profile image upload */
