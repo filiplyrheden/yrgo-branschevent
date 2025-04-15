@@ -217,15 +217,15 @@ const CompanyProfile = () => {
     
     if (!companyData.email.trim()) {
       errors.email = "E-post är obligatoriskt";
-    } else if (!/\S+@\S+\.\S+/.test(companyData.email)) {
+    } else if (!/\S+@\S+\.\S+/.test(companyData.email.trim())) {
       errors.email = "Ogiltig e-postadress";
     }
     
-    if (companyData.website && !/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/.test(companyData.website)) {
+    if (companyData.website && !/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/.test(companyData.website.trim())) {
       errors.website = "Ogiltig webbadress";
     }
     
-    if (companyData.phone && !/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/.test(companyData.phone)) {
+    if (companyData.phone && !/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/.test(companyData.phone.trim())) {
       errors.phone = "Ogiltigt telefonnummer";
     }
     
@@ -278,11 +278,11 @@ const CompanyProfile = () => {
       const { error: companyError } = await supabase
         .from("companies")
         .update({
-          company_name: companyData.name || "",
-          website_url: companyData.website || null,
-          email: companyData.email || "",
-          contact_name: companyData.contactPerson || null,
-          phone: companyData.phone || null,
+          company_name: companyData.name.trim() || "",
+          website_url: companyData.website ? companyData.website.trim() : null,
+          email: companyData.email.trim() || "",
+          contact_name: companyData.contactPerson ? companyData.contactPerson.trim() : null,
+          phone: companyData.phone ? companyData.phone.trim() : null,
           coming_to_event: companyData.attending === false ? false : true,
           logo_url: companyData.logoUrl || null,
           updated_at: new Date().toISOString(),

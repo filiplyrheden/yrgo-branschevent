@@ -19,12 +19,12 @@ const StudentProfile = () => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [user, setUser] = useState(null);
   const [studentDbId, setStudentDbId] = useState(null);
-  
+
   // State för lösenordshantering
   const [showPasswordChange, setShowPasswordChange] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [passwordErrors, setPasswordErrors] = useState({});
-  
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -32,13 +32,13 @@ const StudentProfile = () => {
   });
   const [formErrors, setFormErrors] = useState({});
   const { addNotification } = useNotification();
-  
+
   // Ref för att spåra om profilen har hämtats
   const profileFetchedRef = useRef(false);
 
   // Lista över alla möjliga intressen (samma som specialties för företag)
   const allInterests = [
-   "Digital Design",
+    "Digital Design",
     "PHP",
     "Frontend",
     "Backend",
@@ -70,7 +70,7 @@ const StudentProfile = () => {
     "Sanity",
     "Swift",
     "HTML",
-    "CSS"
+    "CSS",
   ];
 
   // State för intresse-val
@@ -242,10 +242,9 @@ const StudentProfile = () => {
           throw new Error("Kunde inte skapa studentprofil");
         }
       }
-      
+
       // Markera att profilen har hämtats framgångsrikt med useRef
       profileFetchedRef.current = true;
-      
     } catch (error) {
       console.error("Fel vid hämtning av studentprofil:", error);
     }
@@ -269,12 +268,12 @@ const StudentProfile = () => {
 
   const handleNewPasswordChange = (e) => {
     setNewPassword(e.target.value);
-    
+
     // Rensa fel när användaren börjar skriva
     if (passwordErrors.newPassword) {
       setPasswordErrors({
         ...passwordErrors,
-        newPassword: null
+        newPassword: null,
       });
     }
   };
@@ -305,9 +304,9 @@ const StudentProfile = () => {
   const validatePassword = () => {
     const errors = {};
 
-    if (!newPassword) {
+    if (!newPassword.trim()) {
       errors.newPassword = "Lösenord kan inte vara tomt";
-    } else if (newPassword.length < 6) {
+    } else if (newPassword.trim().length < 6) {
       errors.newPassword = "Lösenordet måste vara minst 6 tecken långt";
     }
 
@@ -361,7 +360,7 @@ const StudentProfile = () => {
           return;
         }
       }
-      
+
       // Hantera lösenordsändring om nytt lösenord har angetts
       if (showPasswordChange && newPassword) {
         // Validera lösenordet först
@@ -370,46 +369,47 @@ const StudentProfile = () => {
           setLoading(false);
           return;
         }
-        
+
         try {
           // Använd Supabase Auth för att uppdatera lösenordet
           const { error } = await supabase.auth.updateUser({
-            password: newPassword
+            password: newPassword.trim(),
           });
-          
+
           if (error) {
             throw error;
           }
-          
+
           // Visa framgångsmeddelande för lösenordsändring
           showSuccess(
-            addNotification, 
-            "Ditt lösenord har uppdaterats", 
+            addNotification,
+            "Ditt lösenord har uppdaterats",
             "Lösenord ändrat"
           );
-          
+
           // Stäng lösenordsfältet och återställ
           setShowPasswordChange(false);
           setNewPassword("");
-          
         } catch (error) {
           console.error("Fel vid uppdatering av lösenord:", error);
-          
+
           // Mer detaljerad felhantering för lösenordsuppdatering
           let errorMessage = "Ett fel uppstod när lösenordet skulle uppdateras";
-          
+
           if (error.message) {
             if (error.message.includes("weak-password")) {
-              errorMessage = "Lösenordet är för svagt. Välj ett starkare lösenord.";
+              errorMessage =
+                "Lösenordet är för svagt. Välj ett starkare lösenord.";
             } else if (error.message.includes("requires-recent-login")) {
-              errorMessage = "Du behöver logga in igen innan du kan ändra lösenord.";
+              errorMessage =
+                "Du behöver logga in igen innan du kan ändra lösenord.";
               // Logga ut användaren och skicka till inloggningssidan
               await supabase.auth.signOut();
               navigate("/login");
               return;
             }
           }
-          
+
           showError(addNotification, errorMessage, "Lösenordsfel");
           setSaveInProgress(false);
           setLoading(false);
@@ -418,7 +418,8 @@ const StudentProfile = () => {
       }
 
       // Skapa fullständigt namn
-      let fullName = `${formData.firstName} ${formData.lastName}`.trim();
+      let fullName =
+        `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim();
       if (!fullName) {
         // Säkerställ att name inte är tom (för att uppfylla not null-villkoret)
         fullName = "Okänd Student";
@@ -548,7 +549,7 @@ const StudentProfile = () => {
   const handleChangePassword = () => {
     // Togglea visning av lösenordsfältet
     setShowPasswordChange(!showPasswordChange);
-    
+
     // Återställ lösenord och fel om fältet stängs
     if (showPasswordChange) {
       setNewPassword("");
@@ -583,23 +584,24 @@ const StudentProfile = () => {
       setDeleteInProgress(true);
 
       // 1. Kontrollera autentisering
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
 
       if (sessionError || !sessionData.session) {
         addNotification({
           type: "error",
           title: "Sessionsfel",
           message: "Din session har gått ut. Vänligen logga in igen.",
-          duration: 5000
+          duration: 5000,
         });
         navigate("/");
         return;
       }
 
       const userId = sessionData.session.user.id;
-      
+
       // 2. Ta bort data i denna ordning för att respektera referensintegritet:
-      
+
       // a) Ta bort intressen först
       const { error: interestsError } = await supabase
         .from("student_interests")
@@ -612,7 +614,7 @@ const StudentProfile = () => {
 
       // b) Ta bort studentposter från andra tabeller om det finns några
       // Till exempel, favoriter, matchningar, etc.
-      
+
       // c) Ta bort studentposten
       const { error: studentError } = await supabase
         .from("students")
@@ -625,22 +627,22 @@ const StudentProfile = () => {
       }
 
       // Spara en temporär flagga i sessionStorage innan vi loggar ut användaren
-      sessionStorage.setItem('accountDeleted', 'true');
+      sessionStorage.setItem("accountDeleted", "true");
 
       // Logga ut användaren och navigera till startsidan
       await supabase.auth.signOut();
       navigate("/");
-      
     } catch (error) {
       console.error("Fel vid radering av konto:", error);
-      
+
       addNotification({
         type: "error",
         title: "Raderingsfel",
-        message: "Ett fel uppstod när kontot skulle raderas. Vänligen försök igen senare.",
-        duration: 5000
+        message:
+          "Ett fel uppstod när kontot skulle raderas. Vänligen försök igen senare.",
+        duration: 5000,
       });
-      
+
       setShowDeleteConfirmation(false);
     } finally {
       setDeleteInProgress(false);
@@ -693,7 +695,11 @@ const StudentProfile = () => {
                   }
                 />
                 {formErrors.firstName && (
-                  <div id="firstName-error" className="error-message" role="alert">
+                  <div
+                    id="firstName-error"
+                    className="error-message"
+                    role="alert"
+                  >
                     {formErrors.firstName}
                   </div>
                 )}
@@ -720,7 +726,11 @@ const StudentProfile = () => {
                   }
                 />
                 {formErrors.lastName && (
-                  <div id="lastName-error" className="error-message" role="alert">
+                  <div
+                    id="lastName-error"
+                    className="error-message"
+                    role="alert"
+                  >
                     {formErrors.lastName}
                   </div>
                 )}
@@ -735,7 +745,7 @@ const StudentProfile = () => {
                   readOnly
                   placeholder="************"
                 />
-                
+
                 <button
                   type="button"
                   className="password-change-button"
@@ -743,7 +753,7 @@ const StudentProfile = () => {
                 >
                   {showPasswordChange ? "Avbryt" : "Ändra Lösenord"}
                 </button>
-                
+
                 {/* Nytt lösenordsfält som visas när användaren klickar på "Ändra Lösenord" */}
                 {showPasswordChange && (
                   <div className="password-field-container">
@@ -761,13 +771,21 @@ const StudentProfile = () => {
                       placeholder="Ange nytt lösenord"
                       required
                       aria-required="true"
-                      aria-invalid={passwordErrors.newPassword ? "true" : "false"}
+                      aria-invalid={
+                        passwordErrors.newPassword ? "true" : "false"
+                      }
                       aria-describedby={
-                        passwordErrors.newPassword ? "newPassword-error" : undefined
+                        passwordErrors.newPassword
+                          ? "newPassword-error"
+                          : undefined
                       }
                     />
                     {passwordErrors.newPassword && (
-                      <div id="newPassword-error" className="error-message" role="alert">
+                      <div
+                        id="newPassword-error"
+                        className="error-message"
+                        role="alert"
+                      >
                         {passwordErrors.newPassword}
                       </div>
                     )}
@@ -830,24 +848,32 @@ const StudentProfile = () => {
               Radera konto
             </button>
           </div>
-          
+
           {/* Bekräftelsedialog för radering av konto */}
           {showDeleteConfirmation && (
             <div className="delete-confirmation-overlay">
-              <div className="delete-confirmation-dialog" role="alertdialog" aria-labelledby="delete-title" aria-describedby="delete-description">
+              <div
+                className="delete-confirmation-dialog"
+                role="alertdialog"
+                aria-labelledby="delete-title"
+                aria-describedby="delete-description"
+              >
                 <h2 id="delete-title">Bekräfta radering</h2>
-                <p id="delete-description">Är du säker på att du vill radera ditt konto? Denna åtgärd kan inte ångras och all din data kommer att tas bort permanent.</p>
-                
+                <p id="delete-description">
+                  Är du säker på att du vill radera ditt konto? Denna åtgärd kan
+                  inte ångras och all din data kommer att tas bort permanent.
+                </p>
+
                 <div className="confirmation-buttons">
-                  <button 
-                    className="cancel-button" 
+                  <button
+                    className="cancel-button"
                     onClick={handleCancelDelete}
                     type="button"
                   >
                     Avbryt
                   </button>
-                  <button 
-                    className="confirm-delete-button" 
+                  <button
+                    className="confirm-delete-button"
                     onClick={handleDeleteAccount}
                     type="button"
                     disabled={deleteInProgress}

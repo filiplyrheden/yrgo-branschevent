@@ -8,7 +8,13 @@ import RegisterPopup from "./RegisterPopup";
 import PolicyPopup from "./PolicyPopup";
 import { supabase } from "../../supabaseClient.js";
 import { useNotification } from "../notifications/NotificationSystem";
-import { showSuccess, showError, showInfo, validateField, formatError } from "../utils/notifications";
+import {
+  showSuccess,
+  showError,
+  showInfo,
+  validateField,
+  formatError,
+} from "../utils/notifications";
 
 const LandingForm = () => {
   const navigate = useNavigate();
@@ -32,32 +38,32 @@ const LandingForm = () => {
       ...formData,
       [id]: type === "checkbox" ? checked : value,
     });
-    
+
     // Rensa fel när användaren börjar skriva
     if (formErrors[id]) {
       setFormErrors({
         ...formErrors,
-        [id]: null
+        [id]: null,
       });
     }
   };
 
   const validateForm = () => {
     const errors = {};
-    
-    // Kontrollera e-post
-    const emailError = validateField("email", formData.email);
+
+    // Kontrollera e-post (with trimming)
+    const emailError = validateField("email", formData.email.trim());
     if (emailError) errors.email = emailError;
-    
-    // Kontrollera lösenord
-    const passwordError = validateField("password", formData.password);
+
+    // Kontrollera lösenord (with trimming)
+    const passwordError = validateField("password", formData.password.trim());
     if (passwordError) errors.password = passwordError;
-    
+
     // Kontrollera villkoren
     if (!formData.acceptTerms) {
       errors.acceptTerms = "Du måste acceptera villkoren för att fortsätta";
     }
-    
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -65,7 +71,7 @@ const LandingForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Submit button clicked"); // Debug
-    
+
     // Validera formuläret
     if (!validateForm()) {
       // Visa ett sammanfattande felmeddelande
@@ -79,8 +85,8 @@ const LandingForm = () => {
 
       // Registrera användare med Supabase Auth
       const { data, error } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
+        email: formData.email.trim(),
+        password: formData.password.trim(),
         options: {
           data: {
             user_type: userType,
@@ -93,11 +99,11 @@ const LandingForm = () => {
       if (data?.user) {
         // Visa bekräftelse på lyckad registrering
         showSuccess(
-          addNotification, 
+          addNotification,
           `Du har registrerats som ${userType}. Du kommer att omdirigeras till din profil.`,
           "Registrering lyckades!"
         );
-        
+
         if (userType === "Företag") {
           // Kontrollera om företaget redan finns
           const { data: existingCompany } = await supabase
@@ -113,7 +119,7 @@ const LandingForm = () => {
               .insert([
                 {
                   id: data.user.id,
-                  email: formData.email,
+                  email: formData.email.trim(),
                   company_name: "",
                   coming_to_event: true, // Default till närvarande
                 },
@@ -157,7 +163,7 @@ const LandingForm = () => {
               .insert([
                 {
                   id: data.user.id,
-                  email: formData.email,
+                  email: formData.email.trim(),
                   name: "",
                 },
               ]);
@@ -173,17 +179,17 @@ const LandingForm = () => {
       }
     } catch (error) {
       console.error("Error under registrering:", error);
-      
+
       // Visa ett användarvänligt felmeddelande
       showError(
-        addNotification, 
-        formatError(error), 
+        addNotification,
+        formatError(error),
         "Registrering misslyckades"
       );
-      
-      setFormErrors(prev => ({
+
+      setFormErrors((prev) => ({
         ...prev,
-        general: formatError(error)
+        general: formatError(error),
       }));
     } finally {
       setLoading(false);
@@ -249,7 +255,7 @@ const LandingForm = () => {
             role="button"
             tabIndex="0"
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 togglePopup();
               }
             }}
@@ -295,7 +301,7 @@ const LandingForm = () => {
                 {formErrors.email}
               </div>
             )}
-            
+
             <Input
               id="password"
               label="Lösenord"
@@ -305,7 +311,9 @@ const LandingForm = () => {
               onChange={handleInputChange}
               required
               aria-invalid={formErrors.password ? "true" : "false"}
-              aria-describedby={formErrors.password ? "password-error" : undefined}
+              aria-describedby={
+                formErrors.password ? "password-error" : undefined
+              }
             />
             {formErrors.password && (
               <div id="password-error" className="error-message" role="alert">
@@ -331,15 +339,19 @@ const LandingForm = () => {
             </label>
           </div>
           {formErrors.acceptTerms && (
-            <div className="error-message" role="alert">{formErrors.acceptTerms}</div>
+            <div className="error-message" role="alert">
+              {formErrors.acceptTerms}
+            </div>
           )}
           {formErrors.general && (
-            <div role="alert" className="error-message">{formErrors.general}</div>
+            <div role="alert" className="error-message">
+              {formErrors.general}
+            </div>
           )}
           <div className="button-container">
-            <Button 
-              text={loading ? "Registrerar..." : "Registrera"} 
-              type="submit" 
+            <Button
+              text={loading ? "Registrerar..." : "Registrera"}
+              type="submit"
               disabled={loading}
               aria-busy={loading ? "true" : "false"}
             />
@@ -348,11 +360,11 @@ const LandingForm = () => {
           {showPolicyPopup && <PolicyPopup onClose={closePolicyPopup} />}
         </form>
       </div>
-      
+
       {/* Styling för felmeddelanden */}
       <style jsx>{`
         .error-message {
-          color: #E51236;
+          color: #e51236;
           font-size: 0.875rem;
           margin: 0.5rem 0;
           display: block;
