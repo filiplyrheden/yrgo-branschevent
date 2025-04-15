@@ -7,24 +7,21 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userType, setUserType] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false); // NYTT
 
   useEffect(() => {
-    // Kolla direkt när komponenten mountar
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       setIsLoggedIn(!!data.session);
     };
-
     checkSession();
 
-    // Lyssna på in- och utloggningar
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setIsLoggedIn(!!session);
       }
     );
 
-    // Städa upp när komponenten avmonteras
     return () => {
       listener?.subscription?.unsubscribe?.();
     };
@@ -34,20 +31,16 @@ const Header = () => {
     const checkUserType = async () => {
       try {
         const { data } = await supabase.auth.getSession();
-        
         if (data.session) {
-          // Hämta användartyp från metadata
           const userType = data.session.user.user_metadata?.user_type;
           setUserType(userType);
         }
-        
         setLoading(false);
       } catch (error) {
         console.error("Error checking user type:", error);
         setLoading(false);
       }
     };
-    
     checkUserType();
   }, []);
 
@@ -98,20 +91,32 @@ const Header = () => {
           />
         </svg>
       </Link>
-      <nav>
-        {/* Visa navigationsalternativ för studenter */}
+      <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+        ☰
+      </button>
+
+      <nav className={menuOpen ? "open" : ""}>
         {!loading && userType === "Student" && (
           <>
-            <Link to="/swajp">Swajp</Link>
-            <Link to="/foretag">Företag</Link> {/* Add link to Companies page */}
-            <Link to="/favoriter">Favoriter</Link>
+            <Link to="/swajp" onClick={() => setMenuOpen(false)}>
+              Swajp
+            </Link>
+            <Link to="/foretag" onClick={() => setMenuOpen(false)}>
+              Företag
+            </Link>
+            <Link to="/favoriter" onClick={() => setMenuOpen(false)}>
+              Favoriter
+            </Link>
           </>
         )}
-        
         {isLoggedIn ? (
-          <Link to="/profil">Profil</Link>
+          <Link to="/profil" onClick={() => setMenuOpen(false)}>
+            Profil
+          </Link>
         ) : (
-          <Link to="/login">Logga in</Link>
+          <Link to="/login" onClick={() => setMenuOpen(false)}>
+            Logga in
+          </Link>
         )}
       </nav>
     </header>
