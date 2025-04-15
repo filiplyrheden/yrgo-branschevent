@@ -157,11 +157,6 @@ const Favorites = () => {
         
         if (showNotifications && !favoritesFetchedRef.current) {
           setTimeout(() => {
-            showInfo(
-              addNotification,
-              "Du har inga favoriter än. Gå till Swajp för att hitta företag!",
-              "Inga favoriter"
-            );
           }, 300);
         }
       }
