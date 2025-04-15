@@ -15,6 +15,8 @@ const StudentProfile = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saveInProgress, setSaveInProgress] = useState(false);
+  const [deleteInProgress, setDeleteInProgress] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [user, setUser] = useState(null);
   const [studentDbId, setStudentDbId] = useState(null);
   const [formData, setFormData] = useState({
@@ -485,6 +487,83 @@ const StudentProfile = () => {
     }
   };
 
+  const handleShowDeleteConfirmation = () => {
+    setShowDeleteConfirmation(true);
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirmation(false);
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      setDeleteInProgress(true);
+
+      // 1. Kontrollera autentisering
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+      if (sessionError || !sessionData.session) {
+        addNotification({
+          type: "error",
+          title: "Sessionsfel",
+          message: "Din session har gått ut. Vänligen logga in igen.",
+          duration: 5000
+        });
+        navigate("/");
+        return;
+      }
+
+      const userId = sessionData.session.user.id;
+      
+      // 2. Ta bort data i denna ordning för att respektera referensintegritet:
+      
+      // a) Ta bort intressen först
+      const { error: interestsError } = await supabase
+        .from("student_interests")
+        .delete()
+        .eq("student_id", studentDbId);
+
+      if (interestsError) {
+        console.error("Fel vid borttagning av intressen:", interestsError);
+      }
+
+      // b) Ta bort studentposter från andra tabeller om det finns några
+      // Till exempel, favoriter, matchningar, etc.
+      
+      // c) Ta bort studentposten
+      const { error: studentError } = await supabase
+        .from("students")
+        .delete()
+        .eq("id", studentDbId);
+
+      if (studentError) {
+        console.error("Fel vid borttagning av studentdata:", studentError);
+        throw studentError;
+      }
+
+      // Spara en temporär flagga i sessionStorage innan vi loggar ut användaren
+      sessionStorage.setItem('accountDeleted', 'true');
+
+      // Logga ut användaren och navigera till startsidan
+      await supabase.auth.signOut();
+      navigate("/");
+      
+    } catch (error) {
+      console.error("Fel vid radering av konto:", error);
+      
+      addNotification({
+        type: "error",
+        title: "Raderingsfel",
+        message: "Ett fel uppstod när kontot skulle raderas. Vänligen försök igen senare.",
+        duration: 5000
+      });
+      
+      setShowDeleteConfirmation(false);
+    } finally {
+      setDeleteInProgress(false);
+    }
+  };
+
   if (loading && !saveInProgress) {
     return (
       <div>
@@ -627,7 +706,44 @@ const StudentProfile = () => {
             >
               Logga Ut
             </button>
+            <button
+              className="delete-button"
+              onClick={handleShowDeleteConfirmation}
+              type="button"
+              disabled={deleteInProgress}
+            >
+              Radera konto
+            </button>
           </div>
+          
+          {/* Bekräftelsedialog för radering av konto */}
+          {showDeleteConfirmation && (
+            <div className="delete-confirmation-overlay">
+              <div className="delete-confirmation-dialog" role="alertdialog" aria-labelledby="delete-title" aria-describedby="delete-description">
+                <h2 id="delete-title">Bekräfta radering</h2>
+                <p id="delete-description">Är du säker på att du vill radera ditt konto? Denna åtgärd kan inte ångras och all din data kommer att tas bort permanent.</p>
+                
+                <div className="confirmation-buttons">
+                  <button 
+                    className="cancel-button" 
+                    onClick={handleCancelDelete}
+                    type="button"
+                  >
+                    Avbryt
+                  </button>
+                  <button 
+                    className="confirm-delete-button" 
+                    onClick={handleDeleteAccount}
+                    type="button"
+                    disabled={deleteInProgress}
+                    aria-busy={deleteInProgress ? "true" : "false"}
+                  >
+                    {deleteInProgress ? "Raderar..." : "Ja, radera mitt konto"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Hidden live region for screen reader announcements */}
           <div
@@ -639,39 +755,6 @@ const StudentProfile = () => {
         </div>
       </main>
       <Footer />
-
-      {/* Hidden styles for accessibility */}
-      <style jsx>{`
-        .visually-hidden {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          padding: 0;
-          margin: -1px;
-          overflow: hidden;
-          clip: rect(0, 0, 0, 0);
-          white-space: nowrap;
-          border-width: 0;
-        }
-
-        .error-message {
-          color: #e51236;
-          font-size: 0.875rem;
-          margin-top: 0.5rem;
-          display: block;
-        }
-
-        input[aria-invalid="true"],
-        textarea[aria-invalid="true"] {
-          border-color: #e51236;
-          background-color: rgba(229, 18, 54, 0.05);
-        }
-
-        .required {
-          color: #e51236;
-          margin-left: 4px;
-        }
-      `}</style>
     </div>
   );
 };
